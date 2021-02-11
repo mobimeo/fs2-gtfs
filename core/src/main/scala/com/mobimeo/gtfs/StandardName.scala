@@ -43,5 +43,5 @@ object StandardName extends Enum[StandardName] {
   case object Translations   extends StandardName
   case object Attributions   extends StandardName
 
-  def values: IndexedSeq[StandardName] = findValues
+  def values = findValues
 }

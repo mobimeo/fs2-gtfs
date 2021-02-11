@@ -121,7 +121,7 @@ object LocationType extends IntEnum[LocationType] with CsvIntEnum[LocationType] 
   case object GenericNode  extends LocationType(3)
   case object BoardingArea extends LocationType(4)
 
-  def values: IndexedSeq[LocationType] = findValues
+  val values = findValues
 }
 
 case class Route[RouteType](
@@ -167,7 +167,7 @@ object SimpleRouteType extends IntEnum[SimpleRouteType] with CsvIntEnum[SimpleRo
   case object Trolleybus extends SimpleRouteType(11)
   case object Monorail   extends SimpleRouteType(12)
 
-  def values: IndexedSeq[SimpleRouteType] = findValues
+  val values = findValues
 }
 
 /** Extended route types.
@@ -262,7 +262,7 @@ object ExtendedRouteType extends IntEnum[ExtendedRouteType] with CsvIntEnum[Exte
   case object MiscellaneousService extends ExtendedRouteType(1700)
   case object HorseDrawnCarriage   extends ExtendedRouteType(1702)
 
-  def values: IndexedSeq[ExtendedRouteType] = findValues
+  val values = findValues
 }
 
 case class Trip(
@@ -351,7 +351,7 @@ object PickupOrDropOffType extends IntEnum[PickupOrDropOffType] with CsvIntEnum[
   case object MustPhoneAgency          extends PickupOrDropOffType(2)
   case object MustCoordinateWithDriver extends PickupOrDropOffType(3)
 
-  def values: IndexedSeq[PickupOrDropOffType] = findValues
+  val values = findValues
 }
 
 sealed abstract class Timepoint(val value: Int) extends IntEnumEntry
@@ -359,7 +359,7 @@ object Timepoint extends IntEnum[Timepoint] with CsvIntEnum[Timepoint] {
   case object Approximate extends Timepoint(0)
   case object Exact       extends Timepoint(1)
 
-  def values: IndexedSeq[Timepoint] = findValues
+  val values = findValues
 }
 
 case class Calendar(
@@ -390,7 +390,7 @@ object Availability extends IntEnum[Availability] with CsvIntEnum[Availability] 
   case object Availabile  extends Availability(1)
   case object Unavailable extends Availability(0)
 
-  def values: IndexedSeq[Availability] = findValues
+  val values = findValues
 }
 
 case class CalendarDate(
@@ -414,7 +414,7 @@ object ExceptionType extends IntEnum[ExceptionType] with CsvIntEnum[ExceptionTyp
   case object Added   extends ExceptionType(1)
   case object Removed extends ExceptionType(2)
 
-  def values: IndexedSeq[ExceptionType] = findValues
+  val values = findValues
 }
 
 case class FareAttribute(
@@ -445,7 +445,7 @@ object PaymentMethod extends IntEnum[PaymentMethod] with CsvIntEnum[PaymentMetho
   case object OnBoard        extends PaymentMethod(0)
   case object BeforeBoarding extends PaymentMethod(1)
 
-  def values: IndexedSeq[PaymentMethod] = findValues
+  val values = findValues
 }
 
 case class FareRules(
@@ -516,7 +516,7 @@ object ExactTimes extends IntEnum[ExactTimes] with CsvIntEnum[ExactTimes] {
   case object FrequencyBased extends ExactTimes(0)
   case object ScheduleBased  extends ExactTimes(1)
 
-  def values: IndexedSeq[ExactTimes] = findValues
+  val values = findValues
 }
 
 case class Transfer(
@@ -545,7 +545,7 @@ object TransferType extends IntEnum[TransferType] with CsvIntEnum[TransferType] 
   case object MinimumTimeRequiredTransfer extends TransferType(2)
   case object ImpossibleTransfer          extends TransferType(3)
 
-  def values: IndexedSeq[TransferType] = findValues
+  val values = findValues
 }
 
 case class Pathway(
@@ -592,7 +592,7 @@ object PathwayMode extends IntEnum[PathwayMode] with CsvIntEnum[PathwayMode] {
   case object FareGate       extends PathwayMode(6)
   case object ExitGate       extends PathwayMode(7)
 
-  def values: IndexedSeq[PathwayMode] = findValues
+  val values = findValues
 }
 
 case class Level(
@@ -677,7 +677,7 @@ object TableName extends Enum[TableName] with CsvEnum[TableName] {
   case object Levels       extends TableName
   case object Attributions extends TableName
 
-  def values: IndexedSeq[TableName] = findValues
+  val values = findValues
 }
 
 case class Attribution(

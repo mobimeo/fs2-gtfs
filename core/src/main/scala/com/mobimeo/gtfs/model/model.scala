@@ -125,7 +125,7 @@ case class Route[RouteType](
     @CsvName("agency_id")
     agencyId: Option[String],
     @CsvName("route_short_name")
-    route_short_name: Option[String],
+    routeShortName: Option[String],
     @CsvName("route_long_name")
     longName: Option[String],
     @CsvName("route_desc")

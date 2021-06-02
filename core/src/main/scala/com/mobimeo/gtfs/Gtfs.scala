@@ -17,7 +17,7 @@
 package com.mobimeo.gtfs
 
 import cats.effect._
-import cats.implicits._
+import cats.syntax.all._
 
 import fs2._
 import fs2.data.csv._
@@ -124,12 +124,17 @@ class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(impl
     * For instance `rawFile("calendar.txt")`.
       */
     def rawFile(name: String): Stream[F, CsvRow[String]] =
-      io.file
-        .readAll(fs.getPath(s"/$name"), blocker, 1024)
-        .through(text.utf8Decode)
-        .flatMap(Stream.emits(_))
-        .through(rows[F]())
-        .through(headers[F, String])
+      Stream.force(hasFile(name).map { exists =>
+        if (exists)
+          io.file
+            .readAll(fs.getPath(s"/$name"), blocker, 1024)
+            .through(text.utf8Decode)
+            .flatMap(Stream.emits(_))
+            .through(rows[F]())
+            .through(headers[F, String])
+        else
+          Stream.empty
+      })
 
     /** Gives access to the raw content of CSV file `name`. */
     def rawFile(name: StandardName): Stream[F, CsvRow[String]] =

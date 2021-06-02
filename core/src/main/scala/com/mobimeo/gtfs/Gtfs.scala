@@ -20,9 +20,11 @@ import cats.effect._
 import cats.syntax.all._
 
 import fs2._
+import fs2.io.file.Files
 import fs2.data.csv._
+import fs2.data.csv.lowlevel._
 
-import java.nio.file.{CopyOption, FileSystem, FileSystems, Files, Path, Paths, StandardCopyOption}
+import java.nio.file.{CopyOption, FileSystem, FileSystems, Path, Paths, StandardCopyOption}
 
 import scala.jdk.CollectionConverters._
 
@@ -35,12 +37,12 @@ import java.net.URI
   * Use the smart constructor in the companion object to acquire a `Resource`
   * over a GTFS file. The file will be closed once the resource is released.
   */
-class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(implicit F: Sync[F], cs: ContextShift[F]) {
+class Gtfs[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F], files: Files[F]) {
   self =>
 
   /** Whether the GTFS file contains the given file name. */
   def hasFile(name: String): F[Boolean] =
-    blocker.delay(Files.exists(fs.getPath(s"/$name")))
+    files.exists(fs.getPath(s"/$name"))
 
   /** Whether the GTFS file contains the given file name. */
   def hasFile(name: StandardName): F[Boolean] =
@@ -126,11 +128,10 @@ class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(impl
     def rawFile(name: String): Stream[F, CsvRow[String]] =
       Stream.force(hasFile(name).map { exists =>
         if (exists)
-          io.file
-            .readAll(fs.getPath(s"/$name"), blocker, 1024)
+          files
+            .readAll(fs.getPath(s"/$name"), 1024)
             .through(text.utf8Decode)
-            .flatMap(Stream.emits(_))
-            .through(rows[F]())
+            .through(rows())
             .through(headers[F, String])
         else
           Stream.empty
@@ -145,7 +146,7 @@ class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(impl
     * For instance `file("calendar.txt")`.
       */
     def file[R](name: String)(implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
-      rawFile(name).through(decodeRow[F, String, R])
+      rawFile(name).through(decodeRow)
 
     /** Gives access to the content of CSV file `name`. */
     def file[R](name: StandardName)(implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
@@ -271,17 +272,20 @@ class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(impl
       */
     def rawFile(name: String): Pipe[F, CsvRow[String], Unit] =
       s =>
-        io.file
-          .tempFileStream(blocker, Paths.get(Properties.propOrElse("java.io.tmpdir", "/tmp")), prefix = name)
+        Stream
+          .resource(
+            files
+              .tempFile(Paths.get(Properties.propOrElse("java.io.tmpdir", "/tmp")).some, prefix = name)
+          )
           .flatMap { tempFile =>
             // save the rows in the temp file first
             s.through(encodeRowWithFirstHeaders)
               .through(toRowStrings())
               .through(text.utf8Encode)
-              .through(io.file.writeAll(tempFile, blocker)) ++
+              .through(files.writeAll(tempFile)) ++
               // once temp file is saved, copy it to the destination file in GTFS
-              Stream.eval_(
-                io.file.copy(blocker, tempFile, fs.getPath(s"/$name"), Seq(StandardCopyOption.REPLACE_EXISTING))
+              Stream.exec(
+                files.copy(tempFile, fs.getPath(s"/$name"), Seq(StandardCopyOption.REPLACE_EXISTING)).void
               )
           }
 
@@ -413,7 +417,7 @@ class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(impl
     * to be saved to a new file.
     */
   def copyTo(file: Path, flags: Seq[CopyOption] = Seq.empty): Resource[F, Gtfs[F]] =
-    Resource.liftF(fs2.io.file.copy(blocker, self.file, file, flags)) >> Gtfs(file, blocker)
+    Resource.eval(files.copy(self.file, file, flags)) >> Gtfs(file)
 
 }
 
@@ -421,24 +425,22 @@ object Gtfs {
 
   private[gtfs] def makeFs[F[_]](
       file: Path,
-      blocker: Blocker,
       create: Boolean
-  )(implicit F: Sync[F], cs: ContextShift[F]): Resource[F, FileSystem] =
+  )(implicit F: Sync[F], files: Files[F]): Resource[F, FileSystem] =
     Resource.make(
-      blocker.delay(
-        FileSystems
-          .newFileSystem(
-            URI.create("jar:file:" + file.toAbsolutePath()),
-            Map("create" -> String.valueOf(create && Files.notExists(file))).asJava
-          )
-      )
-    )(fs => blocker.delay(fs.close()))
+      files.exists(file).flatMap { exists =>
+        F.blocking(
+          FileSystems
+            .newFileSystem(
+              URI.create("jar:file:" + file.toAbsolutePath()),
+              Map("create" -> String.valueOf(create && !exists)).asJava
+            )
+        )
+      }
+    )(fs => F.blocking(fs.close()))
 
   /** Creates a GTFS object, giving access to all files within the GTFS file. */
-  def apply[F[_]](file: Path, blocker: Blocker, create: Boolean = false)(implicit
-      F: Sync[F],
-      cs: ContextShift[F]
-  ): Resource[F, Gtfs[F]] =
-    makeFs(file, blocker, create).map(new Gtfs(file, _, blocker))
+  def apply[F[_]](file: Path, create: Boolean = false)(implicit F: Sync[F], files: Files[F]): Resource[F, Gtfs[F]] =
+    makeFs(file, create).map(new Gtfs(file, _))
 
 }

@@ -27,11 +27,14 @@ import fs2.data.csv.generic.semiauto._
 
 import java.time._
 import java.{util => ju}
+import scala.annotation.unused
 
 trait CsvEnum[T <: EnumEntry] extends Enum[T] {
 
   implicit val cellDecoder: CellDecoder[T] =
-    CellDecoder.stringDecoder.emap(s => withNameEither(s).leftMap(t => new DecoderError(s"Unknown enum value $s", t)))
+    CellDecoder.stringDecoder.emap(s =>
+      withNameEither(s).leftMap(t => new DecoderError(s"Unknown enum value $s", None, t))
+    )
 
   implicit val cellEncoder: CellEncoder[T] =
     CellEncoder.stringEncoder.contramap(_.entryName)
@@ -41,7 +44,9 @@ trait CsvEnum[T <: EnumEntry] extends Enum[T] {
 trait CsvIntEnum[T <: IntEnumEntry] extends IntEnum[T] {
 
   implicit val cellDecoder: CellDecoder[T] =
-    CellDecoder.intDecoder.emap(s => withValueEither(s).leftMap(t => new DecoderError(s"Unknown enum value $s", t)))
+    CellDecoder.intDecoder.emap(s =>
+      withValueEither(s).leftMap(t => new DecoderError(s"Unknown enum value $s", None, t))
+    )
 
   implicit val cellEncoder: CellEncoder[T] =
     CellEncoder.intEncoder.contramap(_.value)
@@ -143,7 +148,9 @@ case class Route[RouteType](
 )
 
 object Route {
-  implicit def csvRowDecoder[RouteType: CellDecoder]: CsvRowDecoder[Route[RouteType], String] =
+  implicit def csvRowDecoder[RouteType](implicit
+      @unused decoder: CellDecoder[RouteType]
+  ): CsvRowDecoder[Route[RouteType], String] =
     deriveCsvRowDecoder[Route[RouteType]]
 }
 

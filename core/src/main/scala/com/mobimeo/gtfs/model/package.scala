@@ -34,7 +34,7 @@ package object model {
 
   implicit val zoneIdCellDecoder: CellDecoder[ZoneId] =
     CellDecoder.stringDecoder.emap(s =>
-      Either.catchNonFatal(ZoneId.of(s)).leftMap(t => new DecoderError(s"Invalid zone id $s", t))
+      Either.catchNonFatal(ZoneId.of(s)).leftMap(t => new DecoderError(s"Invalid zone id $s", None, t))
     )
 
   implicit val zoneIdCellEncoder: CellEncoder[ZoneId] =
@@ -44,7 +44,7 @@ package object model {
     CellDecoder.stringDecoder.emap(s =>
       Either
         .catchNonFatal(LocalDate.parse(s, DateTimeFormatter.BASIC_ISO_DATE))
-        .leftMap(t => new DecoderError(s"Invalid date $s", t))
+        .leftMap(t => new DecoderError(s"Invalid date $s", None, t))
     )
 
   implicit val localDateEncoder: CellEncoder[LocalDate] =
@@ -52,7 +52,7 @@ package object model {
 
   implicit val currencyDecoder: CellDecoder[ju.Currency] =
     CellDecoder.stringDecoder.emap(s =>
-      Either.catchNonFatal(ju.Currency.getInstance(s)).leftMap(t => new DecoderError(s"Invalid currency: $s", t))
+      Either.catchNonFatal(ju.Currency.getInstance(s)).leftMap(t => new DecoderError(s"Invalid currency: $s", None, t))
     )
 
   implicit val boolDecoder: CellDecoder[Boolean] =

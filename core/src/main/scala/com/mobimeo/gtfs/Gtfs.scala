@@ -38,6 +38,82 @@ import java.net.URI
 class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(implicit F: Sync[F], cs: ContextShift[F]) {
   self =>
 
+  /** Whether the GTFS file contains the given file name. */
+  def hasFile(name: String): F[Boolean] =
+    blocker.delay(Files.exists(fs.getPath(s"/$name")))
+
+  /** Whether the GTFS file contains the given file name. */
+  def hasFile(name: StandardName): F[Boolean] =
+    hasFile(name.entryName)
+
+  /** Whether the GTFS file contains the agency file. */
+  def hasAgency: F[Boolean] =
+    hasFile(StandardName.Agency)
+
+  /** Whether the GTFS file contains the stops file. */
+  def hasStops: F[Boolean] =
+    hasFile(StandardName.Stops)
+
+  /** Whether the GTFS file contains the routes file. */
+  def hasRoutes: F[Boolean] =
+    hasFile(StandardName.Routes)
+
+  /** Whether the GTFS file contains the trips file. */
+  def hasTrips: F[Boolean] =
+    hasFile(StandardName.Trips)
+
+  /** Whether the GTFS file contains the stop_times file. */
+  def hasStopTimes: F[Boolean] =
+    hasFile(StandardName.StopTimes)
+
+  /** Whether the GTFS file contains the calendar file. */
+  def hasCalendar: F[Boolean] =
+    hasFile(StandardName.Calendar)
+
+  /** Whether the GTFS file contains the calendar_dates file. */
+  def hasCalendarDates: F[Boolean] =
+    hasFile(StandardName.CalendarDates)
+
+  /** Whether the GTFS file contains the fare_attributes file. */
+  def hasFareAttributes: F[Boolean] =
+    hasFile(StandardName.FareAttributes)
+
+  /** Whether the GTFS file contains the fare_rules file. */
+  def hasFareRules: F[Boolean] =
+    hasFile(StandardName.FareRules)
+
+  /** Whether the GTFS file contains the shapes file. */
+  def hasShapes: F[Boolean] =
+    hasFile(StandardName.Shapes)
+
+  /** Whether the GTFS file contains the frequencies file. */
+  def hasFrequencies: F[Boolean] =
+    hasFile(StandardName.Frequencies)
+
+  /** Whether the GTFS file contains the transfers file. */
+  def hasTransfers: F[Boolean] =
+    hasFile(StandardName.Transfers)
+
+  /** Whether the GTFS file contains the pathways file. */
+  def hasPathways: F[Boolean] =
+    hasFile(StandardName.Pathways)
+
+  /** Whether the GTFS file contains the levels file. */
+  def hasLevels: F[Boolean] =
+    hasFile(StandardName.Levels)
+
+  /** Whether the GTFS file contains the feed_info file. */
+  def hasFeedInfo: F[Boolean] =
+    hasFile(StandardName.FeedInfo)
+
+  /** Whether the GTFS file contains the translations file. */
+  def hasTranslations: F[Boolean] =
+    hasFile(StandardName.Translations)
+
+  /** Whether the GTFS file contains the attributions file. */
+  def hasAttributions: F[Boolean] =
+    hasFile(StandardName.Attributions)
+
   /** Namespace containing operators and pipes to read content of a GTFS file access
     * stream.
     */

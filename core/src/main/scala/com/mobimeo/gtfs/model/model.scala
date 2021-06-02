@@ -394,6 +394,14 @@ case class CalendarDate(
     exceptionType: ExceptionType
 )
 
+object CalendarDate {
+  implicit val decoder: CsvRowDecoder[CalendarDate, String] =
+    deriveCsvRowDecoder[CalendarDate]
+
+  implicit val encoder: CsvRowEncoder[CalendarDate, String] =
+    deriveCsvRowEncoder[CalendarDate]
+}
+
 sealed abstract class ExceptionType(val value: Int) extends IntEnumEntry
 object ExceptionType extends IntEnum[ExceptionType] with CsvIntEnum[ExceptionType] {
   case object Added   extends ExceptionType(1)

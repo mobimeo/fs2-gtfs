@@ -55,6 +55,10 @@ class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(impl
         .through(rows[F]())
         .through(headers[F, String])
 
+    /** Gives access to the raw content of CSV file `name`. */
+    def rawFile(name: StandardName): Stream[F, CsvRow[String]] =
+      rawFile(name.entryName)
+
     /** Gives access to the content of CSV file `name`.
       *
     * For instance `file("calendar.txt")`.
@@ -62,109 +66,113 @@ class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(impl
     def file[R](name: String)(implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
       rawFile(name).through(decodeRow[F, String, R])
 
+    /** Gives access to the content of CSV file `name`. */
+    def file[R](name: StandardName)(implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
+      file(name.entryName)
+
     // aliases for standard GTFS files
 
     def stops[S](implicit decoder: CsvRowDecoder[S, String]): Stream[F, S] =
-      file(Gtfs.Names.Stops)
+      file(StandardName.Stops)
 
     def rawStops: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Stops)
+      rawFile(StandardName.Stops)
 
     def rawRoutes: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Routes)
+      rawFile(StandardName.Routes)
 
     def routes[R](implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
-      file(Gtfs.Names.Routes)
+      file(StandardName.Routes)
 
     def rawTrips: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Trips)
+      rawFile(StandardName.Trips)
 
     def trips[T](implicit decoder: CsvRowDecoder[T, String]): Stream[F, T] =
-      file(Gtfs.Names.Trips)
+      file(StandardName.Trips)
 
     def rawStopTimes: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.StopTimes)
+      rawFile(StandardName.StopTimes)
 
     def stopTimes[S](implicit decoder: CsvRowDecoder[S, String]): Stream[F, S] =
-      file(Gtfs.Names.StopTimes)
+      file(StandardName.StopTimes)
 
     def rawAgencies: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Agency)
+      rawFile(StandardName.Agency)
 
     def agencies[A](implicit decoder: CsvRowDecoder[A, String]): Stream[F, A] =
-      file(Gtfs.Names.Agency)
+      file(StandardName.Agency)
 
     def rawCalendar: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Calendar)
+      rawFile(StandardName.Calendar)
 
     def calendar[C](implicit decoder: CsvRowDecoder[C, String]): Stream[F, C] =
-      file(Gtfs.Names.Calendar)
+      file(StandardName.Calendar)
 
     def rawCalendarDates: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.CalendarDates)
+      rawFile(StandardName.CalendarDates)
 
     def calendarDates[C](implicit decoder: CsvRowDecoder[C, String]): Stream[F, C] =
-      file(Gtfs.Names.CalendarDates)
+      file(StandardName.CalendarDates)
 
     def rawFareAttributes: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.FareAttributes)
+      rawFile(StandardName.FareAttributes)
 
     def fareAttributes[A](implicit decoder: CsvRowDecoder[A, String]): Stream[F, A] =
-      file(Gtfs.Names.FareAttributes)
+      file(StandardName.FareAttributes)
 
     def rawFareRules: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.FareRules)
+      rawFile(StandardName.FareRules)
 
     def fareRules[R](implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
-      file(Gtfs.Names.FareRules)
+      file(StandardName.FareRules)
 
     def rawShapes: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Shapes)
+      rawFile(StandardName.Shapes)
 
     def shapes[S](implicit decoder: CsvRowDecoder[S, String]): Stream[F, S] =
-      file(Gtfs.Names.Shapes)
+      file(StandardName.Shapes)
 
     def rawFrequencies: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Frequencies)
+      rawFile(StandardName.Frequencies)
 
     def frequencies[S](implicit decoder: CsvRowDecoder[S, String]): Stream[F, S] =
-      file(Gtfs.Names.Frequencies)
+      file(StandardName.Frequencies)
 
     def rawTransfers: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Transfers)
+      rawFile(StandardName.Transfers)
 
     def transfers[T](implicit decoder: CsvRowDecoder[T, String]): Stream[F, T] =
-      file(Gtfs.Names.Transfers)
+      file(StandardName.Transfers)
 
     def rawPathways: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Pathways)
+      rawFile(StandardName.Pathways)
 
     def pathways[P](implicit decoder: CsvRowDecoder[P, String]): Stream[F, P] =
-      file(Gtfs.Names.Pathways)
+      file(StandardName.Pathways)
 
     def rawLevels: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Levels)
+      rawFile(StandardName.Levels)
 
     def levels[L](implicit decoder: CsvRowDecoder[L, String]): Stream[F, L] =
-      file(Gtfs.Names.Levels)
+      file(StandardName.Levels)
 
     def rawFeedInfo: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.FeedInfo)
+      rawFile(StandardName.FeedInfo)
 
     def feedInfo[I](implicit decoder: CsvRowDecoder[I, String]): Stream[F, I] =
-      file(Gtfs.Names.FeedInfo)
+      file(StandardName.FeedInfo)
 
     def rawTranslations: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Translations)
+      rawFile(StandardName.Translations)
 
     def translations[T](implicit decoder: CsvRowDecoder[T, String]): Stream[F, T] =
-      file(Gtfs.Names.Translations)
+      file(StandardName.Translations)
 
     def rawAttributions: Stream[F, CsvRow[String]] =
-      rawFile(Gtfs.Names.Attributions)
+      rawFile(StandardName.Attributions)
 
     def attributions[A](implicit decoder: CsvRowDecoder[A, String]): Stream[F, A] =
-      file(Gtfs.Names.Attributions)
+      file(StandardName.Attributions)
 
   }
 
@@ -180,10 +188,10 @@ class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(impl
       *
       * For instance `rawFile("agency.txt")`.
       */
-    def rawFile(file: String): Pipe[F, CsvRow[String], Unit] =
+    def rawFile(name: String): Pipe[F, CsvRow[String], Unit] =
       s =>
         io.file
-          .tempFileStream(blocker, Paths.get(Properties.propOrElse("java.io.tmpdir", "/tmp")), prefix = file)
+          .tempFileStream(blocker, Paths.get(Properties.propOrElse("java.io.tmpdir", "/tmp")), prefix = name)
           .flatMap { tempFile =>
             // save the rows in the temp file first
             s.through(encodeRowWithFirstHeaders)
@@ -192,120 +200,128 @@ class Gtfs[F[_]] private (val file: Path, fs: FileSystem, blocker: Blocker)(impl
               .through(io.file.writeAll(tempFile, blocker)) ++
               // once temp file is saved, copy it to the destination file in GTFS
               Stream.eval_(
-                io.file.copy(blocker, tempFile, fs.getPath(s"/$file"), Seq(StandardCopyOption.REPLACE_EXISTING))
+                io.file.copy(blocker, tempFile, fs.getPath(s"/$name"), Seq(StandardCopyOption.REPLACE_EXISTING))
               )
           }
+
+    /** Gives access to the pipe to save in file `name`. */
+    def rawFile(name: StandardName): Pipe[F, CsvRow[String], Unit] =
+      rawFile(name.entryName)
 
     /** Gives access to the pipe to save in file `name`.
       *
       * For instance `file("agency.txt")`.
       */
-    def file[T](file: String)(implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Unit] =
-      _.through(encodeRow).through(rawFile(file))
+    def file[T](name: String)(implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Unit] =
+      _.through(encodeRow).through(rawFile(name))
+
+    /** Gives access to the pipe to save in file `name`. */
+    def file[T](name: StandardName)(implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Unit] =
+      file(name.entryName)
 
     // aliases for standard GTFS files
 
     def stops[S](implicit encoder: CsvRowEncoder[S, String]): Pipe[F, S, Unit] =
-      file(Gtfs.Names.Stops)
+      file(StandardName.Stops)
 
     def rawStops: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Stops)
+      rawFile(StandardName.Stops)
 
     def rawRoutes: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Routes)
+      rawFile(StandardName.Routes)
 
     def routes[R](implicit encoder: CsvRowEncoder[R, String]): Pipe[F, R, Unit] =
-      file(Gtfs.Names.Routes)
+      file(StandardName.Routes)
 
     def rawTrips: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Trips)
+      rawFile(StandardName.Trips)
 
     def trips[T](implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Unit] =
-      file(Gtfs.Names.Trips)
+      file(StandardName.Trips)
 
     def rawStopTimes: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.StopTimes)
+      rawFile(StandardName.StopTimes)
 
     def stopTimes[S](implicit encoder: CsvRowEncoder[S, String]): Pipe[F, S, Unit] =
-      file(Gtfs.Names.StopTimes)
+      file(StandardName.StopTimes)
 
     def rawAgencies: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Agency)
+      rawFile(StandardName.Agency)
 
     def agencies[A](implicit encoder: CsvRowEncoder[A, String]): Pipe[F, A, Unit] =
-      file(Gtfs.Names.Agency)
+      file(StandardName.Agency)
 
     def rawCalendar: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Calendar)
+      rawFile(StandardName.Calendar)
 
     def calendar[C](implicit encoder: CsvRowEncoder[C, String]): Pipe[F, C, Unit] =
-      file(Gtfs.Names.Calendar)
+      file(StandardName.Calendar)
 
     def rawCalendarDates: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.CalendarDates)
+      rawFile(StandardName.CalendarDates)
 
     def calendarDates[C](implicit encoder: CsvRowEncoder[C, String]): Pipe[F, C, Unit] =
-      file(Gtfs.Names.CalendarDates)
+      file(StandardName.CalendarDates)
 
     def rawFareAttributes: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.FareAttributes)
+      rawFile(StandardName.FareAttributes)
 
     def fareAttributes[A](implicit encoder: CsvRowEncoder[A, String]): Pipe[F, A, Unit] =
-      file(Gtfs.Names.FareAttributes)
+      file(StandardName.FareAttributes)
 
     def rawFareRules: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.FareRules)
+      rawFile(StandardName.FareRules)
 
     def fareRules[R](implicit encoder: CsvRowEncoder[R, String]): Pipe[F, R, Unit] =
-      file(Gtfs.Names.FareRules)
+      file(StandardName.FareRules)
 
     def rawShapes: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Shapes)
+      rawFile(StandardName.Shapes)
 
     def shapes[S](implicit encoder: CsvRowEncoder[S, String]): Pipe[F, S, Unit] =
-      file(Gtfs.Names.Shapes)
+      file(StandardName.Shapes)
 
     def rawFrequencies: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Frequencies)
+      rawFile(StandardName.Frequencies)
 
     def frequencies[S](implicit encoder: CsvRowEncoder[S, String]): Pipe[F, S, Unit] =
-      file(Gtfs.Names.Frequencies)
+      file(StandardName.Frequencies)
 
     def rawTransfers: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Transfers)
+      rawFile(StandardName.Transfers)
 
     def transfers[T](implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Unit] =
-      file(Gtfs.Names.Transfers)
+      file(StandardName.Transfers)
 
     def rawPathways: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Pathways)
+      rawFile(StandardName.Pathways)
 
     def pathways[P](implicit encoder: CsvRowEncoder[P, String]): Pipe[F, P, Unit] =
-      file(Gtfs.Names.Pathways)
+      file(StandardName.Pathways)
 
     def rawLevels: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Levels)
+      rawFile(StandardName.Levels)
 
     def levels[L](implicit encoder: CsvRowEncoder[L, String]): Pipe[F, L, Unit] =
-      file(Gtfs.Names.Levels)
+      file(StandardName.Levels)
 
     def rawFeedInfo: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.FeedInfo)
+      rawFile(StandardName.FeedInfo)
 
     def feedInfo[I](implicit encoder: CsvRowEncoder[I, String]): Pipe[F, I, Unit] =
-      file(Gtfs.Names.FeedInfo)
+      file(StandardName.FeedInfo)
 
     def rawTranslations: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Translations)
+      rawFile(StandardName.Translations)
 
     def translations[T](implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Unit] =
-      file(Gtfs.Names.Translations)
+      file(StandardName.Translations)
 
     def rawAttributions: Pipe[F, CsvRow[String], Unit] =
-      rawFile(Gtfs.Names.Attributions)
+      rawFile(StandardName.Attributions)
 
     def attributions[A](implicit encoder: CsvRowEncoder[A, String]): Pipe[F, A, Unit] =
-      file(Gtfs.Names.Attributions)
+      file(StandardName.Attributions)
 
   }
 
@@ -343,26 +359,5 @@ object Gtfs {
       cs: ContextShift[F]
   ): Resource[F, Gtfs[F]] =
     makeFs(file, blocker, create).map(new Gtfs(file, _, blocker))
-
-  /** Standard GTFS file names. */
-  object Names {
-    val Stops          = "stops.txt"
-    val Routes         = "routes.txt"
-    val Trips          = "trips.txt"
-    val StopTimes      = "stop_times.txt"
-    val Agency         = "agency.txt"
-    val Calendar       = "calendar.txt"
-    val CalendarDates  = "calendar_dates.txt"
-    val FareAttributes = "fare_attributes.txt"
-    val FareRules      = "fare_rules.txt"
-    val Shapes         = "shapes.txt"
-    val Frequencies    = "frequencies.txt"
-    val Transfers      = "transfers.txt"
-    val Pathways       = "pathways.txt"
-    val Levels         = "levels.txt"
-    val FeedInfo       = "feed_info.txt"
-    val Translations   = "translations.txt"
-    val Attributions   = "attributions.txt"
-  }
 
 }

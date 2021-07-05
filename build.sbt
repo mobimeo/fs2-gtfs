@@ -57,5 +57,4 @@ lazy val core = project
 lazy val examples = project
   .in(file("examples"))
   .settings(commonSettings)
-  .settings(Compile / scalaSource := baseDirectory.value)
   .dependsOn(core)

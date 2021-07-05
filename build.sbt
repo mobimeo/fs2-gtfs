@@ -27,6 +27,12 @@ val commonSettings = Seq(
   addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1")
 )
 
+val noPublish = List(
+  publish := {},
+  publishLocal := {},
+  publishArtifact := false
+)
+
 // === CI/CD settings ===
 val scala212 = "2.12.13"
 val scala213 = "2.13.4"
@@ -38,12 +44,10 @@ ThisBuild / crossScalaVersions := List(scala212, scala213)
 lazy val root = project
   .in(file("."))
   .settings(commonSettings)
+  .settings(noPublish)
   .settings(
-    publish := {},
-    publishLocal := {},
     test := {},
-    testOnly := {},
-    publishArtifact := false
+    testOnly := {}
   )
   .aggregate(core)
 
@@ -57,4 +61,5 @@ lazy val core = project
 lazy val examples = project
   .in(file("examples"))
   .settings(commonSettings)
+  .settings(noPublish)
   .dependsOn(core)

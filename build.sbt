@@ -3,13 +3,15 @@ val commonSettings = Seq(
   organization := "com.mobimeo",
   cancelable in Global := true,
   headerLicense := Some(HeaderLicense.ALv2("2021", "Mobimeo GmbH")),
-  // Add the macro paradise compiler flag, so we can use circe's @JsonCodec macro annotations
+  // Add the macro paradise compiler flag, so we can use circe's @JsonCodec macro annotations scalacOptions ++= PartialFunction
   scalacOptions ++= PartialFunction
     .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
       case Some((2, n)) if n >= 13 =>
         Seq(
           "-Ymacro-annotations"
         )
+      case Some((3, _)) =>
+        Seq("-Ykind-projector")
     }
     .toList
     .flatten,
@@ -22,9 +24,16 @@ val commonSettings = Seq(
       case _ =>
         // if scala 2.13.0 or later, macro annotations merged into scala-reflect
         Nil
-    }),
-  addCompilerPlugin("org.typelevel" %% "kind-projector"     % "0.11.3" cross CrossVersion.full),
-  addCompilerPlugin("com.olegpy"    %% "better-monadic-for" % "0.3.1")
+    }) ++ PartialFunction
+      .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
+        case Some((2, _)) =>
+          List(
+            compilerPlugin("org.typelevel" % "kind-projector"     % "0.13.0" cross CrossVersion.full),
+            compilerPlugin("com.olegpy"    % "better-monadic-for" % "0.3.1" cross CrossVersion.binary)
+          )
+      }
+      .toList
+      .flatten
 )
 
 val noPublish = List(
@@ -34,11 +43,12 @@ val noPublish = List(
 )
 
 // === CI/CD settings ===
-val scala212 = "2.12.13"
-val scala213 = "2.13.4"
+val scala213 = "2.13.6"
+val scala3   = "3.0.0"
 
 ThisBuild / scalaVersion := scala213
-ThisBuild / crossScalaVersions := List(scala212, scala213)
+// enumeratum has no support for scala3 yet, maybe we don't need it if we use scala3 enums?
+// ThisBuild / crossScalaVersions := List(scala213, scala3)
 
 // === aggregating root project ===
 lazy val root = project
@@ -49,7 +59,7 @@ lazy val root = project
     test := {},
     testOnly := {}
   )
-  .aggregate(core)
+  .aggregate(core, examples)
 
 // === The modules ===
 

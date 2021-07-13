@@ -63,9 +63,13 @@ lazy val root = project
 
 // === The modules ===
 
+lazy val docsMappingsAPIDir = settingKey[String]("Name of subdirectory in site target directory for api docs")
+
 lazy val site = project
   .in(file("site"))
   .enablePlugins(MicrositesPlugin)
+  .enablePlugins(ScalaUnidocPlugin)
+  .settings(commonSettings)
   .settings(
     test := {},
     testOnly := {},
@@ -77,7 +81,12 @@ lazy val site = project
     micrositeTwitter := "@MobimeoMobility",
     micrositeGithubOwner := "mobimeo",
     micrositeGithubRepo := "fs2-gtfs",
-    micrositeGitterChannel := false
+    micrositeGitterChannel := false,
+    autoAPIMappings := true,
+    ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core),
+    docsMappingsAPIDir := "api",
+    addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, docsMappingsAPIDir),
+    mdocExtraArguments := Seq("--no-link-hygiene")
   )
   .dependsOn(core)
 

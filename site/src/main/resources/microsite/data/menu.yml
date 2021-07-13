@@ -8,3 +8,5 @@ options:
       - title: Writing
         url: documentation/file/writing
         section: file
+  - title: API Documentation
+    url: api/

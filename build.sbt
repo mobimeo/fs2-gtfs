@@ -63,6 +63,24 @@ lazy val root = project
 
 // === The modules ===
 
+lazy val site = project
+  .in(file("site"))
+  .enablePlugins(MicrositesPlugin)
+  .settings(
+    test := {},
+    testOnly := {},
+    micrositeName := "fs2-gtfs Website",
+    micrositeDescription := "fs2 based GTFS processing library",
+    micrositeDocumentationUrl := "/documentation",
+    micrositeAuthor := "Mobimeo GmbH",
+    micrositeOrganizationHomepage := "https://mobimeo.com",
+    micrositeTwitter := "@MobimeoMobility",
+    micrositeGithubOwner := "mobimeo",
+    micrositeGithubRepo := "fs2-gtfs",
+    micrositeGitterChannel := false
+  )
+  .dependsOn(core)
+
 lazy val core = project
   .in(file("core"))
   .settings(commonSettings)

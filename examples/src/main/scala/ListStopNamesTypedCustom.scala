@@ -2,7 +2,7 @@ package test
 
 import cats.effect._
 import cats.syntax.all._
-import com.mobimeo.gtfs._
+import com.mobimeo.gtfs.file._
 import fs2.data.csv._
 import fs2.data.csv.generic._
 import fs2.data.csv.generic.semiauto._
@@ -18,7 +18,7 @@ object ListStopNamesTypedCustom extends IOApp {
     args match {
       case Nil => IO(println("please provide the path to the GTFS file as argument")).as(ExitCode.Error)
       case path :: _ =>
-        Gtfs[IO](Paths.get(path))
+        GtfsFile[IO](Paths.get(path))
           .use { gtfs =>
             gtfs.read.stops[StopName].collect { case StopName(Some(name)) => name }.compile.toList
           }

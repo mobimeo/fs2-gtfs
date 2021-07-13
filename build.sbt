@@ -104,6 +104,12 @@ lazy val core = project
   .settings(commonSettings)
   .settings(name := "fs2-gtfs-core", libraryDependencies ++= Dependencies.core)
 
+lazy val db = project
+  .in(file("db"))
+  .settings(commonSettings)
+  .settings(libraryDependencies ++= Dependencies.db)
+  .dependsOn(core)
+
 lazy val examples = project
   .in(file("examples"))
   .settings(commonSettings)

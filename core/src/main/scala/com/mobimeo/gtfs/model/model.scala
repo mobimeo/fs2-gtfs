@@ -16,11 +16,6 @@
 
 package com.mobimeo.gtfs.model
 
-import cats.implicits._
-
-import enumeratum._
-import enumeratum.values.{IntEnum, IntEnumEntry}
-
 import fs2.data.csv._
 import fs2.data.csv.generic.CsvName
 import fs2.data.csv.generic.semiauto._
@@ -28,30 +23,6 @@ import fs2.data.csv.generic.semiauto._
 import java.time._
 import java.{util => ju}
 import scala.annotation.unused
-
-trait CsvEnum[T <: EnumEntry] extends Enum[T] {
-
-  implicit val cellDecoder: CellDecoder[T] =
-    CellDecoder.stringDecoder.emap(s =>
-      withNameEither(s).leftMap(t => new DecoderError(s"Unknown enum value $s", None, t))
-    )
-
-  implicit val cellEncoder: CellEncoder[T] =
-    CellEncoder.stringEncoder.contramap(_.entryName)
-
-}
-
-trait CsvIntEnum[T <: IntEnumEntry] extends IntEnum[T] {
-
-  implicit val cellDecoder: CellDecoder[T] =
-    CellDecoder.intDecoder.emap(s =>
-      withValueEither(s).leftMap(t => new DecoderError(s"Unknown enum value $s", None, t))
-    )
-
-  implicit val cellEncoder: CellEncoder[T] =
-    CellEncoder.intEncoder.contramap(_.value)
-
-}
 
 case class Agency(
     @CsvName("agency_id")
@@ -113,17 +84,6 @@ object Stop {
     deriveCsvRowDecoder[Stop]
 }
 
-sealed abstract class LocationType(val value: Int) extends IntEnumEntry
-object LocationType extends IntEnum[LocationType] with CsvIntEnum[LocationType] {
-  case object Stop         extends LocationType(0)
-  case object Station      extends LocationType(1)
-  case object Entrance     extends LocationType(2)
-  case object GenericNode  extends LocationType(3)
-  case object BoardingArea extends LocationType(4)
-
-  val values = findValues
-}
-
 case class Route[RouteType](
     @CsvName("route_id")
     id: String,
@@ -152,117 +112,6 @@ object Route {
       @unused decoder: CellDecoder[RouteType]
   ): CsvRowDecoder[Route[RouteType], String] =
     deriveCsvRowDecoder[Route[RouteType]]
-}
-
-sealed abstract class SimpleRouteType(val value: Int) extends IntEnumEntry with EnumEntry
-object SimpleRouteType extends IntEnum[SimpleRouteType] with CsvIntEnum[SimpleRouteType] {
-  case object Tram       extends SimpleRouteType(0)
-  case object Subway     extends SimpleRouteType(1)
-  case object Rail       extends SimpleRouteType(2)
-  case object Bus        extends SimpleRouteType(3)
-  case object Ferry      extends SimpleRouteType(4)
-  case object CableTram  extends SimpleRouteType(5)
-  case object AerialLift extends SimpleRouteType(6)
-  case object Funicular  extends SimpleRouteType(7)
-  case object Trolleybus extends SimpleRouteType(11)
-  case object Monorail   extends SimpleRouteType(12)
-
-  val values = findValues
-}
-
-/** Extended route types.
-  * See https://developers.google.com/transit/gtfs/reference/extended-route-types
-  */
-sealed abstract class ExtendedRouteType(val value: Int) extends IntEnumEntry with EnumEntry
-object ExtendedRouteType extends IntEnum[ExtendedRouteType] with CsvIntEnum[ExtendedRouteType] {
-  case object SomeRailwayService          extends ExtendedRouteType(100)
-  case object HighSpeedRailService        extends ExtendedRouteType(101)
-  case object LongDistanceTrains          extends ExtendedRouteType(102)
-  case object InterRegionalRailService    extends ExtendedRouteType(103)
-  case object CarTransportRailService     extends ExtendedRouteType(104)
-  case object SleeperRailService          extends ExtendedRouteType(105)
-  case object RegionalRailService         extends ExtendedRouteType(106)
-  case object TouristRailwayService       extends ExtendedRouteType(107)
-  case object RailShuttle                 extends ExtendedRouteType(108)
-  case object SuburbanRailway             extends ExtendedRouteType(109)
-  case object ReplacementRailService      extends ExtendedRouteType(110)
-  case object SpecialRailService          extends ExtendedRouteType(111)
-  case object LorryTransportRailService   extends ExtendedRouteType(112)
-  case object AllRailServices             extends ExtendedRouteType(113)
-  case object CrossCountryRailService     extends ExtendedRouteType(114)
-  case object VehicleTransportRailService extends ExtendedRouteType(115)
-  case object RackAndPinionRailway        extends ExtendedRouteType(116)
-  case object AdditionalRailService       extends ExtendedRouteType(117)
-
-  case object SomeCoachService          extends ExtendedRouteType(200)
-  case object InternationalCoachService extends ExtendedRouteType(201)
-  case object NationalCoachService      extends ExtendedRouteType(202)
-  case object ShuttleCoachService       extends ExtendedRouteType(203)
-  case object RegionalCoachService      extends ExtendedRouteType(204)
-  case object SpecialCoachService       extends ExtendedRouteType(205)
-  case object SightseeingCoachService   extends ExtendedRouteType(206)
-  case object TouristCoachService       extends ExtendedRouteType(207)
-  case object CommuterCoachService      extends ExtendedRouteType(208)
-  case object AllCoachServices          extends ExtendedRouteType(209)
-
-  case object SomeUrbanRailwayService extends ExtendedRouteType(400)
-  case object MetroService            extends ExtendedRouteType(401)
-  case object UndergroundService      extends ExtendedRouteType(402)
-  case object UrbanRailwayService     extends ExtendedRouteType(403)
-  case object AllUrbanRailwayServices extends ExtendedRouteType(404)
-  case object Monorail                extends ExtendedRouteType(405)
-
-  case object SomeBusService                   extends ExtendedRouteType(700)
-  case object RegionalBusService               extends ExtendedRouteType(701)
-  case object ExpressBusService                extends ExtendedRouteType(702)
-  case object StoppingBusService               extends ExtendedRouteType(703)
-  case object LocalBusService                  extends ExtendedRouteType(704)
-  case object NightBusService                  extends ExtendedRouteType(705)
-  case object PostBusService                   extends ExtendedRouteType(706)
-  case object SpecialNeedsBus                  extends ExtendedRouteType(707)
-  case object MobilityBusService               extends ExtendedRouteType(708)
-  case object MobilityBusForRegisteredDisabled extends ExtendedRouteType(709)
-  case object SightseeingBus                   extends ExtendedRouteType(710)
-  case object ShuttleBus                       extends ExtendedRouteType(711)
-  case object SchoolBus                        extends ExtendedRouteType(712)
-  case object SchoolAndPublicServiceBus        extends ExtendedRouteType(713)
-  case object RailReplacementBusService        extends ExtendedRouteType(714)
-  case object DemandAndResponseBusService      extends ExtendedRouteType(715)
-  case object AllBusServices                   extends ExtendedRouteType(716)
-
-  case object SomeTrolleybusService extends ExtendedRouteType(800)
-
-  case object SomeTramService        extends ExtendedRouteType(900)
-  case object CityTramService        extends ExtendedRouteType(901)
-  case object LocalTramService       extends ExtendedRouteType(902)
-  case object RegionalTramService    extends ExtendedRouteType(903)
-  case object SightseeingTramService extends ExtendedRouteType(904)
-  case object ShuttleTramService     extends ExtendedRouteType(905)
-  case object AllTranServices        extends ExtendedRouteType(906)
-
-  case object SomeWaterTransportService extends ExtendedRouteType(1000)
-
-  case object SomeAirTransportService extends ExtendedRouteType(1100)
-
-  case object SomeFerryService extends ExtendedRouteType(1200)
-
-  case object SomeAerialLiftService extends ExtendedRouteType(1300)
-
-  case object SomeFunicularService extends ExtendedRouteType(1400)
-
-  case object SomeTaxiService           extends ExtendedRouteType(1500)
-  case object CommunalTaxiService       extends ExtendedRouteType(1501)
-  case object WaterTaxiService          extends ExtendedRouteType(1502)
-  case object RailTaxiService           extends ExtendedRouteType(1503)
-  case object BikeTaxiService           extends ExtendedRouteType(1504)
-  case object LicensedTaxiService       extends ExtendedRouteType(1505)
-  case object PrivateHireServiceVehicle extends ExtendedRouteType(1506)
-  case object AllTaxiServices           extends ExtendedRouteType(1507)
-
-  case object MiscellaneousService extends ExtendedRouteType(1700)
-  case object HorseDrawnCarriage   extends ExtendedRouteType(1702)
-
-  val values = findValues
 }
 
 case class Trip(
@@ -344,24 +193,6 @@ object SecondsSinceMidnight {
     )
 }
 
-sealed abstract class PickupOrDropOffType(val value: Int) extends IntEnumEntry
-object PickupOrDropOffType extends IntEnum[PickupOrDropOffType] with CsvIntEnum[PickupOrDropOffType] {
-  case object RegularlyScheduled       extends PickupOrDropOffType(0)
-  case object None                     extends PickupOrDropOffType(1)
-  case object MustPhoneAgency          extends PickupOrDropOffType(2)
-  case object MustCoordinateWithDriver extends PickupOrDropOffType(3)
-
-  val values = findValues
-}
-
-sealed abstract class Timepoint(val value: Int) extends IntEnumEntry
-object Timepoint extends IntEnum[Timepoint] with CsvIntEnum[Timepoint] {
-  case object Approximate extends Timepoint(0)
-  case object Exact       extends Timepoint(1)
-
-  val values = findValues
-}
-
 case class Calendar(
     @CsvName("service_id")
     serviceId: String,
@@ -385,14 +216,6 @@ object Calendar {
     deriveCsvRowEncoder[Calendar]
 }
 
-sealed abstract class Availability(val value: Int) extends IntEnumEntry
-object Availability extends IntEnum[Availability] with CsvIntEnum[Availability] {
-  case object Availabile  extends Availability(1)
-  case object Unavailable extends Availability(0)
-
-  val values = findValues
-}
-
 case class CalendarDate(
     @CsvName("service_id")
     serviceId: String,
@@ -407,14 +230,6 @@ object CalendarDate {
 
   implicit val encoder: CsvRowEncoder[CalendarDate, String] =
     deriveCsvRowEncoder[CalendarDate]
-}
-
-sealed abstract class ExceptionType(val value: Int) extends IntEnumEntry
-object ExceptionType extends IntEnum[ExceptionType] with CsvIntEnum[ExceptionType] {
-  case object Added   extends ExceptionType(1)
-  case object Removed extends ExceptionType(2)
-
-  val values = findValues
 }
 
 case class FareAttribute(
@@ -438,14 +253,6 @@ object FareAttribute {
 
   implicit val encoder: CsvRowEncoder[FareAttribute, String] =
     deriveCsvRowEncoder[FareAttribute]
-}
-
-sealed abstract class PaymentMethod(val value: Int) extends IntEnumEntry
-object PaymentMethod extends IntEnum[PaymentMethod] with CsvIntEnum[PaymentMethod] {
-  case object OnBoard        extends PaymentMethod(0)
-  case object BeforeBoarding extends PaymentMethod(1)
-
-  val values = findValues
 }
 
 case class FareRules(
@@ -511,14 +318,6 @@ object Frequency {
     deriveCsvRowEncoder[Frequency]
 }
 
-sealed abstract class ExactTimes(val value: Int) extends IntEnumEntry
-object ExactTimes extends IntEnum[ExactTimes] with CsvIntEnum[ExactTimes] {
-  case object FrequencyBased extends ExactTimes(0)
-  case object ScheduleBased  extends ExactTimes(1)
-
-  val values = findValues
-}
-
 case class Transfer(
     @CsvName("from_stop_id")
     fromStopId: String,
@@ -536,16 +335,6 @@ object Transfer {
 
   implicit val encoder: CsvRowEncoder[Transfer, String] =
     deriveCsvRowEncoder[Transfer]
-}
-
-sealed abstract class TransferType(val value: Int) extends IntEnumEntry
-object TransferType extends IntEnum[TransferType] with CsvIntEnum[TransferType] {
-  case object RecommendedTransfer         extends TransferType(0)
-  case object TimedTransfer               extends TransferType(1)
-  case object MinimumTimeRequiredTransfer extends TransferType(2)
-  case object ImpossibleTransfer          extends TransferType(3)
-
-  val values = findValues
 }
 
 case class Pathway(
@@ -580,19 +369,6 @@ object Pathway {
 
   implicit val encoder: CsvRowEncoder[Pathway, String] =
     deriveCsvRowEncoder[Pathway]
-}
-
-sealed abstract class PathwayMode(val value: Int) extends IntEnumEntry
-object PathwayMode extends IntEnum[PathwayMode] with CsvIntEnum[PathwayMode] {
-  case object Walkway        extends PathwayMode(1)
-  case object Stairs         extends PathwayMode(2)
-  case object MovingSidewalk extends PathwayMode(3)
-  case object Escalator      extends PathwayMode(4)
-  case object Elevator       extends PathwayMode(5)
-  case object FareGate       extends PathwayMode(6)
-  case object ExitGate       extends PathwayMode(7)
-
-  val values = findValues
 }
 
 case class Level(
@@ -663,21 +439,6 @@ object Translation {
 
   implicit val encoder: CsvRowEncoder[Translation, String] =
     deriveCsvRowEncoder[Translation]
-}
-
-sealed trait TableName extends EnumEntry with EnumEntry.Snakecase
-object TableName extends Enum[TableName] with CsvEnum[TableName] {
-  case object Agency       extends TableName
-  case object Stops        extends TableName
-  case object Routes       extends TableName
-  case object Trips        extends TableName
-  case object StopTimes    extends TableName
-  case object FeedInfo     extends TableName
-  case object Pathways     extends TableName
-  case object Levels       extends TableName
-  case object Attributions extends TableName
-
-  val values = findValues
 }
 
 case class Attribution(

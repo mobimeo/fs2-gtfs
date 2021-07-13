@@ -70,6 +70,7 @@ lazy val site = project
   .enablePlugins(MicrositesPlugin)
   .enablePlugins(ScalaUnidocPlugin)
   .settings(commonSettings)
+  .settings(noPublish)
   .settings(
     test := {},
     testOnly := {},
@@ -89,6 +90,14 @@ lazy val site = project
     mdocExtraArguments := Seq("--no-link-hygiene")
   )
   .dependsOn(core)
+
+ThisBuild / githubWorkflowBuildPostamble ++= List(
+  WorkflowStep.Sbt(
+    List("site/mdoc"),
+    name = Some("Compile Documentation"),
+    cond = Some(s"matrix.scala == '$scala213'")
+  )
+)
 
 lazy val core = project
   .in(file("core"))

@@ -17,18 +17,12 @@
 package com.mobimeo.gtfs
 
 import fs2._
-import fs2.data.csv._
-import fs2.data.csv.lowlevel._
 
-import cats.effect.Sync
-
-/** Represents a GTFS file. Can be used to access the content of the different
-  * files in it.
-  *
-  * Use the smart constructor in the companion object to acquire a `Resource`
-  * over a GTFS file. The file will be closed once the resource is released.
+/** Represents a GTFS container. Can be used to access the content of the different
+  * kind of data in it. This is an abstract API giving basic access to the data without
+  * presuming in what way they are stored.
   */
-trait Gtfs[F[_]] {
+trait Gtfs[F[_], Decoder[_], Encoder[_]] {
 
   /** Whether the GTFS file contains the given file name. */
   def hasFile(name: String): F[Boolean]
@@ -108,7 +102,7 @@ trait Gtfs[F[_]] {
   /** Namespace containing operators and pipes to read content of a GTFS file access
     * stream.
     */
-  val read: GtfsRead[F]
+  val read: GtfsRead[F, Decoder]
 
   /** Namespace containing operators and pipes to save the Result of a GTFS stream.
     * This can be used to save the result of transformations.
@@ -116,264 +110,140 @@ trait Gtfs[F[_]] {
     * Once saved, the content of the GTFS file is modified, subsequent accesses
     * to the same file in the same GTFS file will contain modications.
     */
-  val write: GtfsWrite[F]
+  val write: GtfsWrite[F, Encoder]
 
 }
 
-abstract class GtfsRead[F[_]: Sync] {
-
-  /** Gives access to the raw content of CSV file `name`.
-    *
-    * For instance `rawFile("calendar.txt")`.
-    */
-  def rawFile(name: String): Stream[F, CsvRow[String]]
-
-  /** Gives access to the raw content of CSV file `name`. */
-  def rawFile(name: StandardName): Stream[F, CsvRow[String]] =
-    rawFile(name.entryName)
+trait GtfsRead[F[_], Decoder[_]] {
 
   /** Gives access to the content of CSV file `name`.
     *
     * For instance `file("calendar.txt")`.
     */
-  def file[R](name: String)(implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
-    rawFile(name).through(decodeRow)
+  def file[R](name: String)(implicit decoder: Decoder[R]): Stream[F, R]
 
   /** Gives access to the content of CSV file `name`. */
-  def file[R](name: StandardName)(implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
+  def file[R](name: StandardName)(implicit decoder: Decoder[R]): Stream[F, R] =
     file(name.entryName)
 
   // aliases for standard GTFS files
 
-  def stops[S](implicit decoder: CsvRowDecoder[S, String]): Stream[F, S] =
+  def stops[S](implicit decoder: Decoder[S]): Stream[F, S] =
     file(StandardName.Stops)
 
-  def rawStops: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Stops)
-
-  def rawRoutes: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Routes)
-
-  def routes[R](implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
+  def routes[R](implicit decoder: Decoder[R]): Stream[F, R] =
     file(StandardName.Routes)
 
-  def rawTrips: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Trips)
-
-  def trips[T](implicit decoder: CsvRowDecoder[T, String]): Stream[F, T] =
+  def trips[T](implicit decoder: Decoder[T]): Stream[F, T] =
     file(StandardName.Trips)
 
-  def rawStopTimes: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.StopTimes)
-
-  def stopTimes[S](implicit decoder: CsvRowDecoder[S, String]): Stream[F, S] =
+  def stopTimes[S](implicit decoder: Decoder[S]): Stream[F, S] =
     file(StandardName.StopTimes)
 
-  def rawAgencies: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Agency)
-
-  def agencies[A](implicit decoder: CsvRowDecoder[A, String]): Stream[F, A] =
+  def agencies[A](implicit decoder: Decoder[A]): Stream[F, A] =
     file(StandardName.Agency)
 
-  def rawCalendar: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Calendar)
-
-  def calendar[C](implicit decoder: CsvRowDecoder[C, String]): Stream[F, C] =
+  def calendar[C](implicit decoder: Decoder[C]): Stream[F, C] =
     file(StandardName.Calendar)
 
-  def rawCalendarDates: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.CalendarDates)
-
-  def calendarDates[C](implicit decoder: CsvRowDecoder[C, String]): Stream[F, C] =
+  def calendarDates[C](implicit decoder: Decoder[C]): Stream[F, C] =
     file(StandardName.CalendarDates)
 
-  def rawFareAttributes: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.FareAttributes)
-
-  def fareAttributes[A](implicit decoder: CsvRowDecoder[A, String]): Stream[F, A] =
+  def fareAttributes[A](implicit decoder: Decoder[A]): Stream[F, A] =
     file(StandardName.FareAttributes)
 
-  def rawFareRules: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.FareRules)
-
-  def fareRules[R](implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
+  def fareRules[R](implicit decoder: Decoder[R]): Stream[F, R] =
     file(StandardName.FareRules)
 
-  def rawShapes: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Shapes)
-
-  def shapes[S](implicit decoder: CsvRowDecoder[S, String]): Stream[F, S] =
+  def shapes[S](implicit decoder: Decoder[S]): Stream[F, S] =
     file(StandardName.Shapes)
 
-  def rawFrequencies: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Frequencies)
-
-  def frequencies[S](implicit decoder: CsvRowDecoder[S, String]): Stream[F, S] =
+  def frequencies[S](implicit decoder: Decoder[S]): Stream[F, S] =
     file(StandardName.Frequencies)
 
-  def rawTransfers: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Transfers)
-
-  def transfers[T](implicit decoder: CsvRowDecoder[T, String]): Stream[F, T] =
+  def transfers[T](implicit decoder: Decoder[T]): Stream[F, T] =
     file(StandardName.Transfers)
 
-  def rawPathways: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Pathways)
-
-  def pathways[P](implicit decoder: CsvRowDecoder[P, String]): Stream[F, P] =
+  def pathways[P](implicit decoder: Decoder[P]): Stream[F, P] =
     file(StandardName.Pathways)
 
-  def rawLevels: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Levels)
-
-  def levels[L](implicit decoder: CsvRowDecoder[L, String]): Stream[F, L] =
+  def levels[L](implicit decoder: Decoder[L]): Stream[F, L] =
     file(StandardName.Levels)
 
-  def rawFeedInfo: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.FeedInfo)
-
-  def feedInfo[I](implicit decoder: CsvRowDecoder[I, String]): Stream[F, I] =
+  def feedInfo[I](implicit decoder: Decoder[I]): Stream[F, I] =
     file(StandardName.FeedInfo)
 
-  def rawTranslations: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Translations)
-
-  def translations[T](implicit decoder: CsvRowDecoder[T, String]): Stream[F, T] =
+  def translations[T](implicit decoder: Decoder[T]): Stream[F, T] =
     file(StandardName.Translations)
 
-  def rawAttributions: Stream[F, CsvRow[String]] =
-    rawFile(StandardName.Attributions)
-
-  def attributions[A](implicit decoder: CsvRowDecoder[A, String]): Stream[F, A] =
+  def attributions[A](implicit decoder: Decoder[A]): Stream[F, A] =
     file(StandardName.Attributions)
 
 }
 
-trait GtfsWrite[F[_]] {
-
-  /** Gives access to the pipe to save in file `name`.
-    *
-      * For instance `rawFile("agency.txt")`.
-    */
-  def rawFile(name: String): Pipe[F, CsvRow[String], Nothing]
-
-  /** Gives access to the pipe to save in file `name`. */
-  def rawFile(name: StandardName): Pipe[F, CsvRow[String], Nothing] =
-    rawFile(name.entryName)
+trait GtfsWrite[F[_], Encoder[_]] {
 
   /** Gives access to the pipe to save in file `name`.
     *
       * For instance `file("agency.txt")`.
     */
-  def file[T](name: String)(implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Nothing] =
-    _.through(encodeRow).through(rawFile(name))
+  def file[T](name: String)(implicit encoder: Encoder[T]): Pipe[F, T, Nothing]
 
   /** Gives access to the pipe to save in file `name`. */
-  def file[T](name: StandardName)(implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Nothing] =
+  def file[T](name: StandardName)(implicit encoder: Encoder[T]): Pipe[F, T, Nothing] =
     file(name.entryName)
 
   // aliases for standard GTFS files
 
-  def stops[S](implicit encoder: CsvRowEncoder[S, String]): Pipe[F, S, Nothing] =
+  def stops[S](implicit encoder: Encoder[S]): Pipe[F, S, Nothing] =
     file(StandardName.Stops)
 
-  def rawStops: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Stops)
-
-  def rawRoutes: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Routes)
-
-  def routes[R](implicit encoder: CsvRowEncoder[R, String]): Pipe[F, R, Nothing] =
+  def routes[R](implicit encoder: Encoder[R]): Pipe[F, R, Nothing] =
     file(StandardName.Routes)
 
-  def rawTrips: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Trips)
-
-  def trips[T](implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Nothing] =
+  def trips[T](implicit encoder: Encoder[T]): Pipe[F, T, Nothing] =
     file(StandardName.Trips)
 
-  def rawStopTimes: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.StopTimes)
-
-  def stopTimes[S](implicit encoder: CsvRowEncoder[S, String]): Pipe[F, S, Nothing] =
+  def stopTimes[S](implicit encoder: Encoder[S]): Pipe[F, S, Nothing] =
     file(StandardName.StopTimes)
 
-  def rawAgencies: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Agency)
-
-  def agencies[A](implicit encoder: CsvRowEncoder[A, String]): Pipe[F, A, Nothing] =
+  def agencies[A](implicit encoder: Encoder[A]): Pipe[F, A, Nothing] =
     file(StandardName.Agency)
 
-  def rawCalendar: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Calendar)
-
-  def calendar[C](implicit encoder: CsvRowEncoder[C, String]): Pipe[F, C, Nothing] =
+  def calendar[C](implicit encoder: Encoder[C]): Pipe[F, C, Nothing] =
     file(StandardName.Calendar)
 
-  def rawCalendarDates: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.CalendarDates)
-
-  def calendarDates[C](implicit encoder: CsvRowEncoder[C, String]): Pipe[F, C, Nothing] =
+  def calendarDates[C](implicit encoder: Encoder[C]): Pipe[F, C, Nothing] =
     file(StandardName.CalendarDates)
 
-  def rawFareAttributes: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.FareAttributes)
-
-  def fareAttributes[A](implicit encoder: CsvRowEncoder[A, String]): Pipe[F, A, Nothing] =
+  def fareAttributes[A](implicit encoder: Encoder[A]): Pipe[F, A, Nothing] =
     file(StandardName.FareAttributes)
 
-  def rawFareRules: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.FareRules)
-
-  def fareRules[R](implicit encoder: CsvRowEncoder[R, String]): Pipe[F, R, Nothing] =
+  def fareRules[R](implicit encoder: Encoder[R]): Pipe[F, R, Nothing] =
     file(StandardName.FareRules)
 
-  def rawShapes: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Shapes)
-
-  def shapes[S](implicit encoder: CsvRowEncoder[S, String]): Pipe[F, S, Nothing] =
+  def shapes[S](implicit encoder: Encoder[S]): Pipe[F, S, Nothing] =
     file(StandardName.Shapes)
 
-  def rawFrequencies: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Frequencies)
-
-  def frequencies[S](implicit encoder: CsvRowEncoder[S, String]): Pipe[F, S, Nothing] =
+  def frequencies[S](implicit encoder: Encoder[S]): Pipe[F, S, Nothing] =
     file(StandardName.Frequencies)
 
-  def rawTransfers: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Transfers)
-
-  def transfers[T](implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Nothing] =
+  def transfers[T](implicit encoder: Encoder[T]): Pipe[F, T, Nothing] =
     file(StandardName.Transfers)
 
-  def rawPathways: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Pathways)
-
-  def pathways[P](implicit encoder: CsvRowEncoder[P, String]): Pipe[F, P, Nothing] =
+  def pathways[P](implicit encoder: Encoder[P]): Pipe[F, P, Nothing] =
     file(StandardName.Pathways)
 
-  def rawLevels: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Levels)
-
-  def levels[L](implicit encoder: CsvRowEncoder[L, String]): Pipe[F, L, Nothing] =
+  def levels[L](implicit encoder: Encoder[L]): Pipe[F, L, Nothing] =
     file(StandardName.Levels)
 
-  def rawFeedInfo: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.FeedInfo)
-
-  def feedInfo[I](implicit encoder: CsvRowEncoder[I, String]): Pipe[F, I, Nothing] =
+  def feedInfo[I](implicit encoder: Encoder[I]): Pipe[F, I, Nothing] =
     file(StandardName.FeedInfo)
 
-  def rawTranslations: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Translations)
-
-  def translations[T](implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Nothing] =
+  def translations[T](implicit encoder: Encoder[T]): Pipe[F, T, Nothing] =
     file(StandardName.Translations)
 
-  def rawAttributions: Pipe[F, CsvRow[String], Nothing] =
-    rawFile(StandardName.Attributions)
-
-  def attributions[A](implicit encoder: CsvRowEncoder[A, String]): Pipe[F, A, Nothing] =
+  def attributions[A](implicit encoder: Encoder[A]): Pipe[F, A, Nothing] =
     file(StandardName.Attributions)
 
 }

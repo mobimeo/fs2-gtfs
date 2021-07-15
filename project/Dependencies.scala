@@ -19,7 +19,8 @@ object Dependencies {
 
   val db = List(
     "org.tpolecat" %% "doobie-core" % Versions.doobie,
-    "org.xerial"    % "sqlite-jdbc" % Versions.sqliteJdbc
+    "org.tpolecat" %% "doobie-hikari" % Versions.doobie,
+    "org.xerial"    % "sqlite-jdbc" % Versions.sqliteJdbc % Test
   )
 
 }

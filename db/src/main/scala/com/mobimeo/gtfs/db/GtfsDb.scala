@@ -1,28 +1,48 @@
-package com.mobimeo.gtfs.db
+package com.mobimeo.gtfs
+package db
 
-import doobie._, doobie.implicits._
+import doobie._
+import doobie.implicits._
 import cats.effect._
 import cats.syntax.all._
-import com.mobimeo.gtfs.GtfsRead
-import com.mobimeo.gtfs
+import model._
 import fs2.Pipe
+import Tables.TableSchema
+import fs2.Chunk
 
 object GtfsDb {
 
-  def xa[F[_]: Async] =
-    Transactor.fromDriverManager[F](
-      driver = "org.sqlite.JDBC",
-      url = "jdbc:sqlite:gtfs.db"
-    )
+  def createTables[F[_]: Async](xa: Transactor[F]): F[GtfsDb[F]] =
+    (for {
+      _ <- TableSchema[Route[Int]].create(StandardName.Routes).update.run
+      _ <- TableSchema[Stop].create(StandardName.Stops).update.run
+      _ <- TableSchema[Transfer].create(StandardName.Transfers).update.run
+      _ <- TableSchema[StopTime].create(StandardName.StopTimes).update.run
+      _ <- TableSchema[Agency].create(StandardName.Agency).update.run
+      _ <- TableSchema[Trip].create(StandardName.Trips).update.run
+      _ <- TableSchema[Calendar].create(StandardName.Calendar).update.run
+      _ <- TableSchema[CalendarDate].create(StandardName.CalendarDates).update.run
+      _ <- TableSchema[FareAttribute].create(StandardName.FareAttributes).update.run
+      _ <- TableSchema[FareRules].create(StandardName.FareRules).update.run
+      _ <- TableSchema[Shape].create(StandardName.Shapes).update.run
+      _ <- TableSchema[Frequency].create(StandardName.Frequencies).update.run
+      _ <- TableSchema[Pathway].create(StandardName.Pathways).update.run
+      _ <- TableSchema[Level].create(StandardName.Levels).update.run
+      _ <- TableSchema[FeedInfo].create(StandardName.FeedInfo).update.run
+      _ <- TableSchema[Translation].create(StandardName.Translations).update.run
+      _ <- TableSchema[Attribution].create(StandardName.Attributions).update.run
+    } yield ()).transact(xa) as new GtfsDb(xa)
 
-  val createTables = Tables.Agency.create
+  def normalizeTableName(name: String): String =
+    name.replace('.', '_')
 
-  def create[F[_]: Async](xa: Transactor[F]): F[GtfsDb[F]] =
-    createTables.update.run.transact(xa) as new GtfsDb(xa)        
+  def quoteFieldName(name: String): String =
+    s""""$name""""
 }
 
-final class GtfsDb[F[_]: Async](xa: Transactor[F]) extends gtfs.Gtfs[F, Read, Write] {
-  def hasFile(name: String): F[Boolean] = ???
+final class GtfsDb[F[_]: Async](xa: Transactor[F]) extends Gtfs[F, Read, Write] {
+  def hasFile(name: String): F[Boolean] =
+    sql"select 1 from ${Fragment.const(name)}".query[Int].unique.transact(xa).attempt.map(_.fold(_ => false, _ => true))
 
   object read extends GtfsDbRead[F](xa)
 
@@ -31,32 +51,25 @@ final class GtfsDb[F[_]: Async](xa: Transactor[F]) extends gtfs.Gtfs[F, Read, Wr
 
 abstract class GtfsDbRead[F[_]: Async](xa: Transactor[F]) extends GtfsRead[F, Read] {
 
-  val y = xa.yolo
-  import y._
-
   private def select[R: Read](table: String) =
     sql"select * from ${Fragment.const(table)}".query[R]
 
-  def file[R: Read](name: String): fs2.Stream[F, R] = {
-      val q = select(name)
-      val s = fs2.Stream.eval[F, Unit](q.check).drain
-      s ++ q.stream.transact(xa)
-  }
+  def file[R: Read](name: String): fs2.Stream[F, R] =
+    select(GtfsDb.normalizeTableName(name)).stream.transact(xa)
+
 }
 
-abstract class GtfsDbWrite[F[_]: Async](xa: Transactor[F]) extends gtfs.GtfsWrite[F, Write] {
+abstract class GtfsDbWrite[F[_]: Async](xa: Transactor[F]) extends GtfsWrite[F, Write] {
 
-  val y = xa.yolo
-  import y._
-
-  private def insert[W: Write](table: String, w: W) =
-    sql"insert into ${Fragment.const(table)} values (${Fragments.values(w)})".update
-
+  def insertMany[W: Write](table: String, ws: Chunk[W]) = {
+    val values = List.fill(Write[W].length)("?").mkString("(", ",", ")")
+    val sql    = s"insert into $table values $values"
+    Update[W](sql).updateMany(ws)
+  }
 
   def file[W: Write](name: String): Pipe[F, W, Nothing] =
-    _.evalTap { w => 
-        val q = insert(name, w)
-        q.check *> q.run.transact(xa)
+    _.chunkMin(512).evalTap { ws =>
+      insertMany(GtfsDb.normalizeTableName(name), ws).transact(xa)
     }.drain
 
 }

@@ -1,5 +1,3 @@
-package test
-
 import cats.effect._
 import cats.syntax.all._
 import com.mobimeo.gtfs.file._

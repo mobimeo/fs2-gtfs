@@ -75,6 +75,9 @@ case class Agency(
 object Agency {
   implicit val csvRowDecoder: CsvRowDecoder[Agency, String] =
     deriveCsvRowDecoder[Agency]
+
+  implicit val csvRowEncoder: CsvRowEncoder[Agency, String] =
+    deriveCsvRowEncoder[Agency]
 }
 
 case class Stop(
@@ -111,6 +114,9 @@ case class Stop(
 object Stop {
   implicit val csvRowDecoder: CsvRowDecoder[Stop, String] =
     deriveCsvRowDecoder[Stop]
+
+  implicit val csvRowEncoder: CsvRowEncoder[Stop, String] =
+    deriveCsvRowEncoder[Stop]
 }
 
 sealed abstract class LocationType(val value: Int) extends IntEnumEntry
@@ -152,6 +158,11 @@ object Route {
       @unused decoder: CellDecoder[RouteType]
   ): CsvRowDecoder[Route[RouteType], String] =
     deriveCsvRowDecoder[Route[RouteType]]
+
+  implicit def csvRowEncoder[RouteType](implicit
+      @unused decoder: CellEncoder[RouteType]
+  ): CsvRowEncoder[Route[RouteType], String] =
+    deriveCsvRowEncoder[Route[RouteType]]
 }
 
 sealed abstract class SimpleRouteType(val value: Int) extends IntEnumEntry with EnumEntry
@@ -291,6 +302,9 @@ case class Trip(
 object Trip {
   implicit val csvRowDecoder: CsvRowDecoder[Trip, String] =
     deriveCsvRowDecoder[Trip]
+
+  implicit val csvRowEncoder: CsvRowEncoder[Trip, String] =
+    deriveCsvRowEncoder[Trip]
 }
 
 case class StopTime(
@@ -329,7 +343,7 @@ class SecondsSinceMidnight(val seconds: Int) extends AnyVal {
 }
 
 object SecondsSinceMidnight {
-  private val TimePattern = raw"(-?\d+):(\d{2}):(\d{2})".r
+  private val TimePattern = raw"(-?\d+):(\d{1,2}):(\d{1,2})".r
   implicit val cellDecoder: CellDecoder[SecondsSinceMidnight] =
     CellDecoder.stringDecoder.emap {
       case TimePattern(hours, minutes, seconds) =>
@@ -339,9 +353,12 @@ object SecondsSinceMidnight {
     }
 
   implicit val cellEncoder: CellEncoder[SecondsSinceMidnight] =
-    CellEncoder.stringEncoder.contramap(seconds =>
-      s"${seconds.seconds / 3600}:${(math.abs(seconds.seconds) % 3600) / 60}:${math.abs(seconds.seconds) % 60}"
-    )
+    CellEncoder.stringEncoder.contramap { seconds =>
+      val hours = seconds.seconds / 3600
+      val minutes = (math.abs(seconds.seconds) % 3600) / 60
+      val secs = math.abs(seconds.seconds) % 60
+      f"$hours%02d:$minutes%02d:$secs%02d"
+    }
 }
 
 sealed abstract class PickupOrDropOffType(val value: Int) extends IntEnumEntry

@@ -158,3 +158,9 @@ lazy val rules = project
   .settings(commonSettings)
   .settings(name := "fs2-gtfs-rules", libraryDependencies ++= Dependencies.rules)
   .dependsOn(core)
+
+lazy val validations = project
+  .in(file("validations"))
+  .settings(commonSettings)
+  .settings(Compile / scalaSource := baseDirectory.value)
+  .dependsOn(core)

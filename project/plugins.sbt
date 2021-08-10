@@ -10,3 +10,7 @@ addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "3.1.3")
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.6.0")
 // manage github actions from build definition
 addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.12.0")
+// manage the documentation website
+addSbtPlugin("com.47deg"  % "sbt-microsites" % "1.3.4")
+// generate unified documentation
+addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.3")

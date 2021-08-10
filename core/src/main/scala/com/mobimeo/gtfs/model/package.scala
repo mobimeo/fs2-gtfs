@@ -77,4 +77,7 @@ package object model {
   implicit def eitherCellDecoder[A, B](implicit A: CellDecoder[A], B: CellDecoder[B]): CellDecoder[Either[A, B]] =
     A.either(B)
 
+  implicit def eitherCellEncoder[A, B](implicit A: CellEncoder[A], B: CellEncoder[B]): CellEncoder[Either[A, B]] =
+    _.fold(A(_), B(_))
+
 }

@@ -54,8 +54,12 @@ jobs:
       - name: Build project
         run: sbt --client '++${{ matrix.scala }}; test'
 
+      - name: Compile Documentation
+        if: matrix.scala == '2.13.6'
+        run: sbt --client '++${{ matrix.scala }}; site/mdoc'
+
       - name: Compress target directories
-        run: tar cf targets.tar target core/target examples/target project/target
+        run: tar cf targets.tar target site/target core/target examples/target project/target
 
       - name: Upload target directories
         uses: actions/upload-artifact@v2

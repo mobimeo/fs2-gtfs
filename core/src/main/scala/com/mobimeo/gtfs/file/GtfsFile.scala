@@ -43,9 +43,15 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
     extends Gtfs[F, CsvRowDecoder[*, String], CsvRowEncoder[*, String]] {
   self =>
 
-  /** Whether the GTFS file contains the given file name. */
-  def hasFile(name: String): F[Boolean] =
-    files.exists(fs.getPath(s"/$name"))
+  object has extends GtfsHas[F] {
+    def file(name: String): F[Boolean] =
+      files.exists(fs.getPath(s"/$name"))
+  }
+
+  object delete extends GtfsDelete[F] {
+    def file(name: String): F[Unit] =
+      files.deleteIfExists(fs.getPath(s"/$name")).void
+  }
 
   object read extends GtfsRead[F, CsvRowDecoder[*, String]] {
 
@@ -54,7 +60,7 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
       * For instance `rawFile("calendar.txt")`.
       */
     def rawFile(name: String): Stream[F, CsvRow[String]] =
-      Stream.force(hasFile(name).map { exists =>
+      Stream.force(has.file(name).map { exists =>
         if (exists)
           files
             .readAll(fs.getPath(s"/$name"), 1024)

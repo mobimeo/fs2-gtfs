@@ -24,80 +24,11 @@ import fs2._
   */
 trait Gtfs[F[_], Decoder[_], Encoder[_]] {
 
-  /** Whether the GTFS file contains the given file name. */
-  def hasFile(name: String): F[Boolean]
+  /** Namespace containing file existence check operators. */
+  val has: GtfsHas[F]
 
-  /** Whether the GTFS file contains the given file name. */
-  def hasFile(name: StandardName): F[Boolean] =
-    hasFile(name.entryName)
-
-  /** Whether the GTFS file contains the agency file. */
-  def hasAgency: F[Boolean] =
-    hasFile(StandardName.Agency)
-
-  /** Whether the GTFS file contains the stops file. */
-  def hasStops: F[Boolean] =
-    hasFile(StandardName.Stops)
-
-  /** Whether the GTFS file contains the routes file. */
-  def hasRoutes: F[Boolean] =
-    hasFile(StandardName.Routes)
-
-  /** Whether the GTFS file contains the trips file. */
-  def hasTrips: F[Boolean] =
-    hasFile(StandardName.Trips)
-
-  /** Whether the GTFS file contains the stop_times file. */
-  def hasStopTimes: F[Boolean] =
-    hasFile(StandardName.StopTimes)
-
-  /** Whether the GTFS file contains the calendar file. */
-  def hasCalendar: F[Boolean] =
-    hasFile(StandardName.Calendar)
-
-  /** Whether the GTFS file contains the calendar_dates file. */
-  def hasCalendarDates: F[Boolean] =
-    hasFile(StandardName.CalendarDates)
-
-  /** Whether the GTFS file contains the fare_attributes file. */
-  def hasFareAttributes: F[Boolean] =
-    hasFile(StandardName.FareAttributes)
-
-  /** Whether the GTFS file contains the fare_rules file. */
-  def hasFareRules: F[Boolean] =
-    hasFile(StandardName.FareRules)
-
-  /** Whether the GTFS file contains the shapes file. */
-  def hasShapes: F[Boolean] =
-    hasFile(StandardName.Shapes)
-
-  /** Whether the GTFS file contains the frequencies file. */
-  def hasFrequencies: F[Boolean] =
-    hasFile(StandardName.Frequencies)
-
-  /** Whether the GTFS file contains the transfers file. */
-  def hasTransfers: F[Boolean] =
-    hasFile(StandardName.Transfers)
-
-  /** Whether the GTFS file contains the pathways file. */
-  def hasPathways: F[Boolean] =
-    hasFile(StandardName.Pathways)
-
-  /** Whether the GTFS file contains the levels file. */
-  def hasLevels: F[Boolean] =
-    hasFile(StandardName.Levels)
-
-  /** Whether the GTFS file contains the feed_info file. */
-  def hasFeedInfo: F[Boolean] =
-    hasFile(StandardName.FeedInfo)
-
-  /** Whether the GTFS file contains the translations file. */
-  def hasTranslations: F[Boolean] =
-    hasFile(StandardName.Translations)
-
-  /** Whether the GTFS file contains the attributions file. */
-  def hasAttributions: F[Boolean] =
-    hasFile(StandardName.Attributions)
+  /** Namespace containing file deletion operators. */
+  val delete: GtfsDelete[F]
 
   /** Namespace containing operators and pipes to read content of a GTFS file access
     * stream.
@@ -111,6 +42,203 @@ trait Gtfs[F[_], Decoder[_], Encoder[_]] {
     * to the same file in the same GTFS file will contain modications.
     */
   val write: GtfsWrite[F, Encoder]
+
+}
+
+trait GtfsHas[F[_]] {
+
+  /** Whether the GTFS file contains the given file name.
+    */
+  def file(name: String): F[Boolean]
+
+  /** Whether the GTFS file contains the given file name.
+    */
+  def file(name: StandardName): F[Boolean] =
+    file(name.entryName)
+
+  /** Whether the GTFS file contains the agency file.
+    */
+  def hasAgency: F[Boolean] =
+    file(StandardName.Agency)
+
+  /** Whether the GTFS file contains the stops file.
+    */
+  def stops: F[Boolean] =
+    file(StandardName.Stops)
+
+  /** Whether the GTFS file contains the routes file.
+    */
+  def routes: F[Boolean] =
+    file(StandardName.Routes)
+
+  /** Whether the GTFS file contains the trips file.
+    */
+  def trips: F[Boolean] =
+    file(StandardName.Trips)
+
+  /** Whether the GTFS file contains the stop_times file.
+    */
+  def stopTimes: F[Boolean] =
+    file(StandardName.StopTimes)
+
+  /** Whether the GTFS file contains the calendar file.
+    */
+  def calendar: F[Boolean] =
+    file(StandardName.Calendar)
+
+  /** Whether the GTFS file contains the calendar_dates file.
+    */
+  def calendarDates: F[Boolean] =
+    file(StandardName.CalendarDates)
+
+  /** Whether the GTFS file contains the fare_attributes file.
+    */
+  def fareAttributes: F[Boolean] =
+    file(StandardName.FareAttributes)
+
+  /** Whether the GTFS file contains the fare_rules file.
+    */
+  def fareRules: F[Boolean] =
+    file(StandardName.FareRules)
+
+  /** Whether the GTFS file contains the shapes file.
+    */
+  def shapes: F[Boolean] =
+    file(StandardName.Shapes)
+
+  /** Whether the GTFS file contains the frequencies file.
+    */
+  def frequencies: F[Boolean] =
+    file(StandardName.Frequencies)
+
+  /** Whether the GTFS file contains the transfers file.
+    */
+  def transfers: F[Boolean] =
+    file(StandardName.Transfers)
+
+  /** Whether the GTFS file contains the pathways file.
+    */
+  def pathways: F[Boolean] =
+    file(StandardName.Pathways)
+
+  /** Whether the GTFS file contains the levels file.
+    */
+  def levels: F[Boolean] =
+    file(StandardName.Levels)
+
+  /** Whether the GTFS file contains the feed_info file.
+    */
+  def feedInfo: F[Boolean] =
+    file(StandardName.FeedInfo)
+
+  /** Whether the GTFS file contains the translations file.
+    */
+  def translations: F[Boolean] =
+    file(StandardName.Translations)
+
+  /** Whether the GTFS file contains the attributions file.
+    */
+  def attributions: F[Boolean] =
+    file(StandardName.Attributions)
+
+}
+
+trait GtfsDelete[F[_]] {
+
+  /** Deletes the given file.
+    * It always succeeds, whether the file exists or not.
+    */
+  def file(name: String): F[Unit]
+
+  /** Deletes the given file.
+    */
+  def file(name: StandardName): F[Unit] =
+    file(name.entryName)
+
+  /** Deletes the agency file.
+    */
+  def agency: F[Unit] =
+    file(StandardName.Agency)
+
+  /** Deletes the stops file.
+    */
+  def stops: F[Unit] =
+    file(StandardName.Stops)
+
+  /** Deletes the routes file.
+    */
+  def routes: F[Unit] =
+    file(StandardName.Routes)
+
+  /** Deletes the trips file.
+    */
+  def trips: F[Unit] =
+    file(StandardName.Trips)
+
+  /** Deletes the stop_times file.
+    */
+  def stopTimes: F[Unit] =
+    file(StandardName.StopTimes)
+
+  /** Deletes the calendar file.
+    */
+  def calendar: F[Unit] =
+    file(StandardName.Calendar)
+
+  /** Deletes the calendar_dates file.
+    */
+  def calendarDates: F[Unit] =
+    file(StandardName.CalendarDates)
+
+  /** Deletes the fare_attributes file.
+    */
+  def fareAttributes: F[Unit] =
+    file(StandardName.FareAttributes)
+
+  /** Deletes the fare_rules file.
+    */
+  def fareRules: F[Unit] =
+    file(StandardName.FareRules)
+
+  /** Deletes the shapes file.
+    */
+  def shapes: F[Unit] =
+    file(StandardName.Shapes)
+
+  /** Deletes the frequencies file.
+    */
+  def frequencies: F[Unit] =
+    file(StandardName.Frequencies)
+
+  /** Deletes the transfers file.
+    */
+  def transfers: F[Unit] =
+    file(StandardName.Transfers)
+
+  /** Deletes the pathways file.
+    */
+  def pathways: F[Unit] =
+    file(StandardName.Pathways)
+
+  /** Deletes the levels file.
+    */
+  def levels: F[Unit] =
+    file(StandardName.Levels)
+
+  /** Deletes the feed_info file.
+    */
+  def feedInfo: F[Unit] =
+    file(StandardName.FeedInfo)
+
+  /** Deletes the translations file.
+    */
+  def translations: F[Unit] =
+    file(StandardName.Translations)
+
+  /** Deletes the attributions file.
+    */
+  def attributions: F[Unit] =
+    file(StandardName.Attributions)
 
 }
 

@@ -1,6 +1,8 @@
 options:
-  - title: Model
-    url: documentation/model
+  - title: Introduction
+    url: documentation/
+  - title: GTFS data model
+    url: documentation/model/
   - title: GTFS File
     url: documentation/file/
     nested_options:

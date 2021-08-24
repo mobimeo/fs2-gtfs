@@ -1,3 +1,3 @@
 package com.mobimeo.gtfs
 
-package object db extends DbMappings 
+package object db extends DbMappings with Columns

@@ -8,6 +8,7 @@ import java.nio.file.Paths
 import com.mobimeo.gtfs.file.GtfsFile
 import com.mobimeo.gtfs.model._
 import doobie._
+import doobie.implicits._
 import fs2.data.csv.CsvRowDecoder
 import fs2.Stream
 import com.mobimeo.gtfs.StandardName
@@ -29,33 +30,25 @@ object TestApp extends IOApp {
 
   def run(args: List[String]): IO[ExitCode] =
     transactor.use { xa =>
-      GtfsFile[IO](Paths.get(this.getClass().getClassLoader().getResource("google_transit.zip").toURI())).use { gtfs =>
-        GtfsDb.createTables(xa).flatMap { gtfsDb =>
-          def copy[W: Write: CsvRowDecoder[*, String]](fileName: StandardName) =
-            gtfs.read.file[W](fileName) through gtfsDb.write.file[W](fileName)
+      GtfsDb.createTables(xa) *> IO.println("here") *> GtfsFile[IO](
+        Paths.get(this.getClass().getClassLoader().getResource("google_transit.zip").toURI())
+      ).use { gtfs =>
+        val gtfsDb = new GtfsDb(xa)
 
-          val copyAll = Stream(
-            copy[Route[Int]](StandardName.Routes),
-            copy[Stop](StandardName.Stops),
-            copy[Transfer](StandardName.Transfers),
-            copy[StopTime](StandardName.StopTimes),
-            copy[Agency](StandardName.Agency),
-            copy[Trip](StandardName.Trips),
-            copy[Calendar](StandardName.Calendar),
-            copy[CalendarDate](StandardName.CalendarDates),
-            copy[FareAttribute](StandardName.FareAttributes),
-            copy[FareRules](StandardName.FareRules),
-            copy[Shape](StandardName.Shapes),
-            copy[Frequency](StandardName.Frequencies),
-            copy[Pathway](StandardName.Pathways),
-            copy[Level](StandardName.Levels),
-            copy[FeedInfo](StandardName.FeedInfo),
-            copy[Translation](StandardName.Translations),
-            copy[Attribution](StandardName.Attributions)
-          ).parJoinUnbounded
+        def copy[W: Write: CsvRowDecoder[*, String]](fileName: StandardName) =
+          gtfs.read.file[W](fileName) through gtfsDb.write.file[W](fileName)
 
-          copyAll.compile.drain as ExitCode.Success
-        }
+        val copyAll = Stream(
+          copy[Stop](StandardName.Stops),
+          copy[Transfer](StandardName.Transfers),
+          copy[Agency](StandardName.Agency)
+        ).parJoinUnbounded
+
+        val join = gtfsDb.read
+          .joinOnEqual(tables.Stop.id, tables.Transfer.fromStopId)
+          .transact(xa)
+        (copyAll ++ join).evalMap(x => IO.println(x.toString)).compile.drain as ExitCode.Success
+
       }
     }
 

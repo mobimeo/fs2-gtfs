@@ -5,6 +5,19 @@ It consists of several API levels, and can be used to perform several kind of ta
 
 The current modules are:
  - `core` the core features to process GTFS files
+ - `rules` the business rule engine and DSL
+
+To build and view the documentation website locally run:
+```shell
+$ sbt site/makeMicrosite
+$ cd site/target/site
+$ jekyll serve -b /fs2-gtfs
+```
+
+To publish the documentation website publicly, run:
+```shell
+$ sbt site/pushMicrosite
+```
 
 For more details, please head over to the [website][website].
 

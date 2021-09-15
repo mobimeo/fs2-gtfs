@@ -1,16 +1,22 @@
 options:
   - title: Introduction
     url: documentation/
-  - title: GTFS data model
+  - title: GTFS Data Model
     url: documentation/model/
   - title: GTFS File
     url: documentation/file/
     nested_options:
       - title: Reading
-        url: documentation/file/reading
+        url: documentation/file/reading/
         section: file
       - title: Writing
-        url: documentation/file/writing
+        url: documentation/file/writing/
         section: file
+  - title: GTFS Rule Engine
+    url: documentation/rules/
+    nested_options:
+      - title: Rule DSL
+        url: documentation/rules/dsl/
+        section: rules
   - title: API Documentation
     url: api/

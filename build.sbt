@@ -3,15 +3,18 @@ val commonSettings = Seq(
   organization := "com.mobimeo",
   cancelable in Global := true,
   headerLicense := Some(HeaderLicense.ALv2("2021", "Mobimeo GmbH")),
-  libraryDependencies ++= PartialFunction.condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
-    case Some((2, _)) =>
-      List(
-        compilerPlugin("org.typelevel" % "kind-projector" % "0.13.0" cross CrossVersion.full),
-        compilerPlugin("com.olegpy" % "better-monadic-for" % "0.3.1" cross CrossVersion.binary)
-      )
-  }
+  libraryDependencies ++= PartialFunction
+    .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
+      case Some((2, _)) =>
+        List(
+          compilerPlugin("org.typelevel" % "kind-projector"     % "0.13.2" cross CrossVersion.full),
+          compilerPlugin("com.olegpy"    % "better-monadic-for" % "0.3.1" cross CrossVersion.binary)
+        )
+    }
     .toList
-    .flatten
+    .flatten,
+  resolvers += Resolver.sonatypeRepo("public"),
+  resolvers += Resolver.sonatypeRepo("snapshots")
 )
 
 val noPublish = List(
@@ -22,10 +25,27 @@ val noPublish = List(
 
 // === CI/CD settings ===
 val scala213 = "2.13.6"
-val scala3 = "3.0.0"
+val scala3   = "3.0.2"
 
 ThisBuild / scalaVersion := scala213
 ThisBuild / crossScalaVersions := List(scala213, scala3)
+
+// publishing
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches +=
+  RefPredicate.StartsWith(Ref.Tag("v"))
+
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "PGP_PASSPHRASE"    -> "${{ secrets.PGP_PASSPHRASE }}",
+      "PGP_SECRET"        -> "${{ secrets.PGP_SECRET }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}"
+    )
+  )
+)
 
 // === aggregating root project ===
 lazy val root = project
@@ -36,7 +56,7 @@ lazy val root = project
     test := {},
     testOnly := {}
   )
-  .aggregate(core, examples)
+  .aggregate(core)
 
 // === The modules ===
 
@@ -51,6 +71,7 @@ lazy val site = project
   .settings(
     test := {},
     testOnly := {},
+    githubWorkflowArtifactUpload := false,
     micrositeName := "fs2-gtfs Website",
     micrositeDescription := "fs2 based GTFS processing library",
     micrositeDocumentationUrl := "/documentation",
@@ -79,14 +100,12 @@ ThisBuild / githubWorkflowBuildPostamble ++= List(
 lazy val core = project
   .in(file("core"))
   .settings(commonSettings)
-  .settings(name := "fs2-gtfs-core", libraryDependencies ++= Dependencies.core ++ PartialFunction.condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
-    case Some((2, _)) => Dependencies.coreScala2
-  }
-    .toList
-    .flatten)
-
-lazy val examples = project
-  .in(file("examples"))
-  .settings(commonSettings)
-  .settings(noPublish)
-  .dependsOn(core)
+  .settings(
+    name := "fs2-gtfs-core",
+    libraryDependencies ++= Dependencies.core ++ PartialFunction
+      .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
+        case Some((2, _)) => Dependencies.coreScala2
+      }
+      .toList
+      .flatten
+  )

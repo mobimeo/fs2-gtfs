@@ -14,3 +14,5 @@ addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.12.0")
 addSbtPlugin("com.47deg"  % "sbt-microsites" % "1.3.4")
 // generate unified documentation
 addSbtPlugin("com.eed3si9n" % "sbt-unidoc" % "0.4.3")
+// release automatically
+addSbtPlugin("com.geirsson" % "sbt-ci-release" % "1.5.7")

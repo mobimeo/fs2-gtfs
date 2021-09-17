@@ -3,6 +3,14 @@ val commonSettings = Seq(
   organization := "com.mobimeo",
   cancelable in Global := true,
   headerLicense := Some(HeaderLicense.ALv2("2021", "Mobimeo GmbH")),
+  licenses += ("The Apache Software License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
+  homepage := Some(url("https://github.com/mobimeo/fs2-gtfs")),
+  developers := List(
+    Developer(id = "mobimeo",
+              name = "Mobimeo OSS Team",
+              email = "opensource@mobimeo.com",
+              url = url("https://github.com/mobimeo"))
+  ),
   libraryDependencies ++= PartialFunction
     .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
       case Some((2, _)) =>

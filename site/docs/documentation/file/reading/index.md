@@ -17,9 +17,9 @@ import com.mobimeo.gtfs.model._
 import cats.effect._
 import cats.effect.unsafe.implicits.global
 
-import java.nio.file._
+import fs2.io.file.Path
 
-val gtfs = GtfsFile[IO](Paths.get("site/gtfs.zip"))
+val gtfs = GtfsFile[IO](Path("site/gtfs.zip"))
 ```
 
 The acquired GTFS resource gives access to the content under the `read` namespace. The content is streamed entity by entity. This way the files are never entirely loaded into memory when reading them. The `read` namespace exposes function to read from the standard files, for instance if one wants to read the available route names from a GTFS file, on can use the `routes` function as follows. Note that it uses the [provided data model][gtfs-model].

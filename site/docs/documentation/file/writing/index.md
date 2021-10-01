@@ -18,9 +18,9 @@ import com.mobimeo.gtfs.model._
 import cats.effect._
 import cats.effect.unsafe.implicits.global
 
-import java.nio.file._
+import fs2.io.file.{CopyFlag, CopyFlags, Path}
 
-val gtfs = GtfsFile[IO](Paths.get("site/gtfs.zip"))
+val gtfs = GtfsFile[IO](Path("site/gtfs.zip"))
 ```
 
 ## Modifying an existing file
@@ -42,9 +42,9 @@ This code modifies the file in place, making all stop names uppercase. However t
 One should prefer to work on a copy of the original file. The `GtfsFile` provides a way to do it conveniently.
 
 ```scala mdoc
-val modified = Paths.get("site/modified-gtfs.zip")
+val modified = Path("site/modified-gtfs.zip")
 gtfs.use { src =>
-  src.copyTo(modified, List(StandardCopyOption.REPLACE_EXISTING)).use { tgt =>
+  src.copyTo(modified, CopyFlags(CopyFlag.ReplaceExisting)).use { tgt =>
     src.read
       .rawStops
       .map(s => s.modify("stop_name")(_.toUpperCase))
@@ -82,7 +82,7 @@ If one wants to create a new file from scratch, one need to tell the file needs 
 def makeStop(id: String, name: String) =
   Stop(id, None, Some(name), None, None, None, None, None, None, None, None, None, None, None)
 
-val file = Paths.get("site/gtfs2.zip")
+val file = Path("site/gtfs2.zip")
 GtfsFile[IO](file, create = true).use { gtfs =>
   fs2.Stream.emits(List(makeStop("stop1", "Some Stop"), makeStop("stop2", "Some Other Stop")))
     .covary[IO]

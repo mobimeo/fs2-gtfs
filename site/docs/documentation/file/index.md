@@ -14,12 +14,12 @@ This API lives in the `com.mobimeo.gtfs.file` package
 ```scala mdoc
 import com.mobimeo.gtfs.file._
 
+import fs2.io.file.Path
+
 import cats.effect._
 import cats.effect.unsafe.implicits.global
 
-import java.nio.file._
-
-GtfsFile[IO](Paths.get("site/gtfs.zip")).use { gtfs =>
+GtfsFile[IO](Path("site/gtfs.zip")).use { gtfs =>
   IO.pure(s"Some work with the GTFS file at ${gtfs.file}")
 }.unsafeRunSync()
 ```

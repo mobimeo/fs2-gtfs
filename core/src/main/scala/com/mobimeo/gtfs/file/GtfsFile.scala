@@ -22,15 +22,14 @@ import cats.syntax.all._
 import com.mobimeo.gtfs._
 
 import fs2._
-import fs2.io.file.Files
+import fs2.io.file._
 import fs2.data.csv._
 import fs2.data.csv.lowlevel._
 
-import java.nio.file.{CopyOption, FileSystem, FileSystems, Path, Paths, StandardCopyOption}
-
 import scala.jdk.CollectionConverters._
 
-import scala.util.Properties
+import java.nio.file.{FileSystem, FileSystems}
+
 import java.net.URI
 
 /** Represents a GTFS file. Can be used to access the content of the different
@@ -45,12 +44,12 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
 
   object has extends GtfsHas[F] {
     def file(name: String): F[Boolean] =
-      files.exists(fs.getPath(s"/$name"))
+      files.exists(Path.fromNioPath(fs.getPath(s"/$name")))
   }
 
   object delete extends GtfsDelete[F] {
     def file(name: String): F[Unit] =
-      files.deleteIfExists(fs.getPath(s"/$name")).void
+      files.deleteIfExists(Path.fromNioPath(fs.getPath(s"/$name"))).void
   }
 
   object read extends GtfsRead[F, CsvRowDecoder[*, String]] {
@@ -63,8 +62,8 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
       Stream.force(has.file(name).map { exists =>
         if (exists)
           files
-            .readAll(fs.getPath(s"/$name"), 1024)
-            .through(text.utf8Decode)
+            .readAll(Path.fromNioPath(fs.getPath(s"/$name")), 1024, Flags.Read)
+            .through(text.utf8.decode)
             .through(rows())
             .through(headers[F, String])
         else
@@ -141,18 +140,17 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
       s =>
         Stream
           .resource(
-            files
-              .tempFile(Paths.get(Properties.propOrElse("java.io.tmpdir", "/tmp")).some, prefix = name)
+            files.tempFile
           )
           .flatMap { tempFile =>
             // save the rows in the temp file first
             s.through(encodeRowWithFirstHeaders)
               .through(toRowStrings())
-              .through(text.utf8Encode)
+              .through(text.utf8.encode)
               .through(files.writeAll(tempFile)) ++
               // once temp file is saved, copy it to the destination file in GTFS
               Stream.exec(
-                files.copy(tempFile, fs.getPath(s"/$name"), Seq(StandardCopyOption.REPLACE_EXISTING)).void
+                files.copy(tempFile, Path.fromNioPath(fs.getPath(s"/$name")), CopyFlags(CopyFlag.ReplaceExisting)).void
               )
           }
 
@@ -222,7 +220,7 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
     * This can be used when the result of transforming this GTFS file content is toRowStrings
     * to be saved to a new file.
     */
-  def copyTo(file: Path, flags: Seq[CopyOption] = Seq.empty): Resource[F, GtfsFile[F]] =
+  def copyTo(file: Path, flags: CopyFlags = CopyFlags.empty): Resource[F, GtfsFile[F]] =
     Resource.eval(files.copy(self.file, file, flags)) >> GtfsFile(file)
 
 }
@@ -238,7 +236,7 @@ object GtfsFile {
         F.blocking(
           FileSystems
             .newFileSystem(
-              URI.create("jar:file:" + file.toAbsolutePath()),
+              URI.create("jar:file:" + file.absolute),
               Map("create" -> String.valueOf(create && !exists)).asJava
             )
         )

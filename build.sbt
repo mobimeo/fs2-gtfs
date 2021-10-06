@@ -6,10 +6,12 @@ val commonSettings = Seq(
   licenses += ("The Apache Software License, Version 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
   homepage := Some(url("https://github.com/mobimeo/fs2-gtfs")),
   developers := List(
-    Developer(id = "mobimeo",
-              name = "Mobimeo OSS Team",
-              email = "opensource@mobimeo.com",
-              url = url("https://github.com/mobimeo"))
+    Developer(
+      id = "mobimeo",
+      name = "Mobimeo OSS Team",
+      email = "opensource@mobimeo.com",
+      url = url("https://github.com/mobimeo")
+    )
   ),
   libraryDependencies ++= PartialFunction
     .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
@@ -55,6 +57,31 @@ ThisBuild / githubWorkflowPublish := Seq(
   )
 )
 
+// publish website
+
+ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
+  id = "site",
+  name = "Deploy site",
+  needs = List("publish"),
+  javas = (ThisBuild / githubWorkflowJavaVersions).value.toList,
+  scalas = (ThisBuild / scalaVersion).value :: Nil,
+  cond = "startsWith(github.ref, 'refs/tags/v')".some,
+  steps = githubWorkflowGeneratedDownloadSteps.value.toList :+
+    WorkflowStep.Sbt(
+      List("site/makeMicrosite"),
+      name = Some("Compile Website"),
+      cond = Some(s"matrix.scala == '$scala213'")
+    ) :+
+    WorkflowStep.Use(
+      UseRef.Public("peaceiris", "actions-gh-pages", "v3"),
+      name = Some(s"Deploy site"),
+      params = Map(
+        "publish_dir"  -> "./site/target/site",
+        "github_token" -> "${{ secrets.GITHUB_TOKEN }}"
+      )
+    )
+)
+
 // === aggregating root project ===
 lazy val root = project
   .in(file("."))
@@ -94,7 +121,8 @@ lazy val site = project
     ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core),
     docsMappingsAPIDir := "api",
     addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, docsMappingsAPIDir),
-    mdocExtraArguments := Seq("--no-link-hygiene")
+    mdocExtraArguments := Seq("--no-link-hygiene"),
+    githubWorkflowArtifactUpload := false
   )
   .dependsOn(core)
 

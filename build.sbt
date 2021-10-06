@@ -58,6 +58,9 @@ ThisBuild / githubWorkflowPublish := Seq(
   )
 )
 
+// don't use sbt thin client
+ThisBuild / githubWorkflowUseSbtThinClient := false
+
 // publish website
 
 ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
@@ -125,7 +128,7 @@ lazy val site = project
     libraryDependencies ++= Dependencies.site,
     scalacOptions ~= filterConsoleScalacOptions,
     mdocExtraArguments := Seq("--no-link-hygiene"),
-    githubWorkflowArtifactUpload := false
+    githubWorkflowArtifactUpload := false,
   )
   .dependsOn(core, rules)
 

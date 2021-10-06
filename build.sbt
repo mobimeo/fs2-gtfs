@@ -13,7 +13,7 @@ val commonSettings = Seq(
       url = url("https://github.com/mobimeo")
     )
   ),
-  libraryDependencies ++= PartialFunction
+  libraryDependencies ++= Dependencies.common ++ PartialFunction
     .condOpt(CrossVersion.partialVersion(scalaVersion.value)) {
       case Some((2, _)) =>
         List(
@@ -24,7 +24,8 @@ val commonSettings = Seq(
     .toList
     .flatten,
   resolvers += Resolver.sonatypeRepo("public"),
-  resolvers += Resolver.sonatypeRepo("snapshots")
+  resolvers += Resolver.sonatypeRepo("snapshots"),
+  testFrameworks += new TestFramework("weaver.framework.CatsEffect")
 )
 
 val noPublish = List(
@@ -91,7 +92,7 @@ lazy val root = project
     test := {},
     testOnly := {}
   )
-  .aggregate(core)
+  .aggregate(core, rules)
 
 // === The modules ===
 
@@ -118,13 +119,15 @@ lazy val site = project
     micrositeGithubRepo := "fs2-gtfs",
     micrositeGitterChannel := false,
     autoAPIMappings := true,
-    ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core),
+    ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core, rules),
     docsMappingsAPIDir := "api",
     addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, docsMappingsAPIDir),
+    libraryDependencies ++= Dependencies.site,
+    scalacOptions ~= filterConsoleScalacOptions,
     mdocExtraArguments := Seq("--no-link-hygiene"),
     githubWorkflowArtifactUpload := false
   )
-  .dependsOn(core)
+  .dependsOn(core, rules)
 
 ThisBuild / githubWorkflowBuildPostamble ++= List(
   WorkflowStep.Sbt(
@@ -146,3 +149,9 @@ lazy val core = project
       .toList
       .flatten
   )
+
+lazy val rules = project
+  .in(file("rules"))
+  .settings(commonSettings)
+  .settings(name := "fs2-gtfs-rules", libraryDependencies ++= Dependencies.rules)
+  .dependsOn(core)

@@ -1,0 +1,318 @@
+<!DOCTYPE html><html><head><title>fs2-gtfs Website: Rule DSL</title><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Mobimeo GmbH" /><meta name="description" content="fs2 based GTFS processing library" /><meta name="og:image" content="/fs2-gtfs/img/poster.png" /><meta name="image" property="og:image" content="/fs2-gtfs/img/poster.png" /><meta name="og:title" content="fs2-gtfs Website: Rule DSL" /><meta name="title" property="og:title" content="fs2-gtfs Website: Rule DSL" /><meta name="og:site_name" content="fs2-gtfs Website" /><meta name="og:url" content="https://github.com/mobimeo/fs2-gtfs" /><meta name="og:type" content="website" /><meta name="og:description" content="fs2 based GTFS processing library" /><link rel="icon" type="image/png" href="/fs2-gtfs/img/favicon.png" /><meta name="twitter:title" content="fs2-gtfs Website: Rule DSL" /><meta name="twitter:image" content="/fs2-gtfs/img/poster.png" /><meta name="twitter:description" content="fs2 based GTFS processing library" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="@MobimeoMobility" /><link rel="icon" type="image/png" sizes="16x16" href="/fs2-gtfs/img/favicon16x16.png" /><link rel="icon" type="image/png" sizes="24x24" href="/fs2-gtfs/img/favicon24x24.png" /><link rel="icon" type="image/png" sizes="32x32" href="/fs2-gtfs/img/favicon32x32.png" /><link rel="icon" type="image/png" sizes="48x48" href="/fs2-gtfs/img/favicon48x48.png" /><link rel="icon" type="image/png" sizes="57x57" href="/fs2-gtfs/img/favicon57x57.png" /><link rel="icon" type="image/png" sizes="60x60" href="/fs2-gtfs/img/favicon60x60.png" /><link rel="icon" type="image/png" sizes="64x64" href="/fs2-gtfs/img/favicon64x64.png" /><link rel="icon" type="image/png" sizes="70x70" href="/fs2-gtfs/img/favicon70x70.png" /><link rel="icon" type="image/png" sizes="72x72" href="/fs2-gtfs/img/favicon72x72.png" /><link rel="icon" type="image/png" sizes="76x76" href="/fs2-gtfs/img/favicon76x76.png" /><link rel="icon" type="image/png" sizes="96x96" href="/fs2-gtfs/img/favicon96x96.png" /><link rel="icon" type="image/png" sizes="114x114" href="/fs2-gtfs/img/favicon114x114.png" /><link rel="icon" type="image/png" sizes="120x120" href="/fs2-gtfs/img/favicon120x120.png" /><link rel="icon" type="image/png" sizes="128x128" href="/fs2-gtfs/img/favicon128x128.png" /><link rel="icon" type="image/png" sizes="144x144" href="/fs2-gtfs/img/favicon144x144.png" /><link rel="icon" type="image/png" sizes="150x150" href="/fs2-gtfs/img/favicon150x150.png" /><link rel="icon" type="image/png" sizes="152x152" href="/fs2-gtfs/img/favicon152x152.png" /><link rel="icon" type="image/png" sizes="196x196" href="/fs2-gtfs/img/favicon196x196.png" /><link rel="icon" type="image/png" sizes="310x310" href="/fs2-gtfs/img/favicon310x310.png" /><link rel="icon" type="image/png" sizes="310x150" href="/fs2-gtfs/img/favicon310x150.png" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/fs2-gtfs/highlight/styles/vs.css" /><link rel="stylesheet" href="/fs2-gtfs/css/light-style.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><div id="sidebar-brand"><a href="/fs2-gtfs/" class="brand"><div class="brand-wrapper"></div><span>fs2-gtfs Website</span></a><button id="main-toggle" class="sidebar-toggle"><span class="close"></span></button></div><div class="sidebar-nav"> <div class="sidebar-nav-item  "><a href="/fs2-gtfs/documentation/" title="Introduction" class="">Introduction</a></div> <div class="sidebar-nav-item  "><a href="/fs2-gtfs/documentation/model/" title="GTFS Data Model" class="">GTFS Data Model</a></div> <div class="sidebar-nav-item  "><a href="/fs2-gtfs/documentation/file/" title="GTFS File" class="drop-nested">GTFS File</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/fs2-gtfs/documentation/file/reading/" title="Reading" class="">Reading</a> <a href="/fs2-gtfs/documentation/file/writing/" title="Writing" class="">Writing</a></div></div> <div class="sidebar-nav-item  open"><a href="/fs2-gtfs/documentation/rules/" title="GTFS Rule Engine" class="drop-nested">GTFS Rule Engine</a><i class="fa fa-angle-right"></i><div class="sub-section"> <a href="/fs2-gtfs/documentation/rules/dsl/" title="Rule DSL" class="active">Rule DSL</a></div></div> <div class="sidebar-nav-item  "><a href="/fs2-gtfs/api/" title="API Documentation" class="">API Documentation</a></div></div></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="search-nav"><div id="search-dropdown"><label><i class="fa fa-search"></i>Search</label><input id="search-bar" type="text" placeholder="Enter keywords here..." onclick="displayToggleSearch(event)" /><ul id="search-dropdown-content" class="dropdown dropdown-content"></ul></div></li><li id="gh-eyes-item" class="hidden-xs to-uppercase"><a href="https://github.com/mobimeo/fs2-gtfs" target="_blank" rel="noopener noreferrer"><i class="fa fa-eye"></i><span>Watchers<span id="eyes" class="label label-default">--</span></span></a></li><li id="gh-stars-item" class="hidden-xs to-uppercase"><a href="https://github.com/mobimeo/fs2-gtfs" target="_blank" rel="noopener noreferrer"><i class="fa fa-star-o"></i><span>Stars<span id="stars" class="label label-default">--</span></span></a></li></ul></div></div></div></div><div id="content" data-github-owner="mobimeo" data-github-repo="fs2-gtfs"><div class="content-wrapper"><section><ul id="markdown-toc">
+  <li><a href="#the-rule-dsl" id="markdown-toc-the-rule-dsl">The rule DSL</a>    <ul>
+      <li><a href="#define-a-rule-set" id="markdown-toc-define-a-rule-set">Define a rule set</a></li>
+      <li><a href="#access-to-the-current-row-and-context" id="markdown-toc-access-to-the-current-row-and-context">Access to the current row and context</a></li>
+      <li><a href="#the-row-matcher" id="markdown-toc-the-row-matcher">The row matcher</a></li>
+      <li><a href="#perform-transformations" id="markdown-toc-perform-transformations">Perform transformations</a></li>
+      <li><a href="#delete-a-row" id="markdown-toc-delete-a-row">Delete a row</a></li>
+      <li><a href="#log-data" id="markdown-toc-log-data">Log data</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="the-rule-dsl">The rule DSL</h1>
+
+<p>Rules are grouped in rule sets, applying to a specific file in GTFS data. The DSL helps you write your rules in scala in an easy and typesafe way.</p>
+
+<h2 id="define-a-rule-set">Define a rule set</h2>
+
+<p>To define a set of rule, you need to have an instance of the <code class="language-plaintext highlighter-rouge">Dsl</code> class for you effect type. By importing members of this class, you bring in scope the facilities.</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nn">com.mobimeo.gtfs._</span>
+<span class="k">import</span> <span class="nn">com.mobimeo.gtfs.rules._</span>
+
+<span class="k">import</span> <span class="nn">cats.effect._</span>
+
+<span class="k">val</span> <span class="nv">dsl</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Dsl</span><span class="o">[</span><span class="kt">IO</span><span class="o">]</span>
+<span class="c1">// dsl: Dsl[IO] = com.mobimeo.gtfs.rules.Dsl@e81d8f8</span>
+
+<span class="k">import</span> <span class="nn">dsl._</span>
+</code></pre></div></div>
+
+<p>Rule sets are defined within the <code class="language-plaintext highlighter-rouge">ruleset</code> method. The first parameter defines which file the set applies to within the GTFS data, the second part defines the rules included in the rule set.</p>
+
+<p>The different rules will be tried in order, and the first matching one will be selected for each row in the file.</p>
+
+<p>To write several rules, you can separate them with the <code class="language-plaintext highlighter-rouge">orElse</code> operator.</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">val</span> <span class="nv">someRule</span><span class="k">:</span> <span class="kt">RulesBuilder</span> <span class="o">=</span> <span class="o">???</span>
+<span class="k">val</span> <span class="nv">someOtherRule</span><span class="k">:</span> <span class="kt">RulesBuilder</span> <span class="o">=</span> <span class="o">???</span>
+
+<span class="nf">ruleset</span><span class="o">(</span><span class="nv">StandardName</span><span class="o">.</span><span class="py">Routes</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">someRule</span> <span class="n">orElse</span> <span class="n">someOtherRule</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="access-to-the-current-row-and-context">Access to the current row and context</h2>
+
+<p>Within the definition of a rule (matcher and transformations) it might come in handy to access the content of the current row. This can be achieved by using the <code class="language-plaintext highlighter-rouge">row</code> variable available in the DSL.</p>
+
+<p>For instance to access the <code class="language-plaintext highlighter-rouge">route_short_name</code> field of the current row (if it exists):</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">row</span><span class="o">(</span><span class="s">"route_short_name"</span><span class="o">)</span>
+<span class="c1">// res1: RowFieldBuilder = com.mobimeo.gtfs.rules.Dsl$RowFieldBuilder@7b8c91f2</span>
+</code></pre></div></div>
+
+<p>Sometimes, not only the current row value is interesting but we might want to use some sort of global context, containing values.
+The DSL provides the <code class="language-plaintext highlighter-rouge">ctx</code> variable, which gives you access to the hierarchical context, which consists of a tree of string. Accessing values can be done by providing the path to the leaf.</p>
+
+<p>For instance, let’s say you have the current date in the global context as follows:</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2021-01-01"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>You can access the <code class="language-plaintext highlighter-rouge">date</code> field like this:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">ctx</span><span class="o">(</span><span class="s">"meta"</span><span class="o">)(</span><span class="s">"date"</span><span class="o">)</span>
+<span class="c1">// res2: CtxBuilder = com.mobimeo.gtfs.rules.Dsl$CtxBuilder@63e3e506</span>
+</code></pre></div></div>
+
+<p>Both <code class="language-plaintext highlighter-rouge">row</code> and <code class="language-plaintext highlighter-rouge">ctx</code> can be used in the matcher part of the rule and the transformation one.</p>
+
+<h2 id="the-row-matcher">The row matcher</h2>
+
+<p>The first part of a rule is the matcher. The matcher defines which rows are eligible for performing the actions of the rule.</p>
+
+<p><strong>Note:</strong> Matcher is a pure expression, it cannot perform any side effect, that is why it is not possible to call functions in a matcher.</p>
+
+<p>The matcher expressions are usually based on the content of the current row.
+To check taht a row contains a field, you can use the <code class="language-plaintext highlighter-rouge">exists</code> operator:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">row</span><span class="o">(</span><span class="s">"stop_name"</span><span class="o">).</span><span class="py">exists</span>
+<span class="c1">// res3: Matcher = Exists(variable = Field(name = Str(value = "stop_name")))</span>
+</code></pre></div></div>
+
+<p>Values can be compared using the <code class="language-plaintext highlighter-rouge">===</code> operator:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">row</span><span class="o">(</span><span class="s">"stop_name"</span><span class="o">)</span> <span class="o">===</span> <span class="s">"Some Stop"</span>
+<span class="c1">// res4: Matcher = Equals(</span>
+<span class="c1">//   left = Field(name = Str(value = "stop_name")),</span>
+<span class="c1">//   right = Str(value = "Some Stop")</span>
+<span class="c1">// )</span>
+</code></pre></div></div>
+
+<p>You can also check that a value is withing a list of values using the <code class="language-plaintext highlighter-rouge">in</code> operator:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">row</span><span class="o">(</span><span class="s">"stop_name"</span><span class="o">)</span> <span class="n">in</span> <span class="nc">List</span><span class="o">(</span><span class="s">"Some Stop"</span><span class="o">,</span> <span class="s">"Some Other Stop"</span><span class="o">)</span>
+<span class="c1">// res5: Matcher = In(</span>
+<span class="c1">//   value = Field(name = Str(value = "stop_name")),</span>
+<span class="c1">//   values = List(Str(value = "Some Stop"), Str(value = "Some Other Stop"))</span>
+<span class="c1">// )</span>
+</code></pre></div></div>
+
+<p>You can check for some regular expression patterns using the <code class="language-plaintext highlighter-rouge">matches</code> operator:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">row</span><span class="o">(</span><span class="s">"stop_name"</span><span class="o">)</span> <span class="n">matches</span> <span class="s">"^Berlin, .*"</span>
+<span class="c1">// res6: Matcher = Matches(</span>
+<span class="c1">//   value = Field(name = Str(value = "stop_name")),</span>
+<span class="c1">//   regex = "^Berlin, .*"</span>
+<span class="c1">// )</span>
+</code></pre></div></div>
+
+<p>Matchers can be combined together via <code class="language-plaintext highlighter-rouge">and</code>, <code class="language-plaintext highlighter-rouge">or</code>, and <code class="language-plaintext highlighter-rouge">!</code> operators to create a new one:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">row</span><span class="o">(</span><span class="s">"stop_name"</span><span class="o">).</span><span class="py">exists</span> <span class="n">and</span> <span class="o">!</span><span class="nf">row</span><span class="o">(</span><span class="s">"stop_id"</span><span class="o">).</span><span class="py">exists</span>
+<span class="c1">// res7: Matcher = And(</span>
+<span class="c1">//   left = Exists(variable = Field(name = Str(value = "stop_name"))),</span>
+<span class="c1">//   right = Not(inner = Exists(variable = Field(name = Str(value = "stop_id"))))</span>
+<span class="c1">// )</span>
+</code></pre></div></div>
+
+<h2 id="perform-transformations">Perform transformations</h2>
+
+<p>One possible kind of rules are the rules that perform transformations on the matched rows.
+We can for instance define the rules to make all stop names uppercase as follows:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">ruleset</span><span class="o">(</span><span class="nv">StandardName</span><span class="o">.</span><span class="py">Stops</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nf">rule</span><span class="o">(</span><span class="s">"uppercase-stops"</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">when</span><span class="o">(</span><span class="n">any</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">perform</span><span class="o">(</span><span class="nf">row</span><span class="o">(</span><span class="s">"stop_name"</span><span class="o">)</span> <span class="o">:=</span> <span class="nf">uppercase</span><span class="o">(</span><span class="nf">row</span><span class="o">(</span><span class="s">"stop_name"</span><span class="o">)))</span>
+<span class="o">}</span>
+<span class="c1">// res8: RuleSet[IO] = RuleSet(</span>
+<span class="c1">//   file = "stops.txt",</span>
+<span class="c1">//   rules = List(</span>
+<span class="c1">//     Rule(</span>
+<span class="c1">//       name = "uppercase-stops",</span>
+<span class="c1">//       matcher = Any,</span>
+<span class="c1">//       action = Transform(</span>
+<span class="c1">//         transformations = NonEmptyList(</span>
+<span class="c1">//           head = Set(</span>
+<span class="c1">//             field = Str(value = "stop_name"),</span>
+<span class="c1">//             to = NamedFunction(</span>
+<span class="c1">//               name = "uppercase",</span>
+<span class="c1">//               args = List(Val(v = Field(name = Str(value = "stop_name"))))</span>
+<span class="c1">//             )</span>
+<span class="c1">//           ),</span>
+<span class="c1">//           tail = List()</span>
+<span class="c1">//         )</span>
+<span class="c1">//       )</span>
+<span class="c1">//     )</span>
+<span class="c1">//   ),</span>
+<span class="c1">//   additions = List()</span>
+<span class="c1">// )</span>
+</code></pre></div></div>
+
+<p>The previous transformation sets the row field value to a new value. Another possible transformation is to search for a pattern and replace it by a new value.</p>
+
+<p>For instance, if we want to remove the leading <code class="language-plaintext highlighter-rouge">Berlin, </code> occurrences in stop names:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">ruleset</span><span class="o">(</span><span class="nv">StandardName</span><span class="o">.</span><span class="py">Stops</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nf">rule</span><span class="o">(</span><span class="s">"uppercase-stops"</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">when</span><span class="o">(</span><span class="nf">row</span><span class="o">(</span><span class="s">"stop_name"</span><span class="o">)</span> <span class="n">matches</span> <span class="s">"^Berlin, .*$"</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">perform</span><span class="o">(</span><span class="nf">in</span><span class="o">(</span><span class="s">"stop_name"</span><span class="o">).</span><span class="py">search</span><span class="o">(</span><span class="s">"^Berlin, "</span><span class="o">).</span><span class="py">andReplaceBy</span><span class="o">(</span><span class="s">""</span><span class="o">))</span>
+<span class="o">}</span>
+<span class="c1">// res9: RuleSet[IO] = RuleSet(</span>
+<span class="c1">//   file = "stops.txt",</span>
+<span class="c1">//   rules = List(</span>
+<span class="c1">//     Rule(</span>
+<span class="c1">//       name = "uppercase-stops",</span>
+<span class="c1">//       matcher = Matches(</span>
+<span class="c1">//         value = Field(name = Str(value = "stop_name")),</span>
+<span class="c1">//         regex = "^Berlin, .*$"</span>
+<span class="c1">//       ),</span>
+<span class="c1">//       action = Transform(</span>
+<span class="c1">//         transformations = NonEmptyList(</span>
+<span class="c1">//           head = SearchAndReplace(</span>
+<span class="c1">//             field = Str(value = "stop_name"),</span>
+<span class="c1">//             regex = "^Berlin, ",</span>
+<span class="c1">//             replacement = ""</span>
+<span class="c1">//           ),</span>
+<span class="c1">//           tail = List()</span>
+<span class="c1">//         )</span>
+<span class="c1">//       )</span>
+<span class="c1">//     )</span>
+<span class="c1">//   ),</span>
+<span class="c1">//   additions = List()</span>
+<span class="c1">// )</span>
+</code></pre></div></div>
+
+<p>In the replacement string, <code class="language-plaintext highlighter-rouge">$n</code> refers to the value of the n-th capturing group in the regular expression for n between 0 and 9.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">perform</code> function takes several transformations (at least one) which will be applied in order of defnition. A transformation is performed on the result of the previous ones.</p>
+
+<h2 id="delete-a-row">Delete a row</h2>
+
+<p>The second action a rule can perform is deleting matching rows.</p>
+
+<p>For instance if a stop was closed but still appears in GTFS data, you could add this rule:</p>
+
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">ruleset</span><span class="o">(</span><span class="nv">StandardName</span><span class="o">.</span><span class="py">Stops</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nf">rule</span><span class="o">(</span><span class="s">"delete-französische-straße"</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">when</span><span class="o">(</span><span class="nf">row</span><span class="o">(</span><span class="s">"route_short_name"</span><span class="o">)</span> <span class="o">===</span> <span class="s">"Französische Straße"</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">delete</span>
+<span class="o">}</span>
+<span class="c1">// res10: RuleSet[IO] = RuleSet(</span>
+<span class="c1">//   file = "stops.txt",</span>
+<span class="c1">//   rules = List(</span>
+<span class="c1">//     Rule(</span>
+<span class="c1">//       name = "delete-franz\u00f6sische-stra\u00dfe",</span>
+<span class="c1">//       matcher = Equals(</span>
+<span class="c1">//         left = Field(name = Str(value = "route_short_name")),</span>
+<span class="c1">//         right = Str(value = "Franz\u00f6sische Stra\u00dfe")</span>
+<span class="c1">//       ),</span>
+<span class="c1">//       action = Delete()</span>
+<span class="c1">//     )</span>
+<span class="c1">//   ),</span>
+<span class="c1">//   additions = List()</span>
+<span class="c1">// )</span>
+</code></pre></div></div>
+
+<h2 id="log-data">Log data</h2>
+
+<p>The last possible action to perform for a rule is logging. The logging action will be executed for the matching rows only. Rows (matching or not) are always left unchanged for logging rules.</p>
+
+<p>For instance a rule set that logs missing colors for routes could look like this:</p>
+<div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">ruleset</span><span class="o">(</span><span class="nv">StandardName</span><span class="o">.</span><span class="py">Routes</span><span class="o">)</span> <span class="o">{</span>
+  <span class="nf">rule</span><span class="o">(</span><span class="s">"log-missing-colors"</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">when</span><span class="o">(!</span><span class="nf">row</span><span class="o">(</span><span class="s">"route_color"</span><span class="o">).</span><span class="py">exists</span> <span class="n">and</span> <span class="o">!</span><span class="nf">row</span><span class="o">(</span><span class="s">"route_text_color"</span><span class="o">).</span><span class="py">exists</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">error</span><span class="o">(</span><span class="n">concat</span><span class="s">"Route ${row("</span><span class="n">route_short_name</span><span class="s">")} (${row("</span><span class="n">route_id</span><span class="s">")}) is missing all colors"</span><span class="o">)</span> <span class="n">orElse</span>
+  <span class="nf">rule</span><span class="o">(</span><span class="s">"log-missing-line-color"</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">when</span><span class="o">(!</span><span class="nf">row</span><span class="o">(</span><span class="s">"route_color"</span><span class="o">).</span><span class="py">exists</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">error</span><span class="o">(</span><span class="n">concat</span><span class="s">"Route ${row("</span><span class="n">route_short_name</span><span class="s">")} (${row("</span><span class="n">route_id</span><span class="s">")}) is missing line color"</span><span class="o">)</span> <span class="n">orElse</span>
+  <span class="nf">rule</span><span class="o">(</span><span class="s">"log-missing-text-color"</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">when</span><span class="o">(!</span><span class="nf">row</span><span class="o">(</span><span class="s">"route_color"</span><span class="o">).</span><span class="py">exists</span><span class="o">)</span>
+    <span class="o">.</span><span class="py">warning</span><span class="o">(</span><span class="n">concat</span><span class="s">"Route ${row("</span><span class="n">route_short_name</span><span class="s">")} (${row("</span><span class="n">route_id</span><span class="s">")}) is missing text color"</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// res11: RuleSet[IO] = RuleSet(</span>
+<span class="c1">//   file = "routes.txt",</span>
+<span class="c1">//   rules = List(</span>
+<span class="c1">//     Rule(</span>
+<span class="c1">//       name = "log-missing-colors",</span>
+<span class="c1">//       matcher = Not(</span>
+<span class="c1">//         inner = Or(</span>
+<span class="c1">//           left = Exists(variable = Field(name = Str(value = "route_color"))),</span>
+<span class="c1">//           right = Exists(</span>
+<span class="c1">//             variable = Field(name = Str(value = "route_text_color"))</span>
+<span class="c1">//           )</span>
+<span class="c1">//         )</span>
+<span class="c1">//       ),</span>
+<span class="c1">//       action = Log(</span>
+<span class="c1">//         msg = NamedFunction(</span>
+<span class="c1">//           name = "concat",</span>
+<span class="c1">//           args = List(</span>
+<span class="c1">//             Val(v = Str(value = "Route ")),</span>
+<span class="c1">//             Val(v = Field(name = Str(value = "route_short_name"))),</span>
+<span class="c1">//             Val(v = Str(value = " (")),</span>
+<span class="c1">//             Val(v = Field(name = Str(value = "route_id"))),</span>
+<span class="c1">//             Val(v = Str(value = ") is missing all colors"))</span>
+<span class="c1">//           )</span>
+<span class="c1">//         ),</span>
+<span class="c1">//         level = Error</span>
+<span class="c1">//       )</span>
+<span class="c1">//     ),</span>
+<span class="c1">//     Rule(</span>
+<span class="c1">//       name = "log-missing-line-color",</span>
+<span class="c1">//       matcher = Not(</span>
+<span class="c1">//         inner = Exists(variable = Field(name = Str(value = "route_color")))</span>
+<span class="c1">//       ),</span>
+<span class="c1">//       action = Log(</span>
+<span class="c1">//         msg = NamedFunction(</span>
+<span class="c1">//           name = "concat",</span>
+<span class="c1">//           args = List(</span>
+<span class="c1">//             Val(v = Str(value = "Route ")),</span>
+<span class="c1">//             Val(v = Field(name = Str(value = "route_short_name"))),</span>
+<span class="c1">//             Val(v = Str(value = " (")),</span>
+<span class="c1">//             Val(v = Field(name = Str(value = "route_id"))),</span>
+<span class="c1">//             Val(v = Str(value = ") is missing line color"))</span>
+<span class="c1">//           )</span>
+<span class="c1">//         ),</span>
+<span class="c1">//         level = Error</span>
+<span class="c1">//       )</span>
+<span class="c1">//     ),</span>
+<span class="c1">//     Rule(</span>
+<span class="c1">//       name = "log-missing-text-color",</span>
+<span class="c1">//       matcher = Not(</span>
+<span class="c1">//         inner = Exists(variable = Field(name = Str(value = "route_color")))</span>
+<span class="c1">//       ),</span>
+<span class="c1">//       action = Log(</span>
+<span class="c1">//         msg = NamedFunction(</span>
+<span class="c1">//           name = "concat",</span>
+<span class="c1">//           args = List(</span>
+<span class="c1">//             Val(v = Str(value = "Route ")),</span>
+<span class="c1">//             Val(v = Field(name = Str(value = "route_short_name"))),</span>
+<span class="c1">//             Val(v = Str(value = " (")),</span>
+<span class="c1">//             Val(v = Field(name = Str(value = "route_id"))),</span>
+<span class="c1">//             Val(v = Str(value = ") is missing text color"))</span>
+<span class="c1">//           )</span>
+<span class="c1">//         ),</span>
+<span class="c1">//         level = Warning</span>
+<span class="c1">//       )</span>
+<span class="c1">//     )</span>
+<span class="c1">//   ),</span>
+<span class="c1">//   additions = List()</span>
+<span class="c1">// )</span>
+</code></pre></div></div>
+</section></div></div></div></div><script src="/fs2-gtfs/highlight/highlight.pack.js"></script><script src="/fs2-gtfs/lunr/lunr.js"></script><script>
+// For all code blocks, copy the language from the containing div
+// to the inner code tag (where hljs expects it to be)
+const langPrefix = 'language-';
+document.querySelectorAll(`div[class^='${langPrefix}']`).forEach(function(div) {
+  div.classList.forEach(function(cssClass) {
+    if (cssClass.startsWith(langPrefix)) {
+      const lang = cssClass.substring(langPrefix.length);
+      div.querySelectorAll('pre code').forEach(function(code) {
+        code.classList.add(lang);
+      });
+    }
+  });
+});
+
+hljs.configure({languages:['scala','java','bash']});
+hljs.initHighlightingOnLoad();
+      </script><script>console.info('\x57\x65\x62\x73\x69\x74\x65\x20\x62\x75\x69\x6c\x74\x20\x77\x69\x74\x68\x3a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x5f\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x5f\x20\x5f\x5f\x0a\x20\x20\x20\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x5f\x20\x20\x2f\x20\x2f\x5f\x20\x20\x20\x20\x20\x20\x5f\x5f\x5f\x5f\x20\x5f\x5f\x5f\x20\x20\x28\x5f\x29\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x28\x5f\x29\x20\x2f\x5f\x5f\x5f\x5f\x20\x20\x5f\x5f\x5f\x5f\x5f\x0a\x20\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x60\x5f\x5f\x20\x5c\x2f\x20\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x5f\x2f\x20\x5f\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x20\x2f\x20\x5f\x5f\x2f\x20\x5f\x20\x5c\x2f\x20\x5f\x5f\x5f\x2f\x0a\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x5f\x2f\x20\x2f\x20\x2f\x5f\x2f\x5f\x5f\x5f\x5f\x5f\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x20\x2f\x5f\x5f\x2f\x20\x2f\x20\x20\x2f\x20\x2f\x5f\x2f\x20\x28\x5f\x5f\x20\x20\x29\x20\x2f\x20\x2f\x5f\x2f\x20\x20\x5f\x5f\x28\x5f\x5f\x20\x20\x29\x0a\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2e\x5f\x5f\x5f\x2f\x5c\x5f\x5f\x2f\x20\x20\x20\x20\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x20\x2f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x2f\x20\x20\x20\x5c\x5f\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x5f\x2f\x5c\x5f\x5f\x2f\x5c\x5f\x5f\x5f\x2f\x5f\x5f\x5f\x5f\x2f\x0a\x0a\x68\x74\x74\x70\x73\x3a\x2f\x2f\x34\x37\x64\x65\x67\x2e\x67\x69\x74\x68\x75\x62\x2e\x69\x6f\x2f\x73\x62\x74\x2d\x6d\x69\x63\x72\x6f\x73\x69\x74\x65\x73')</script><script src="/fs2-gtfs/js/search.js"></script><script src="/fs2-gtfs/js/docs.js"></script></body></html>

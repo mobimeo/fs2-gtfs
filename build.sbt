@@ -95,7 +95,7 @@ lazy val root = project
     test := {},
     testOnly := {}
   )
-  .aggregate(core, rules)
+  .aggregate(core, rules, rulesSyntax)
 
 // === The modules ===
 
@@ -130,7 +130,7 @@ lazy val site = project
     mdocExtraArguments := Seq("--no-link-hygiene"),
     githubWorkflowArtifactUpload := false,
   )
-  .dependsOn(core, rules)
+  .dependsOn(core, rules, rulesSyntax)
 
 ThisBuild / githubWorkflowBuildPostamble ++= List(
   WorkflowStep.Sbt(
@@ -158,3 +158,9 @@ lazy val rules = project
   .settings(commonSettings)
   .settings(name := "fs2-gtfs-rules", libraryDependencies ++= Dependencies.rules)
   .dependsOn(core)
+
+lazy val rulesSyntax = project
+  .in(file("rules/syntax"))
+  .settings(commonSettings)
+  .settings(name := "fs2-gtfs-rules-syntax", libraryDependencies ++= Dependencies.rulesSyntax)
+  .dependsOn(rules)

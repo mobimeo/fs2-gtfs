@@ -15,8 +15,11 @@ options:
   - title: GTFS Rule Engine
     url: documentation/rules/
     nested_options:
-      - title: Rule DSL
-        url: documentation/rules/dsl/
+      - title: Embedded DSL
+        url: documentation/rules/dsl/embedded/
+        section: rules
+      - title: External DSL
+        url: documentation/rules/dsl/external/
         section: rules
   - title: API Documentation
     url: api/

@@ -1,12 +1,14 @@
 ---
 layout: docs
-title: Rule DSL
+title: Embedded DSL
 ---
 
 * Contents
 {:toc}
 
-# The rule DSL
+# The embedded DSL
+
+The embedded DSL allows you to write scala code to type-safely create rule sets in a convenient way.
 
 Rules are grouped in rule sets, applying to a specific file in GTFS data. The DSL helps you write your rules in scala in an easy and typesafe way.
 

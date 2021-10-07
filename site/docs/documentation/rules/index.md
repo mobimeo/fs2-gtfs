@@ -62,7 +62,7 @@ val rules =
     Nil)
 ```
 
-As you can see, this is not the easiest way to define the rules, that's why the library also provides a [DSL][dsl] to help write them in a more readable way.
+As you can see, this is not the easiest way to define the rules, that's why the library also provides an [embedded DSL][embedded-dsl] and an [external DSL][external-dsl] to help write them in a more readable way.
 
 ## Create the engine
 
@@ -132,4 +132,5 @@ println(Interpreter.defaultFunctions[Either[Throwable, *]]
 ```
 
 [blog]: https://medium.com/mobimeo-technology/designing-a-gtfs-business-rule-engine-part-1-d455e6d6add
-[dsl]: dsl/
+[embedded-dsl]: dsl/embedded/
+[external-dsl]: dsl/external/

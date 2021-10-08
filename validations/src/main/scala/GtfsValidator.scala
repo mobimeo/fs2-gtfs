@@ -1,4 +1,4 @@
-package src.main.scala.com.mobimeo
+package src.main.scala
 
 import cats.data.ValidatedNel
 import fs2.data.csv.CsvRow

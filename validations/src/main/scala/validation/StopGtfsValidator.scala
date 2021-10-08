@@ -1,8 +1,8 @@
-package src.main.scala.com.mobimeo.validation
+package src.main.scala.validation
 
 import cats.data.{Validated, ValidatedNel}
 import fs2.data.csv.CsvRow
-import src.main.scala.com.mobimeo.{GtfsValidator, Problem}
+import src.main.scala.{GtfsValidator, Problem}
 
 class StopGtfsValidator extends GtfsValidator {
 

@@ -1,4 +1,4 @@
-package src.main.scala.com.mobimeo
+package src.main.scala
 
 import fs2._
 import cats.data.Validated

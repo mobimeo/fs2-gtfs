@@ -1,4 +1,4 @@
-package src.main.scala.com.mobimeo
+package src.main.scala
 
 import com.mobimeo.gtfs.file.GtfsFile
 import fs2._
@@ -9,11 +9,11 @@ class GtfsFileValidator[F[_]](validations: Map[String, GtfsValidator]) {
 
   def validate(gtfsFile: GtfsFile[F]) = {
     Stream.emits(validations.toSeq).flatMap {
-      case (name, validator) =>
-        gtfsFile.read.rawFile(name).zipWithIndex
+      case (fileName, validator) =>
+        gtfsFile.read.rawFile(fileName).zipWithIndex
           .through(new GtfsValidatorPipe(validator))
           .map {
-            case (p, i) => GtfsProblem(name, i, p)
+            case (problem, index) => GtfsProblem(fileName, index, problem)
           }
     }
   }

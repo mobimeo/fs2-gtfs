@@ -121,6 +121,7 @@ lazy val site = project
     micrositeGithubOwner := "mobimeo",
     micrositeGithubRepo := "fs2-gtfs",
     micrositeGitterChannel := false,
+    micrositeFooterText := Some("""Icons by Becris and Zulfa Mahendra from the <a href="https://thenounproject.com">Noun Project</a>"""),
     autoAPIMappings := true,
     ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core, rules),
     docsMappingsAPIDir := "api",

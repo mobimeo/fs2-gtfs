@@ -26,7 +26,7 @@
 <span class="k">import</span> <span class="nn">cats.effect._</span>
 
 <span class="k">val</span> <span class="nv">dsl</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Dsl</span><span class="o">[</span><span class="kt">IO</span><span class="o">]</span>
-<span class="c1">// dsl: Dsl[IO] = com.mobimeo.gtfs.rules.Dsl@5fe73991</span>
+<span class="c1">// dsl: Dsl[IO] = com.mobimeo.gtfs.rules.Dsl@454570</span>
 
 <span class="k">import</span> <span class="nn">dsl._</span>
 </code></pre></div></div>
@@ -51,7 +51,7 @@
 
 <p>For instance to access the <code class="language-plaintext highlighter-rouge">route_short_name</code> field of the current row (if it exists):</p>
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">row</span><span class="o">(</span><span class="s">"route_short_name"</span><span class="o">)</span>
-<span class="c1">// res1: RowFieldBuilder = com.mobimeo.gtfs.rules.Dsl$RowFieldBuilder@4d19630c</span>
+<span class="c1">// res1: RowFieldBuilder = com.mobimeo.gtfs.rules.Dsl$RowFieldBuilder@100cb7ba</span>
 </code></pre></div></div>
 
 <p>Sometimes, not only the current row value is interesting but we might want to use some sort of global context, containing values.
@@ -67,7 +67,7 @@ The DSL provides the <code class="language-plaintext highlighter-rouge">ctx</cod
 
 <p>You can access the <code class="language-plaintext highlighter-rouge">date</code> field like this:</p>
 <div class="language-scala highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">ctx</span><span class="o">(</span><span class="s">"meta"</span><span class="o">)(</span><span class="s">"date"</span><span class="o">)</span>
-<span class="c1">// res2: CtxBuilder = com.mobimeo.gtfs.rules.Dsl$CtxBuilder@361944bb</span>
+<span class="c1">// res2: CtxBuilder = com.mobimeo.gtfs.rules.Dsl$CtxBuilder@269bcd31</span>
 </code></pre></div></div>
 
 <p>Both <code class="language-plaintext highlighter-rouge">row</code> and <code class="language-plaintext highlighter-rouge">ctx</code> can be used in the matcher part of the rule and the transformation one.</p>

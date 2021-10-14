@@ -123,7 +123,7 @@ lazy val site = project
     micrositeGitterChannel := false,
     micrositeFooterText := Some("""Icons by Becris and Zulfa Mahendra from the <a href="https://thenounproject.com">Noun Project</a>"""),
     autoAPIMappings := true,
-    ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core, rules),
+    ScalaUnidoc / unidoc / unidocProjectFilter := inProjects(core, rules, rulesSyntax),
     docsMappingsAPIDir := "api",
     addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, docsMappingsAPIDir),
     libraryDependencies ++= Dependencies.site,

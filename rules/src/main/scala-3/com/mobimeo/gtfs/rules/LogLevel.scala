@@ -22,3 +22,15 @@ enum LogLevel(val entryName: String) {
   case Warning extends LogLevel("WARNING")
   case Error extends LogLevel("ERROR")
 }
+
+object LogLevel {
+
+  def withNameInsensitive(s: String): LogLevel =
+    s.toLowerCase match {
+      case "debug"   => LogLevel.Debug
+      case "info"    => LogLevel.Info
+      case "warning" => LogLevel.Warning
+      case "error"   => LogLevel.Error
+    }
+
+}

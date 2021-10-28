@@ -98,7 +98,7 @@ There are two way to parse rules written with the external DSL:
  1. Using the `RuleParser` combinators from the `com.mobimeo.gtfs.rules.syntax` package.
  2. Using the string interpolators provided in the `com.mobimeo.gtfs.rules.syntax.lexicals` package.
 
-**Note:** Rules parsed with the external DSL are effect free, only rules with [`Id`][cats-id] are generated. The effectful rules only come from the ones using anonymous scala functions, which cannot be expressed with the DSL.
+**Note:** Rules parsed with the external DSL are effect free, only `Pure` rules are generated. The effectful rules only come from the ones using anonymous scala functions, which cannot be expressed with the DSL.
 
 ### Using the `RuleParser` class directly
 
@@ -178,12 +178,12 @@ rules.show
 **Note:** the concrete syntax does not allow for expressing anonymous functions. If you try to serialize rules containing calls to anonymous functions, it will be rendered as concatenation of the arguments.
 
 ```scala mdoc
-import cats.Id
+import fs2.Pure
 import com.mobimeo.gtfs.rules._
 
-val fun = (s: List[String]) => s.mkString("-")
+val fun = (s: List[String]) => ???
 
-val t: Expr[Id] = Expr.AnonymousFunction[Id](fun,
+val t: Expr[Pure] = Expr.AnonymousFunction[Pure](fun,
   List(
     Expr.Val(Value.Str("a")),
     Expr.Val(Value.Str("b")),
@@ -193,4 +193,3 @@ t.show
 ```
 
 [cats-parse]: https://github.com/typelevel/cats-parse
-[cats-id]: https://typelevel.org/cats/api/cats/index.html#Id[A]=A

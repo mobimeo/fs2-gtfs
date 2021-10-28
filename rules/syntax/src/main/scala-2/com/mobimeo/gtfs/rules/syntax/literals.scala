@@ -2,21 +2,21 @@ package com.mobimeo.gtfs.rules.syntax
 
 import org.typelevel.literally.Literally
 import com.mobimeo.gtfs.rules._
-import cats.Id
 import cats.syntax.all._
 import cats.data.NonEmptyList
 import scala.annotation.unused
 import com.mobimeo.gtfs.rules
 import scala.reflect.macros.blackbox.Context
+import fs2.Pure
 
 object literals {
 
   implicit class RulesInterpolator(val sc: StringContext) extends AnyVal {
-    def ruleset(args: Any*): RuleSet[Id] = macro RuleSetLiteral.make
-    def rule(args: Any*): Rule[Id] = macro RuleLiteral.make
+    def ruleset(args: Any*): RuleSet[Pure] = macro RuleSetLiteral.make
+    def rule(args: Any*): Rule[Pure] = macro RuleLiteral.make
     def matcher(args: Any*): Matcher = macro MatcherLiteral.make
-    def action(args: Any*): Action[Id] = macro ActionLiteral.make
-    def transform(args: Any*): Transformation[Id] = macro TransformationLiteral.make
+    def action(args: Any*): Action[Pure] = macro ActionLiteral.make
+    def transform(args: Any*): Transformation[Pure] = macro TransformationLiteral.make
   }
 
   trait LiftableImpls {
@@ -58,11 +58,11 @@ object literals {
         q"_root_.com.mobimeo.gtfs.rules.Matcher.Or($left, $right)"
     }
 
-    implicit lazy val expr: Liftable[rules.Expr[Id]] = Liftable[rules.Expr[Id]] {
+    implicit lazy val expr: Liftable[rules.Expr[Pure]] = Liftable[rules.Expr[Pure]] {
       case rules.Expr.Val(v) =>
-        q"_root_.com.mobimeo.gtfs.rules.Expr.Val[_root_.cats.Id]($v)"
+        q"_root_.com.mobimeo.gtfs.rules.Expr.Val[_root_.fs2.Pure]($v)"
       case rules.Expr.NamedFunction(name, args) =>
-        q"_root_.com.mobimeo.gtfs.rules.Expr.NamedFunction[_root_.cats.Id]($name, $args)"
+        q"_root_.com.mobimeo.gtfs.rules.Expr.NamedFunction[_root_.fs2.Pure]($name, $args)"
       case rules.Expr.AnonymousFunction(_, _) =>
         c.abort(c.enclosingPosition, "anonymous functions are not supported")
     }
@@ -74,33 +74,33 @@ object literals {
       case LogLevel.Error   => q"_root_.com.mobimeo.gtfs.rules.LogLevel.Error"
     }
 
-    implicit lazy val transformation: Liftable[Transformation[Id]] = Liftable[Transformation[Id]] {
-      case Transformation.Set(v, e) => q"_root_.com.mobimeo.gtfs.rules.Transformation.Set[_root_.cats.Id]($v, $e): _root_.com.mobimeo.gtfs.rules.Transformation[_root_.cats.Id]"
+    implicit lazy val transformation: Liftable[Transformation[Pure]] = Liftable[Transformation[Pure]] {
+      case Transformation.Set(v, e) => q"_root_.com.mobimeo.gtfs.rules.Transformation.Set[_root_.fs2.Pure]($v, $e): _root_.com.mobimeo.gtfs.rules.Transformation[_root_.fs2.Pure]"
       case Transformation.SearchAndReplace(fld, re, repl) =>
-        q"_root_.com.mobimeo.gtfs.rules.Transformation.SearchAndReplace[_root_.cats.Id]($fld, $re, $repl): _root_.com.mobimeo.gtfs.rules.Transformation[_root_.cats.Id]"
+        q"_root_.com.mobimeo.gtfs.rules.Transformation.SearchAndReplace[_root_.fs2.Pure]($fld, $re, $repl): _root_.com.mobimeo.gtfs.rules.Transformation[_root_.fs2.Pure]"
     }
 
-    implicit lazy val action: Liftable[Action[Id]] = Liftable[Action[Id]] {
+    implicit lazy val action: Liftable[Action[Pure]] = Liftable[Action[Pure]] {
       case Action.Delete() =>
-        q"_root_.com.mobimeo.gtfs.rules.Action.Delete[_root_.cats.Id]()"
+        q"_root_.com.mobimeo.gtfs.rules.Action.Delete[_root_.fs2.Pure]()"
       case Action.Log(msg, lvl) =>
-        q"_root_.com.mobimeo.gtfs.rules.Action.Log[_root_.cats.Id]($msg, $lvl)"
+        q"_root_.com.mobimeo.gtfs.rules.Action.Log[_root_.fs2.Pure]($msg, $lvl)"
       case Action.Transform(ts) =>
-        q"_root_.com.mobimeo.gtfs.rules.Action.Transform[_root_.cats.Id]($ts)"
+        q"_root_.com.mobimeo.gtfs.rules.Action.Transform[_root_.fs2.Pure]($ts)"
     }
 
-    implicit lazy val rule: Liftable[Rule[Id]] = Liftable[Rule[Id]] { r =>
-      q"_root_.com.mobimeo.gtfs.rules.Rule[_root_.cats.Id](${r.name}, ${r.matcher}, ${r.action})"
+    implicit lazy val rule: Liftable[Rule[Pure]] = Liftable[Rule[Pure]] { r =>
+      q"_root_.com.mobimeo.gtfs.rules.Rule[_root_.fs2.Pure](${r.name}, ${r.matcher}, ${r.action})"
     }
 
-    implicit lazy val ruleset: Liftable[RuleSet[Id]] = Liftable[RuleSet[Id]] { r =>
-      q"_root_.com.mobimeo.gtfs.rules.RuleSet[_root_.cats.Id](${r.file}, ${r.rules}, ${r.additions})"
+    implicit lazy val ruleset: Liftable[RuleSet[Pure]] = Liftable[RuleSet[Pure]] { r =>
+      q"_root_.com.mobimeo.gtfs.rules.RuleSet[_root_.fs2.Pure](${r.file}, ${r.rules}, ${r.additions})"
     }
 
   }
 
-  private object RuleSetLiteral extends Literally[RuleSet[Id]] {
-    def validate(ctx: Context)(s: String): Either[String, ctx.Expr[RuleSet[Id]]] = {
+  private object RuleSetLiteral extends Literally[RuleSet[Pure]] {
+    def validate(ctx: Context)(s: String): Either[String, ctx.Expr[RuleSet[Pure]]] = {
       import ctx.universe._
       val liftables = new LiftableImpls {
         val c: ctx.type = ctx
@@ -112,11 +112,11 @@ object literals {
         .map(rs => ctx.Expr(q"$rs"))
     }
 
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[RuleSet[Id]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[RuleSet[Pure]] = apply(c)(args: _*)
   }
 
-  private object RuleLiteral extends Literally[Rule[Id]] {
-    def validate(ctx: Context)(s: String): Either[String, ctx.Expr[Rule[Id]]] = {
+  private object RuleLiteral extends Literally[Rule[Pure]] {
+    def validate(ctx: Context)(s: String): Either[String, ctx.Expr[Rule[Pure]]] = {
       import ctx.universe._
       val liftables = new LiftableImpls {
         val c: ctx.type = ctx
@@ -129,7 +129,7 @@ object literals {
         .map(r => ctx.Expr(q"$r"))
     }
 
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Rule[Id]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Rule[Pure]] = apply(c)(args: _*)
   }
 
   private object MatcherLiteral extends Literally[Matcher] {
@@ -149,8 +149,8 @@ object literals {
     def make(c: Context)(args: c.Expr[Any]*): c.Expr[Matcher] = apply(c)(args: _*)
   }
 
-  private object TransformationLiteral extends Literally[Transformation[Id]] {
-    def validate(ctx: Context)(s: String): Either[String, ctx.Expr[Transformation[Id]]] = {
+  private object TransformationLiteral extends Literally[Transformation[Pure]] {
+    def validate(ctx: Context)(s: String): Either[String, ctx.Expr[Transformation[Pure]]] = {
       import ctx.universe._
       val liftables = new LiftableImpls {
         val c: ctx.type = ctx
@@ -163,11 +163,11 @@ object literals {
         .map(m => c.Expr(q"$m"))
     }
 
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Transformation[Id]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Transformation[Pure]] = apply(c)(args: _*)
   }
 
-  private object ActionLiteral extends Literally[Action[Id]] {
-    def validate(ctx: Context)(s: String): Either[String, ctx.Expr[Action[Id]]] = {
+  private object ActionLiteral extends Literally[Action[Pure]] {
+    def validate(ctx: Context)(s: String): Either[String, ctx.Expr[Action[Pure]]] = {
       import ctx.universe._
       val liftables = new LiftableImpls {
         val c: ctx.type = ctx
@@ -180,7 +180,7 @@ object literals {
         .map(m => c.Expr(q"$m"))
     }
 
-    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Action[Id]] = apply(c)(args: _*)
+    def make(c: Context)(args: c.Expr[Any]*): c.Expr[Action[Pure]] = apply(c)(args: _*)
   }
 
 }

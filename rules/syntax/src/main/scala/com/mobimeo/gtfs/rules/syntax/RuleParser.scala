@@ -21,7 +21,7 @@ import com.mobimeo.gtfs.rules._
 import cats.parse._
 import cats.syntax.all._
 import cats.data.NonEmptyList
-import cats.Id
+import fs2.Pure
 
 /** Concrete syntax parser for the rule DSL. The parsed grammar is defined as follows:
   * {{{
@@ -203,9 +203,9 @@ object RuleParser {
 
   }
 
-  val expr: Parser[Expr[Id]] = Parser.recursive[Expr[Id]] { expr =>
-    val paramList: Parser[List[Expr[Id]]] = repSep0(expr, min = 0, sep = char(',')).with1.between(ch('('), ch(')'))
-    val factor: Parser[Expr[Id]] = oneOf(
+  val expr: Parser[Expr[Pure]] = Parser.recursive[Expr[Pure]] { expr =>
+    val paramList: Parser[List[Expr[Pure]]] = repSep0(expr, min = 0, sep = char(',')).with1.between(ch('('), ch(')'))
+    val factor: Parser[Expr[Pure]] = oneOf(
       List(
         value.map(Expr.Val(_)),
         (ident ~ paramList).map { case (f, args) => Expr.NamedFunction(f, args) }
@@ -218,7 +218,7 @@ object RuleParser {
     }
   }
 
-  val transformation: Parser[Transformation[Id]] =
+  val transformation: Parser[Transformation[Pure]] =
     oneOf(
       List(
         ((string("search") *> regex) ~ (keyword("in") *> keyword("row") *> sel) ~ (keyword("and") *> keyword(
@@ -234,15 +234,15 @@ object RuleParser {
       )
     )
 
-  def transformations: Parser[NonEmptyList[Transformation[Id]]] =
+  def transformations: Parser[NonEmptyList[Transformation[Pure]]] =
     repSep(transformation.surroundedBy(whitespaces0), sep = string("then"))
 
-  val log: Parser[(LogLevel, Expr[Id])] =
+  val log: Parser[(LogLevel, Expr[Pure])] =
     stringIn(List("debug", "info", "warning", "error"))
       .surroundedBy(whitespaces0)
       .map(LogLevel.withNameInsensitive((_))) ~ expr.between(ch('('), ch(')'))
 
-  val action: Parser[Action[Id]] =
+  val action: Parser[Action[Pure]] =
     oneOf(
       List(
         string("delete").as(Action.Delete()),
@@ -251,14 +251,14 @@ object RuleParser {
       )
     )
 
-  val rule: Parser[Rule[Id]] =
+  val rule: Parser[Rule[Pure]] =
     (string("rule") *> ident ~ (keyword("when") *> matcher
       .surroundedBy(whitespaces0) ~ (string("then") *> action.surroundedBy(whitespaces0))).between(ch('{'), ch('}')))
       .map { case (name, (matcher, action)) =>
         Rule(name, matcher, action)
       }
 
-  val ruleset: Parser[RuleSet[Id]] =
+  val ruleset: Parser[RuleSet[Pure]] =
     string("ruleset") *> keyword("for") *> (filename ~ (ch('{') *> repSep0(
       rule.surroundedBy(whitespaces0),
       min = 0,
@@ -268,7 +268,7 @@ object RuleParser {
         RuleSet(s"$name.txt", rules, Nil)
       }
 
-  val file: Parser0[List[RuleSet[Id]]] =
+  val file: Parser0[List[RuleSet[Pure]]] =
     start *> whitespaces0 *> ruleset.rep0 <* whitespaces0 <* end
 
 }

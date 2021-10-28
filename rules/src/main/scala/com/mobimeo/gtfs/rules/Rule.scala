@@ -20,9 +20,9 @@ import cats.data.NonEmptyList
 import cats.Show
 import cats.syntax.all._
 
-case class RuleSet[F[_]](file: String, rules: List[Rule[F]], additions: List[NonEmptyList[String]])
+case class RuleSet[+F[_]](file: String, rules: List[Rule[F]], additions: List[NonEmptyList[String]])
 
-case class Rule[F[_]](name: String, matcher: Matcher, action: Action[F])
+case class Rule[+F[_]](name: String, matcher: Matcher, action: Action[F])
 
 sealed trait Matcher {
   def unary_! : Matcher =
@@ -83,18 +83,18 @@ object Value {
   }
 }
 
-sealed trait Action[F[_]]
+sealed trait Action[+F[_]]
 object Action {
 
   case class Delete[F[_]]() extends Action[F]
 
   case class Log[F[_]](msg: Expr[F], level: LogLevel) extends Action[F]
 
-  case class Transform[F[_]](transformations: NonEmptyList[Transformation[F]]) extends Action[F]
+  case class Transform[+F[_]](transformations: NonEmptyList[Transformation[F]]) extends Action[F]
 
 }
 
-sealed trait Transformation[F[_]]
+sealed trait Transformation[+F[_]]
 object Transformation {
 
   case class Set[F[_]](field: Value, to: Expr[F])                                     extends Transformation[F]
@@ -102,7 +102,7 @@ object Transformation {
 
 }
 
-sealed trait Expr[F[_]]
+sealed trait Expr[+F[_]]
 object Expr {
   case class NamedFunction[F[_]](name: String, args: List[Expr[F]])                     extends Expr[F]
   case class AnonymousFunction[F[_]](f: List[String] => F[String], args: List[Expr[F]]) extends Expr[F]

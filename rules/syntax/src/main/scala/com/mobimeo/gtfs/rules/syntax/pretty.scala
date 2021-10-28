@@ -18,8 +18,9 @@ package com.mobimeo.gtfs.rules.syntax
 
 import com.mobimeo.gtfs.rules._
 
-import cats.{Id, Show}
+import cats.Show
 import cats.syntax.all._
+import fs2.Pure
 
 /** Pretty prints rules in the concrete syntax.
   * '''Note: ''' anonymous functions cannot be rendered as then include scala code. Instances are printed as concatenation of the arguments.
@@ -62,7 +63,7 @@ object pretty {
       }
   }
 
-  implicit val expr: Show[Expr[Id]] =
+  implicit val expr: Show[Expr[Pure]] =
     Show.show {
       case Expr.NamedFunction(name, args)  => show"$name(${args.mkString_(", ")})"
       case Expr.AnonymousFunction(_, args) => args.mkString_(" + ")
@@ -82,14 +83,14 @@ object pretty {
     }
   }
 
-  implicit val transformation: Show[Transformation[Id]] = Show.show {
+  implicit val transformation: Show[Transformation[Pure]] = Show.show {
     case Transformation.Set(fld, e) =>
       show"set row[$fld] to $e"
     case Transformation.SearchAndReplace(fld, re, repl) =>
       show"""search $re in row[$fld] and replace by "${escapeString(repl)}"""""
   }
 
-  implicit val action: Show[Action[Id]] = Show.show {
+  implicit val action: Show[Action[Pure]] = Show.show {
     case Action.Delete()                 => "delete"
     case Action.Log(e, LogLevel.Debug)   => show"debug($e)"
     case Action.Log(e, LogLevel.Info)    => show"info($e)"
@@ -98,14 +99,14 @@ object pretty {
     case Action.Transform(ts)            => show"${ts.mkString_("\n  then ")}"
   }
 
-  implicit val rule: Show[Rule[Id]] = Show.show { r =>
+  implicit val rule: Show[Rule[Pure]] = Show.show { r =>
     show"""rule ${r.name} {
           |  when ${r.matcher}
           |  then ${r.action}
           |}""".stripMargin
   }
 
-  implicit val ruleset: Show[RuleSet[Id]] = Show.show { rs =>
+  implicit val ruleset: Show[RuleSet[Pure]] = Show.show { rs =>
     show"""ruleset for ${rs.file.dropRight(4)} {
           |  ${rs.rules.map(_.show.replace("\n", "\n  ")).mkString_("\n  or\n  ")}
           |}""".stripMargin

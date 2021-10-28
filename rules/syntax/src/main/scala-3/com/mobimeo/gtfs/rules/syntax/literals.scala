@@ -16,25 +16,25 @@
 
 package com.mobimeo.gtfs.rules.syntax
 
-import cats.Id
 import cats.syntax.all._
 import com.mobimeo.gtfs.rules._
 import org.typelevel.literally.Literally
 import scala.quoted.{Expr => QExpr, *}
 import cats.data.NonEmptyList
+import fs2.Pure
 
 object literals {
 
   extension (inline ctx: StringContext) {
-    inline def ruleset(inline args: Any*): RuleSet[Id] =
+    inline def ruleset(inline args: Any*): RuleSet[Pure] =
       ${ RuleSetLiteral('ctx, 'args) }
-    inline def rule(inline args: Any*): Rule[Id] =
+    inline def rule(inline args: Any*): Rule[Pure] =
       ${ RuleLiteral('ctx, 'args) }
     inline def matcher(inline args: Any*): Matcher =
       ${ MatcherLiteral('ctx, 'args) }
-    inline def action(inline args: Any*): Action[Id] =
+    inline def action(inline args: Any*): Action[Pure] =
       ${ ActionLiteral('ctx, 'args) }
-    inline def transform(inline args: Any*): Transformation[Id] =
+    inline def transform(inline args: Any*): Transformation[Pure] =
       ${ TransformationLiteral('ctx, 'args) }
   }
 
@@ -73,8 +73,8 @@ object literals {
     }
   }
 
-  given ToExpr[Expr[Id]] with {
-    def apply(e: Expr[Id])(using Quotes) = e match {
+  given ToExpr[Expr[Pure]] with {
+    def apply(e: Expr[Pure])(using Quotes) = e match {
       case Expr.Val(v)                    => '{ Expr.Val(${ QExpr(v) }) }
       case Expr.NamedFunction(name, args) => '{ Expr.NamedFunction(${ QExpr(name) }, ${ QExpr(args) }) }
       case Expr.AnonymousFunction(_, _)   => '{ compiletime.error("anonymous functions not supported") }
@@ -90,33 +90,33 @@ object literals {
     }
   }
 
-  given ToExpr[Transformation[Id]] with {
-    def apply(t: Transformation[Id])(using Quotes) = t match {
+  given ToExpr[Transformation[Pure]] with {
+    def apply(t: Transformation[Pure])(using Quotes) = t match {
       case Transformation.Set(fld, e) => '{ Transformation.Set(${ QExpr(fld) }, ${ QExpr(e) }) }
       case Transformation.SearchAndReplace(fld, re, repl) =>
         '{ Transformation.SearchAndReplace(${ QExpr(fld) }, ${ QExpr(re) }, ${ QExpr(repl) }) }
     }
   }
 
-  given ToExpr[Action[Id]] with {
-    def apply(a: Action[Id])(using Quotes) = a match {
+  given ToExpr[Action[Pure]] with {
+    def apply(a: Action[Pure])(using Quotes) = a match {
       case Action.Delete()      => '{ Action.Delete() }
       case Action.Log(msg, lvl) => '{ Action.Log(${ QExpr(msg) }, ${ QExpr(lvl) }) }
       case Action.Transform(ts) => '{ Action.Transform(${ QExpr(ts) }) }
     }
   }
 
-  given ToExpr[Rule[Id]] with {
-    def apply(r: Rule[Id])(using Quotes) =
+  given ToExpr[Rule[Pure]] with {
+    def apply(r: Rule[Pure])(using Quotes) =
       '{ Rule(${ QExpr(r.name) }, ${ QExpr(r.matcher) }, ${ QExpr(r.action) }) }
   }
 
-  given ToExpr[RuleSet[Id]] with {
-    def apply(r: RuleSet[Id])(using Quotes) =
+  given ToExpr[RuleSet[Pure]] with {
+    def apply(r: RuleSet[Pure])(using Quotes) =
       '{ RuleSet(${ QExpr(r.file) }, ${ QExpr(r.rules) }, ${ QExpr(r.additions) }) }
   }
 
-  object RuleSetLiteral extends Literally[RuleSet[Id]] {
+  object RuleSetLiteral extends Literally[RuleSet[Pure]] {
     def validate(s: String)(using Quotes) =
       RuleParser.ruleset
         .parseAll(s)
@@ -124,7 +124,7 @@ object literals {
         .map(r => Expr(r))
   }
 
-  object RuleLiteral extends Literally[Rule[Id]] {
+  object RuleLiteral extends Literally[Rule[Pure]] {
     def validate(s: String)(using Quotes) =
       RuleParser.rule
         .parseAll(s)
@@ -140,7 +140,7 @@ object literals {
         .map(r => Expr(r))
   }
 
-  object ActionLiteral extends Literally[Action[Id]] {
+  object ActionLiteral extends Literally[Action[Pure]] {
     def validate(s: String)(using Quotes) =
       RuleParser.action
         .parseAll(s)
@@ -148,7 +148,7 @@ object literals {
         .map(r => Expr(r))
   }
 
-  object TransformationLiteral extends Literally[Transformation[Id]] {
+  object TransformationLiteral extends Literally[Transformation[Pure]] {
     def validate(s: String)(using Quotes) =
       RuleParser.transformation
         .parseAll(s)

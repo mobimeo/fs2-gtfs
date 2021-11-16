@@ -163,3 +163,13 @@ ruleset(StandardName.Routes) {
     .warning(concat"Route ${row("route_short_name")} (${row("route_id")}) is missing text color")
 }
 ```
+
+## Call anonymous functions
+
+In addition to calling functions by name, you can use the DSL to call standard scala function. Any function with signature `List[String] => F[String]` can be called.
+
+```scala mdoc
+def makeKebab(args: List[String]) = IO.pure(args.mkString("-"))
+
+call(makeKebab _)("a", "b", "c")
+```

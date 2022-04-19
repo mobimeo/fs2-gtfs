@@ -16,7 +16,7 @@
 
 package com.mobimeo.gtfs
 
-import cats.implicits._
+import cats.syntax.all._
 
 import fs2.data.csv.{CellDecoder, CellEncoder, DecoderError}
 

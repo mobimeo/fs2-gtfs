@@ -21,8 +21,8 @@ import cats.syntax.all._
 import fs2.data.csv.CsvRow
 import cats.ApplicativeError
 
-/** An interpreter is used in the context of the engine to evaluate the various expressions from the [[Matcher]] s
-  * and [[Transformation]] s.
+/** An interpreter is used in the context of the engine to evaluate the various expressions from the [[Matcher]] s and
+  * [[Transformation]] s.
   *
   * Expressions are pure, and cannot perform any side effects. Applicable functions transform a string value into
   * another one without access to any context.

@@ -32,11 +32,10 @@ import java.nio.file.{FileSystem, FileSystems}
 
 import java.net.URI
 
-/** Represents a GTFS file. Can be used to access the content of the different
-  * files in it.
+/** Represents a GTFS file. Can be used to access the content of the different files in it.
   *
-  * Use the smart constructor in the companion object to acquire a `Resource`
-  * over a GTFS file. The file will be closed once the resource is released.
+  * Use the smart constructor in the companion object to acquire a `Resource` over a GTFS file. The file will be closed
+  * once the resource is released.
   */
 class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F], files: Files[F])
     extends Gtfs[F, CsvRowDecoder[*, String], CsvRowEncoder[*, String]] {
@@ -214,11 +213,10 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
 
   }
 
-  /** Creates a GTFS target which originally consists of the content of this one.
-    * The file is copied when the resource is acquired.
+  /** Creates a GTFS target which originally consists of the content of this one. The file is copied when the resource
+    * is acquired.
     *
-    * This can be used when the result of transforming this GTFS file content is toRowStrings
-    * to be saved to a new file.
+    * This can be used when the result of transforming this GTFS file content is toRowStrings to be saved to a new file.
     */
   def copyTo(file: Path, flags: CopyFlags = CopyFlags.empty): Resource[F, GtfsFile[F]] =
     Resource.eval(files.copy(self.file, file, flags)) >> GtfsFile(file)

@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.6, 3.0.2]
+        scala: [2.13.8, 3.0.2]
         java: [adopt@1.8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -56,7 +56,7 @@ jobs:
         run: sbt ++${{ matrix.scala }} test
 
       - name: Compile Documentation
-        if: matrix.scala == '2.13.6'
+        if: matrix.scala == '2.13.8'
         run: sbt ++${{ matrix.scala }} site/mdoc
 
       - name: Compress target directories
@@ -75,7 +75,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.6]
+        scala: [2.13.8]
         java: [adopt@1.8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -135,7 +135,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.6]
+        scala: [2.13.8]
         java: [adopt@1.8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -160,7 +160,7 @@ jobs:
           rm targets.tar
 
       - name: Compile Website
-        if: matrix.scala == '2.13.6'
+        if: matrix.scala == '2.13.8'
         run: sbt ++${{ matrix.scala }} site/makeMicrosite
 
       - name: Deploy site

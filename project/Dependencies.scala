@@ -1,7 +1,7 @@
 import sbt._
 
 object Versions {
-  val fs2        = "3.1.3"
+  val fs2        = "3.1.6"
   val fs2Data    = "1.1.0"
   val enumeratum = "1.7.0"
   val weaver     = "0.7.6"

@@ -3,7 +3,7 @@ addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.1.20")
 // source code formatting
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
 // coverage
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.8.2")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.9.3")
 // check dependencies against OWASP vulnerabilities
 addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "3.4.1")
 // check and add missing license headers

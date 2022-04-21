@@ -18,9 +18,8 @@ package com.mobimeo.gtfs
 
 import fs2._
 
-/** Represents a GTFS container. Can be used to access the content of the different
-  * kind of data in it. This is an abstract API giving basic access to the data without
-  * presuming in what way they are stored.
+/** Represents a GTFS container. Can be used to access the content of the different kind of data in it. This is an
+  * abstract API giving basic access to the data without presuming in what way they are stored.
   */
 trait Gtfs[F[_], Decoder[_], Encoder[_]] {
 
@@ -30,16 +29,15 @@ trait Gtfs[F[_], Decoder[_], Encoder[_]] {
   /** Namespace containing file deletion operators. */
   val delete: GtfsDelete[F]
 
-  /** Namespace containing operators and pipes to read content of a GTFS file access
-    * stream.
+  /** Namespace containing operators and pipes to read content of a GTFS file access stream.
     */
   val read: GtfsRead[F, Decoder]
 
-  /** Namespace containing operators and pipes to save the Result of a GTFS stream.
-    * This can be used to save the result of transformations.
+  /** Namespace containing operators and pipes to save the Result of a GTFS stream. This can be used to save the result
+    * of transformations.
     *
-    * Once saved, the content of the GTFS file is modified, subsequent accesses
-    * to the same file in the same GTFS file will contain modications.
+    * Once saved, the content of the GTFS file is modified, subsequent accesses to the same file in the same GTFS file
+    * will contain modications.
     */
   val write: GtfsWrite[F, Encoder]
 
@@ -145,8 +143,7 @@ trait GtfsHas[F[_]] {
 
 trait GtfsDelete[F[_]] {
 
-  /** Deletes the given file.
-    * It always succeeds, whether the file exists or not.
+  /** Deletes the given file. It always succeeds, whether the file exists or not.
     */
   def file(name: String): F[Unit]
 
@@ -313,7 +310,7 @@ trait GtfsWrite[F[_], Encoder[_]] {
 
   /** Gives access to the pipe to save in file `name`.
     *
-      * For instance `file("agency.txt")`.
+    * For instance `file("agency.txt")`.
     */
   def file[T](name: String)(implicit encoder: Encoder[T]): Pipe[F, T, Nothing]
 

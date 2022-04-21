@@ -75,7 +75,8 @@ object literals {
     }
 
     implicit lazy val transformation: Liftable[Transformation[Pure]] = Liftable[Transformation[Pure]] {
-      case Transformation.Set(v, e) => q"_root_.com.mobimeo.gtfs.rules.Transformation.Set[_root_.fs2.Pure]($v, $e): _root_.com.mobimeo.gtfs.rules.Transformation[_root_.fs2.Pure]"
+      case Transformation.Set(v, e) =>
+        q"_root_.com.mobimeo.gtfs.rules.Transformation.Set[_root_.fs2.Pure]($v, $e): _root_.com.mobimeo.gtfs.rules.Transformation[_root_.fs2.Pure]"
       case Transformation.SearchAndReplace(fld, re, repl) =>
         q"_root_.com.mobimeo.gtfs.rules.Transformation.SearchAndReplace[_root_.fs2.Pure]($fld, $re, $repl): _root_.com.mobimeo.gtfs.rules.Transformation[_root_.fs2.Pure]"
     }

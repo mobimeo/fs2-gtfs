@@ -40,7 +40,12 @@ class Engine[F[_]](interpreter: Interpreter[F])(implicit
     * The order in which the files are processed is not specified (and can even be done in parallel) but the different
     * rule sets operating on a single file are ensured to be run in the same order as provided.
     */
-  def process[G[x] <: F[x]](rulesets: List[RuleSet[G]], from: GtfsFile[F], to: GtfsFile[F], ctx: Ctx = Ctx.empty): F[Unit] = {
+  def process[G[x] <: F[x]](
+      rulesets: List[RuleSet[G]],
+      from: GtfsFile[F],
+      to: GtfsFile[F],
+      ctx: Ctx = Ctx.empty
+  ): F[Unit] = {
     // fusing rule sets allows to only go through the entities once
     // even if several rulesets are defined for a given file
     // this is possible because each ruleset consider the rows in isolation

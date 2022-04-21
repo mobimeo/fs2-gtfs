@@ -203,9 +203,9 @@ object SecondsSinceMidnight {
 
   implicit val cellEncoder: CellEncoder[SecondsSinceMidnight] =
     CellEncoder.stringEncoder.contramap { seconds =>
-      val hours = seconds.seconds / 3600
+      val hours   = seconds.seconds / 3600
       val minutes = (math.abs(seconds.seconds) % 3600) / 60
-      val secs = math.abs(seconds.seconds) % 60
+      val secs    = math.abs(seconds.seconds)  % 60
       f"$hours%02d:$minutes%02d:$secs%02d"
     }
 }

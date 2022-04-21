@@ -7,7 +7,7 @@ addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.9.3")
 // check dependencies against OWASP vulnerabilities
 addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "4.0.0")
 // check and add missing license headers
-addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.6.5")
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.7.0")
 // manage github actions from build definition
 addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.14.2")
 // manage the documentation website

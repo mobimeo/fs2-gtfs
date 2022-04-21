@@ -63,7 +63,7 @@ object Matcher {
 sealed trait Value {
   def in(values: List[Value]): Matcher = Matcher.In(this, values)
   def matches(regex: String): Matcher  = Matcher.Matches(this, regex)
-  def ===(that: Value): Matcher         = Matcher.Equals(this, that)
+  def ===(that: Value): Matcher        = Matcher.Equals(this, that)
 }
 sealed trait Variable extends Value {
   def exists: Matcher = Matcher.Exists(this)

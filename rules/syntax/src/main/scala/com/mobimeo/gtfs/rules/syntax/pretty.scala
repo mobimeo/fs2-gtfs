@@ -22,8 +22,8 @@ import cats.Show
 import cats.syntax.all._
 import fs2.Pure
 
-/** Pretty prints rules in the concrete syntax.
-  * '''Note: ''' anonymous functions cannot be rendered as then include scala code. Instances are printed as concatenation of the arguments.
+/** Pretty prints rules in the concrete syntax. '''Note: ''' anonymous functions cannot be rendered as then include
+  * scala code. Instances are printed as concatenation of the arguments.
   */
 object pretty {
 

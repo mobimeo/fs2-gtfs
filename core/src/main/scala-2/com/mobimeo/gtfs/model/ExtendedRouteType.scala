@@ -19,9 +19,7 @@ package com.mobimeo.gtfs.model
 import enumeratum.EnumEntry
 import enumeratum.values.{IntEnum, IntEnumEntry}
 
-
-/** Extended route types.
-  * See https://developers.google.com/transit/gtfs/reference/extended-route-types
+/** Extended route types. See https://developers.google.com/transit/gtfs/reference/extended-route-types
   */
 sealed abstract class ExtendedRouteType(val value: Int) extends IntEnumEntry with EnumEntry
 object ExtendedRouteType extends IntEnum[ExtendedRouteType] with CsvIntEnum[ExtendedRouteType] {

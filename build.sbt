@@ -34,8 +34,8 @@ val noPublish = List(
 )
 
 // === CI/CD settings ===
-val scala213 = "2.13.6"
-val scala3   = "3.0.2"
+val scala213 = "2.13.8"
+val scala3   = "3.1.2"
 
 ThisBuild / scalaVersion       := scala213
 ThisBuild / crossScalaVersions := List(scala213, scala3)

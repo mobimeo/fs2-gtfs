@@ -63,7 +63,7 @@ object Matcher {
 sealed trait Value {
   def in(values: List[Value]): Matcher = Matcher.In(this, values)
   def matches(regex: String): Matcher  = Matcher.Matches(this, regex)
-  def ===(that: Value): Matcher         = Matcher.Equals(this, that)
+  def ===(that: Value): Matcher        = Matcher.Equals(this, that)
 }
 sealed trait Variable extends Value {
   def exists: Matcher = Matcher.Exists(this)
@@ -77,8 +77,8 @@ object Value {
     def show(t: Value): String =
       t match {
         case Str(v)        => s""""${v.replace("\"", "\\\"")}""""
-        case Field(name)   => s"row[${name.show}]"
-        case Context(keys) => s"ctx${keys.map(_.show).mkString_("[", "][", "]")}"
+        case Field(name)   => s"row[${show(name)}]"
+        case Context(keys) => s"ctx${keys.map(show(_)).mkString_("[", "][", "]")}"
       }
   }
 }
@@ -109,9 +109,11 @@ object Expr {
   case class Val[F[_]](v: Value)                                                        extends Expr[F]
 
   implicit def show[F[_]]: Show[Expr[F]] =
-    Show.show {
-      case NamedFunction(name, args)  => show"$name(${args.map(_.show).mkString(", ")})"
-      case AnonymousFunction(_, args) => show"<function>(${args.map(_.show).mkString(", ")})"
-      case Val(v)                     => v.show
+    new Show[Expr[F]] {
+      override def show(t: Expr[F]): String = t match {
+        case NamedFunction(name, args)  => show"$name(${args.map(show).mkString(", ")})"
+        case AnonymousFunction(_, args) => show"<function>(${args.map(show).mkString(", ")})"
+        case Val(v)                     => v.show
+      }
     }
 }

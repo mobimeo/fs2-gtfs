@@ -77,7 +77,7 @@ object Ctx {
         Decoder.decodeJsonObject(j).flatMap { o =>
           o.toList
             .traverse { case (k, v) =>
-              v.as[Ctx].tupleLeft(k)
+              v.as[Ctx](decoder).tupleLeft(k)
             }
             .map(l => apply(l: _*))
         }

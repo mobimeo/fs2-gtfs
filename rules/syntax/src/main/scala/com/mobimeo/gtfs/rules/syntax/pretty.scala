@@ -59,16 +59,18 @@ object pretty {
       t match {
         case Value.Str(v)        => s""""${escapeString(v)}""""
         case Value.Field(name)   => show"""row[$name]"""
-        case Value.Context(keys) => show"ctx${keys.mkString_("[", "][", "]")}"
+        case Value.Context(keys) => show"ctx${keys.map(show).mkString_("[", "][", "]")}"
       }
   }
 
-  implicit val expr: Show[Expr[Pure]] =
-    Show.show {
-      case Expr.NamedFunction(name, args)  => show"$name(${args.mkString_(", ")})"
-      case Expr.AnonymousFunction(_, args) => args.mkString_(" + ")
+  implicit val expr: Show[Expr[Pure]] = new Show[Expr[Pure]] {
+    override def show(t: Expr[Pure]): String = t match {
+      case Expr.NamedFunction(name, args)  => show"$name(${args.map(show).mkString_(", ")})"
+      case Expr.AnonymousFunction(_, args) => args.map(show).mkString_(" + ")
       case Expr.Val(v)                     => v.show
     }
+  }
+
   implicit val matcher: Show[Matcher] = Show.show { m =>
     val prio = priority(m)
     m match {

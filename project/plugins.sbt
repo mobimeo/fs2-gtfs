@@ -1,5 +1,5 @@
 // strict compiler flags
-addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.2.3")
+addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.3.3")
 // source code formatting
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
 // coverage

@@ -7,7 +7,7 @@ object Versions {
   val weaver     = "0.7.11"
   val circe      = "0.14.1"
   val log4cats   = "2.2.0"
-  val catsParse  = "0.3.7"
+  val catsParse  = "0.3.8"
   val literally  = "1.0.2"
 }
 

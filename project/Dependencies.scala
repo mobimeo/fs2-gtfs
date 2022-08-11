@@ -4,7 +4,7 @@ object Versions {
   val fs2        = "3.2.7"
   val fs2Data    = "1.3.1"
   val enumeratum = "1.7.0"
-  val weaver     = "0.7.11"
+  val weaver     = "0.7.15"
   val circe      = "0.14.1"
   val log4cats   = "2.2.0"
   val catsParse  = "0.3.7"

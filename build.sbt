@@ -22,8 +22,8 @@ val commonSettings = Seq(
     }
     .toList
     .flatten,
-  resolvers += Resolver.sonatypeRepo("public"),
-  resolvers += Resolver.sonatypeRepo("snapshots"),
+  resolvers ++= Resolver.sonatypeOssRepos("public"),
+  resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
   testFrameworks += new TestFramework("weaver.framework.CatsEffect")
 )
 
@@ -34,8 +34,8 @@ val noPublish = List(
 )
 
 // === CI/CD settings ===
-val scala213 = "2.13.8"
-val scala3   = "3.1.2"
+val scala213 = "2.13.9"
+val scala3   = "3.2.0"
 
 ThisBuild / scalaVersion       := scala213
 ThisBuild / crossScalaVersions := List(scala213, scala3)
@@ -128,7 +128,7 @@ lazy val site = project
     docsMappingsAPIDir                         := "api",
     addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, docsMappingsAPIDir),
     libraryDependencies ++= Dependencies.site,
-    tpolecatScalacOptions ~= tpolecatConsoleOptionsFilter,
+    tpolecatCiModeOptions ~= { opts => opts.filterNot(_ == ScalacOptions.fatalWarnings) },
     mdocExtraArguments           := Seq("--no-link-hygiene"),
     githubWorkflowArtifactUpload := false
   )

@@ -1,14 +1,14 @@
 import sbt._
 
 object Versions {
-  val fs2        = "3.2.7"
-  val fs2Data    = "1.3.1"
+  val fs2        = "3.3.0"
+  val fs2Data    = "1.5.1"
   val enumeratum = "1.7.0"
-  val weaver     = "0.7.11"
-  val circe      = "0.14.1"
-  val log4cats   = "2.2.0"
-  val catsParse  = "0.3.7"
-  val literally  = "1.0.2"
+  val weaver     = "0.8.0"
+  val circe      = "0.14.3"
+  val log4cats   = "2.5.0"
+  val catsParse  = "0.3.8"
+  val literally  = "1.1.0"
 }
 
 object Dependencies {

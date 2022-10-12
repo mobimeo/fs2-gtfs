@@ -34,8 +34,8 @@ The different rules will be tried in order, and the first matching one will be s
 To write several rules, you can separate them with the `orElse` operator.
 
 ```scala mdoc:compile-only
-val someRule: RulesBuilder = ???
-val someOtherRule: RulesBuilder = ???
+def someRule: RulesBuilder = ???
+def someOtherRule: RulesBuilder = ???
 
 ruleset(StandardName.Routes) {
   someRule orElse someOtherRule

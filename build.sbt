@@ -128,6 +128,8 @@ lazy val site = project
     docsMappingsAPIDir                         := "api",
     addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, docsMappingsAPIDir),
     libraryDependencies ++= Dependencies.site,
+    tpolecatDevModeOptions ~= { opts => opts.filterNot(_ == ScalacOptions.fatalWarnings) },
+    tpolecatDefaultOptionsMode   := _root_.io.github.davidgregory084.DevMode,
     mdocExtraArguments           := Seq("--no-link-hygiene"),
     githubWorkflowArtifactUpload := false
   )

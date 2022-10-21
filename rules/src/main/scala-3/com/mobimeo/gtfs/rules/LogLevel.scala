@@ -17,10 +17,10 @@
 package com.mobimeo.gtfs.rules
 
 enum LogLevel(val entryName: String) {
-  case Debug extends LogLevel("DEBUG")
-  case Info extends LogLevel("INFO")
+  case Debug   extends LogLevel("DEBUG")
+  case Info    extends LogLevel("INFO")
   case Warning extends LogLevel("WARNING")
-  case Error extends LogLevel("ERROR")
+  case Error   extends LogLevel("ERROR")
 }
 
 object LogLevel {

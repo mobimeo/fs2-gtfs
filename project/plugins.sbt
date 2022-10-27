@@ -8,11 +8,11 @@ addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.4.1")
 // source code formatting
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
 // coverage
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.3")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.6")
 // check dependencies against OWASP vulnerabilities
 addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "4.1.0")
 // check and add missing license headers
-addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.7.0")
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.8.0")
 // manage github actions from build definition
 addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.14.2")
 // manage the documentation website

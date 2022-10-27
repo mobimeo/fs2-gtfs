@@ -4,6 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -168,7 +169,7 @@ class Engine[F[_]](interpreter: Interpreter[F])(implicit
             logger
               .debug(row.toMap)(
                 s"In field $field (value: '${row(field)
-                  .getOrElse("")}'), replace all matching '$regex' with '$repl' -> ${row(field).getOrElse("").replaceAll(regex, repl)}"
+                    .getOrElse("")}'), replace all matching '$regex' with '$repl' -> ${row(field).getOrElse("").replaceAll(regex, repl)}"
               )
               .as(row.modify(field)(_.replaceAll(regex, repl)))
           case None =>

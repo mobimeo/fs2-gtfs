@@ -169,7 +169,7 @@ class Engine[F[_]](interpreter: Interpreter[F])(implicit
             logger
               .debug(row.toMap)(
                 s"In field $field (value: '${row(field)
-                  .getOrElse("")}'), replace all matching '$regex' with '$repl' -> ${row(field).getOrElse("").replaceAll(regex, repl)}"
+                    .getOrElse("")}'), replace all matching '$regex' with '$repl' -> ${row(field).getOrElse("").replaceAll(regex, repl)}"
               )
               .as(row.modify(field)(_.replaceAll(regex, repl)))
           case None =>

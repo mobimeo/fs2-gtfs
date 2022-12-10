@@ -16,7 +16,7 @@ addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.8.0")
 // manage github actions from build definition
 addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.14.2")
 // manage the documentation website
-addSbtPlugin("com.47deg" % "sbt-microsites" % "1.3.4")
+addSbtPlugin("com.47deg" % "sbt-microsites" % "1.4.0")
 // generate unified documentation
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
 // release automatically

@@ -10,7 +10,7 @@ addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.0")
 // coverage
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.6")
 // check dependencies against OWASP vulnerabilities
-addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "4.3.0")
+addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.0.0")
 // check and add missing license headers
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.9.0")
 // manage github actions from build definition

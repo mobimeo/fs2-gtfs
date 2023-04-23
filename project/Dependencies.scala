@@ -6,7 +6,7 @@ object Versions {
   val enumeratum = "1.7.0"
   val weaver     = "0.8.1"
   val circe      = "0.14.3"
-  val log4cats   = "2.5.0"
+  val log4cats   = "2.6.0"
   val catsParse  = "0.3.9"
   val literally  = "1.1.0"
 }

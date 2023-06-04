@@ -14,7 +14,7 @@ addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.1.0")
 // check and add missing license headers
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.9.0")
 // manage github actions from build definition
-addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.14.2")
+addSbtPlugin("com.github.sbt" % "sbt-github-actions" % "0.15.0")
 // manage the documentation website
 addSbtPlugin("com.47deg" % "sbt-microsites" % "1.4.3")
 // generate unified documentation

@@ -4,15 +4,15 @@ ThisBuild / libraryDependencySchemes ++= Seq(
 )
 
 // strict compiler flags
-addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.4.2")
+addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.4.4")
 // source code formatting
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.0")
 // coverage
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.7")
+addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.8")
 // check dependencies against OWASP vulnerabilities
 addSbtPlugin("net.vonbuchholtz" % "sbt-dependency-check" % "5.1.0")
 // check and add missing license headers
-addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.9.0")
+addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.10.0")
 // manage github actions from build definition
 addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.14.2")
 // manage the documentation website

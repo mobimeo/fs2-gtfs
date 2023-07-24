@@ -16,7 +16,6 @@
 
 package com.mobimeo.gtfs.model
 
-import cats.syntax.all._
 import fs2.data.csv.{CellDecoder, CellEncoder, DecoderError}
 
 import scala.util.Try

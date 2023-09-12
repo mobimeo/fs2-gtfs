@@ -6,7 +6,7 @@ ThisBuild / libraryDependencySchemes ++= Seq(
 // strict compiler flags
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.4.4")
 // source code formatting
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.0")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
 // coverage
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.8")
 // check dependencies against OWASP vulnerabilities

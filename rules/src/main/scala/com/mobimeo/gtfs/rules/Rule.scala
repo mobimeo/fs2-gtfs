@@ -19,6 +19,7 @@ package com.mobimeo.gtfs.rules
 import cats.data.NonEmptyList
 import cats.Show
 import cats.syntax.all._
+import LogLevel
 
 case class RuleSet[+F[_]](file: String, rules: List[Rule[F]], additions: List[NonEmptyList[String]])
 

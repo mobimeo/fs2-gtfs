@@ -16,15 +16,24 @@
 
 package com.mobimeo.gtfs.model
 
-import enumeratum.values.{IntEnum, IntEnumEntry}
+import fs2.data.csv._
+import fs2.data.csv.generic.CsvName
+import fs2.data.csv.generic.semiauto._
 
-sealed abstract class LocationType(val value: Int) extends IntEnumEntry
-object LocationType extends IntEnum[LocationType] with CsvIntEnum[LocationType] {
-  case object Stop         extends LocationType(0)
-  case object Station      extends LocationType(1)
-  case object Entrance     extends LocationType(2)
-  case object GenericNode  extends LocationType(3)
-  case object BoardingArea extends LocationType(4)
+case class Frequency(
+    @CsvName("trip_id")
+    tripId: String,
+    @CsvName("start_time")
+    startTime: SecondsSinceMidnight,
+    @CsvName("end_time")
+    endTime: SecondsSinceMidnight,
+    @CsvName("headway_secs")
+    headwaySecs: Int,
+    @CsvName("exact_times")
+    exactTimes: Option[ExactTimes]
+)
 
-  val values = findValues
+object Frequency {
+  given CsvRowDecoder[Frequency, String] = deriveCsvRowDecoder[Frequency]
+  given CsvRowEncoder[Frequency, String] = deriveCsvRowEncoder[Frequency]
 }

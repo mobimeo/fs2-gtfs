@@ -16,12 +16,24 @@
 
 package com.mobimeo.gtfs.model
 
-import enumeratum.values.{IntEnum, IntEnumEntry}
+import fs2.data.csv._
+import fs2.data.csv.generic.CsvName
+import fs2.data.csv.generic.semiauto._
 
-sealed abstract class ExceptionType(val value: Int) extends IntEnumEntry
-object ExceptionType extends IntEnum[ExceptionType] with CsvIntEnum[ExceptionType] {
-  case object Added   extends ExceptionType(1)
-  case object Removed extends ExceptionType(2)
+case class Shape(
+    @CsvName("shape_id")
+    id: String,
+    @CsvName("shape_pt_lat")
+    lat: Double,
+    @CsvName("shape_pt_lon")
+    lon: Double,
+    @CsvName("shape_pt_sequence")
+    sequence: Int,
+    @CsvName("shape_dist_traveled")
+    distTraveled: Option[Double]
+)
 
-  val values = findValues
+object Shape {
+  given CsvRowDecoder[Shape, String] = deriveCsvRowDecoder[Shape]
+  given CsvRowEncoder[Shape, String] = deriveCsvRowEncoder[Shape]
 }

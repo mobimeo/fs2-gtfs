@@ -17,7 +17,6 @@
 package com.mobimeo.gtfs.model
 
 import fs2.data.csv.{CellDecoder, CellEncoder, DecoderError}
-
 import scala.util.Try
 
 trait EnumEntry {
@@ -30,11 +29,10 @@ trait CsvEnum[T <: EnumEntry] {
 
   lazy val byEntryName: Map[String, T] = values.toList.groupMapReduce(_.entryName)(identity)((e, _) => e)
 
-  implicit val cellDecoder: CellDecoder[T] =
+  given CellDecoder[T] =
     CellDecoder.stringDecoder.emap(s => byEntryName.get(s).toRight(new DecoderError(s"Unknown enum value $s")))
 
-  implicit val cellEncoder: CellEncoder[T] =
-    CellEncoder.stringEncoder.contramap(_.entryName)
+  given CellEncoder[T] = CellEncoder.stringEncoder.contramap(_.entryName)
 
 }
 
@@ -55,11 +53,8 @@ trait CsvIntEnum[T <: IntEnumEntry] {
 
   def valueOf(n: Int): Option[T] = valueLookup(n)
 
-  implicit val cellDecoder: CellDecoder[T] =
-    CellDecoder.intDecoder.emap(n => valueOf(n).toRight(new DecoderError(s"Unknown enum value $n")))
-
-  implicit val cellEncoder: CellEncoder[T] =
-    CellEncoder.intEncoder.contramap(_.value)
+  given CellDecoder[T] = CellDecoder.intDecoder.emap(n => valueOf(n).toRight(new DecoderError(s"Unknown enum value $n")))
+  given CellEncoder[T] = CellEncoder.intEncoder.contramap(_.value)
 
 }
 

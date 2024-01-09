@@ -16,14 +16,20 @@
 
 package com.mobimeo.gtfs.model
 
-import enumeratum.values.{IntEnum, IntEnumEntry}
+import fs2.data.csv._
+import fs2.data.csv.generic.CsvName
+import fs2.data.csv.generic.semiauto._
+import java.time._
 
-sealed abstract class TransferType(val value: Int) extends IntEnumEntry
-object TransferType extends IntEnum[TransferType] with CsvIntEnum[TransferType] {
-  case object RecommendedTransfer         extends TransferType(0)
-  case object TimedTransfer               extends TransferType(1)
-  case object MinimumTimeRequiredTransfer extends TransferType(2)
-  case object ImpossibleTransfer          extends TransferType(3)
+case class CalendarDate(
+    @CsvName("service_id")
+    serviceId: String,
+    date: LocalDate,
+    @CsvName("exception_type")
+    exceptionType: ExceptionType
+)
 
-  val values = findValues
+object CalendarDate {
+  given CsvRowDecoder[CalendarDate, String] = deriveCsvRowDecoder[CalendarDate]
+  given CsvRowEncoder[CalendarDate, String] = deriveCsvRowEncoder[CalendarDate]
 }

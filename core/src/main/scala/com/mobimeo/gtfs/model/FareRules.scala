@@ -16,19 +16,27 @@
 
 package com.mobimeo.gtfs.model
 
-import enumeratum.{Enum, EnumEntry}
+import fs2.data.csv._
+import fs2.data.csv.generic.CsvName
+import fs2.data.csv.generic.semiauto._
 
-sealed trait TableName extends EnumEntry with EnumEntry.Snakecase
-object TableName extends Enum[TableName] with CsvEnum[TableName] {
-  case object Agency       extends TableName
-  case object Stops        extends TableName
-  case object Routes       extends TableName
-  case object Trips        extends TableName
-  case object StopTimes    extends TableName
-  case object FeedInfo     extends TableName
-  case object Pathways     extends TableName
-  case object Levels       extends TableName
-  case object Attributions extends TableName
+case class FareRules(
+    @CsvName("fare_id")
+    fareId: String,
+    @CsvName("route_id")
+    routeId: Option[String],
+    @CsvName("origin_id")
+    originId: Option[String],
+    @CsvName("destination_id")
+    destinationId: Option[String],
+    @CsvName("contains_id")
+    containsId: Option[String]
+)
 
-  val values = findValues
+object FareRules {
+  implicit val decoder: CsvRowDecoder[FareRules, String] =
+    deriveCsvRowDecoder[FareRules]
+
+  implicit val encoder: CsvRowEncoder[FareRules, String] =
+    deriveCsvRowEncoder[FareRules]
 }

@@ -16,17 +16,22 @@
 
 package com.mobimeo.gtfs.model
 
-import enumeratum.values.{IntEnum, IntEnumEntry}
+import fs2.data.csv._
+import fs2.data.csv.generic.CsvName
+import fs2.data.csv.generic.semiauto._
 
-sealed abstract class PathwayMode(val value: Int) extends IntEnumEntry
-object PathwayMode extends IntEnum[PathwayMode] with CsvIntEnum[PathwayMode] {
-  case object Walkway        extends PathwayMode(1)
-  case object Stairs         extends PathwayMode(2)
-  case object MovingSidewalk extends PathwayMode(3)
-  case object Escalator      extends PathwayMode(4)
-  case object Elevator       extends PathwayMode(5)
-  case object FareGate       extends PathwayMode(6)
-  case object ExitGate       extends PathwayMode(7)
+case class Transfer(
+    @CsvName("from_stop_id")
+    fromStopId: String,
+    @CsvName("to_stop_id")
+    toStopId: String,
+    @CsvName("transfer_type")
+    transferType: TransferType,
+    @CsvName("min_transfer_time")
+    minTransferTime: Option[Int]
+)
 
-  val values = findValues
+object Transfer {
+  given CsvRowDecoder[Transfer, String] = deriveCsvRowDecoder[Transfer]
+  given CsvRowEncoder[Transfer, String] = deriveCsvRowEncoder[Transfer]
 }

@@ -22,6 +22,7 @@ import cats.parse._
 import cats.syntax.all._
 import cats.data.NonEmptyList
 import fs2.Pure
+import com.mobimeo.gtfs.rules.LogLevel
 
 /** Concrete syntax parser for the rule DSL. The parsed grammar is defined as follows:
   * {{{

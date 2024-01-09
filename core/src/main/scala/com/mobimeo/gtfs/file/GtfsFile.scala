@@ -31,6 +31,7 @@ import scala.jdk.CollectionConverters._
 import java.nio.file.{FileSystem, FileSystems}
 
 import java.net.URI
+import com.mobimeo.gtfs.StandardName
 
 /** Represents a GTFS file. Can be used to access the content of the different files in it.
   *

@@ -17,6 +17,7 @@
 package com.mobimeo.gtfs
 
 import cats.data.NonEmptyList
+import StandardName
 
 /** Standard GTFS headers for standard files. */
 object StandardHeaders {

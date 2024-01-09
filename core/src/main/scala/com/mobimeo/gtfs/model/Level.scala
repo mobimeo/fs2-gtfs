@@ -16,14 +16,20 @@
 
 package com.mobimeo.gtfs.model
 
-import enumeratum.values.{IntEnum, IntEnumEntry}
+import fs2.data.csv._
+import fs2.data.csv.generic.CsvName
+import fs2.data.csv.generic.semiauto._
 
-sealed abstract class PickupOrDropOffType(val value: Int) extends IntEnumEntry
-object PickupOrDropOffType extends IntEnum[PickupOrDropOffType] with CsvIntEnum[PickupOrDropOffType] {
-  case object RegularlyScheduled       extends PickupOrDropOffType(0)
-  case object None                     extends PickupOrDropOffType(1)
-  case object MustPhoneAgency          extends PickupOrDropOffType(2)
-  case object MustCoordinateWithDriver extends PickupOrDropOffType(3)
+case class Level(
+    @CsvName("level_id")
+    id: String,
+    @CsvName("level_index")
+    index: Double,
+    @CsvName("level_name")
+    name: Option[String]
+)
 
-  val values = findValues
+object Level {
+  given CsvRowDecoder[Level, String] = deriveCsvRowDecoder[Level]
+  given CsvRowEncoder[Level, String] = deriveCsvRowEncoder[Level]
 }

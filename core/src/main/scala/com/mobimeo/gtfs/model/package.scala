@@ -23,6 +23,7 @@ import fs2.data.csv.{CellDecoder, CellEncoder, DecoderError}
 import java.time.{LocalDate, ZoneId}
 import java.time.format.DateTimeFormatter
 import java.{util => ju}
+import model.SimpleRouteType
 
 package object model {
 
@@ -69,7 +70,7 @@ package object model {
     CellEncoder.stringEncoder.contramap(_.getCurrencyCode())
 
   implicit val localeDecoder: CellDecoder[ju.Locale] =
-    CellDecoder.stringDecoder.map(new ju.Locale(_))
+    CellDecoder.stringDecoder.map(ju.Locale.forLanguageTag(_))
 
   implicit val localeEncoder: CellEncoder[ju.Locale] =
     CellEncoder.stringEncoder.contramap(_.getISO3Language())

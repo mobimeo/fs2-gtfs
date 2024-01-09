@@ -19,6 +19,7 @@ package com.mobimeo.gtfs.rules
 import cats.data.NonEmptyList
 import com.mobimeo.gtfs.StandardName
 import scala.annotation.tailrec
+import LogLevel
 
 class Dsl[F[_]] {
 

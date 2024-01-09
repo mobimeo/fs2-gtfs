@@ -20,28 +20,26 @@ import fs2.data.csv._
 import fs2.data.csv.generic.CsvName
 import fs2.data.csv.generic.semiauto._
 import java.time._
-import java.{util => ju}
-
 
 case class FeedInfo(
-    @CsvName("feed_publisher_name")
-    publisherName: String,
-    @CsvName("feed_publisher_url")
-    publisherUrl: String,
-    @CsvName("feed_lang")
-    lang: ju.Locale,
-    @CsvName("default_lang")
-    defaultLang: Option[ju.Locale],
-    @CsvName("feed_start_date")
-    startDate: Option[LocalDate],
-    @CsvName("feed_end_date")
-    endDate: Option[LocalDate],
-    @CsvName("feed_version")
-    version: Option[String],
-    @CsvName("feed_contact_email")
-    contactEmail: Option[String],
-    @CsvName("feed_contact_url")
-    contactUrl: Option[String]
+  @CsvName("feed_version")
+  version: Option[String],
+  @CsvName("feed_publisher_name")
+  publisherName: String,
+  @CsvName("feed_publisher_url")
+  publisherUrl: String,
+  @CsvName("feed_lang")
+  lang: String,
+  @CsvName("default_lang")
+  defaultLang: Option[String],
+  @CsvName("feed_start_date")
+  startDate: Option[LocalDate],
+  @CsvName("feed_end_date")
+  endDate: Option[LocalDate],
+  @CsvName("feed_contact_email")
+  contactEmail: Option[String],
+  @CsvName("feed_contact_url")
+  contactUrl: Option[String]
 )
 
 object FeedInfo {

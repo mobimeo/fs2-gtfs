@@ -18,20 +18,16 @@ package com.mobimeo.gtfs.file
 
 import cats.effect._
 import cats.syntax.all._
-
+import com.mobimeo.gtfs.StandardName
 import com.mobimeo.gtfs._
-
 import fs2._
-import fs2.io.file._
 import fs2.data.csv._
 import fs2.data.csv.lowlevel._
-
+import fs2.io.file._
+import java.net.*
+import java.nio.file.{FileSystem, FileSystems, Path => JPath}
 import scala.jdk.CollectionConverters._
-
-import java.nio.file.{FileSystem, FileSystems}
-
-import java.net.URI
-import com.mobimeo.gtfs.StandardName
+import scala.util.Try
 
 /** Represents a GTFS file. Can be used to access the content of the different files in it.
   *
@@ -227,23 +223,33 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
 object GtfsFile {
 
   /** Creates a GTFS object, giving access to all files within the GTFS file. */
-  def apply[F[_]](file: Path, create: Boolean = false)(implicit F: Sync[F], files: Files[F]): Resource[F, GtfsFile[F]] =
-    makeFs(file, create).map(new GtfsFile(file, _))
+  def apply[F[_]: Sync: Files](file: Path, create: Boolean = false): Resource[F, GtfsFile[F]] =
+    Resource
+      .make(createFileSystem(file, create)){ fs => Sync[F].blocking(fs.close()) }
+      .map(new GtfsFile(file, _))
 
-  private[gtfs] def makeFs[F[_]](
-      file: Path,
-      create: Boolean
-  )(implicit F: Sync[F], files: Files[F]): Resource[F, FileSystem] =
-    Resource.make(
-      files.exists(file).flatMap { exists =>
-        F.blocking(
-          FileSystems
-            .newFileSystem(
-              URI.create("jar:file:" + file.absolute),
-              Map("create" -> String.valueOf(create && !exists)).asJava
-            )
-        )
-      }
-    )(fs => F.blocking(fs.close()))
+  /** Creates a GTFS object, giving access to all files within the GTFS file. */
+  def fromClasspath[F[_]: Sync: Files](resource: URL): Resource[F, GtfsFile[F]] = {
+    val file          = Path.fromNioPath(JPath.of(resource.toURI))
+    val fileSystemUri = URI.create("jar:file:" + file.absolute)
+    val fileSystem = Sync[F].blocking(
+      Try {
+        FileSystems.newFileSystem(fileSystemUri, Map().asJava)
+      }.getOrElse(FileSystems.getFileSystem(fileSystemUri))
+    )
+    Resource.eval(fileSystem.map(new GtfsFile(file, _)))
+  }
+
+  private def createFileSystem[F[_]: Sync: Files](file: Path, create: Boolean = false) =
+    Files[F].exists(file).flatMap { exists =>
+      Sync[F].blocking(
+        Try {
+          FileSystems.newFileSystem(
+            URI.create("jar:file:" + file.absolute),
+            Map("create" -> String.valueOf(create && !exists)).asJava
+          )
+        }.get
+      )
+    }
 
 }

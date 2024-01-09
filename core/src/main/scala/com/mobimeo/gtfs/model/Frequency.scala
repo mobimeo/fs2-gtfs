@@ -19,14 +19,15 @@ package com.mobimeo.gtfs.model
 import fs2.data.csv._
 import fs2.data.csv.generic.CsvName
 import fs2.data.csv.generic.semiauto._
+import java.time.LocalTime
 
 case class Frequency(
     @CsvName("trip_id")
     tripId: String,
     @CsvName("start_time")
-    startTime: SecondsSinceMidnight,
+    startTime: LocalTime,
     @CsvName("end_time")
-    endTime: SecondsSinceMidnight,
+    endTime: LocalTime,
     @CsvName("headway_secs")
     headwaySecs: Int,
     @CsvName("exact_times")

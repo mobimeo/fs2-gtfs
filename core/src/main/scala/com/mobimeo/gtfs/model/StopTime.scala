@@ -19,26 +19,18 @@ package com.mobimeo.gtfs.model
 import fs2.data.csv._
 import fs2.data.csv.generic.CsvName
 import fs2.data.csv.generic.semiauto._
+import java.time.LocalTime
 
 case class StopTime(
-    @CsvName("trip_id")
-    tripId: String,
-    @CsvName("arrival_time")
-    arrivalTime: SecondsSinceMidnight,
-    @CsvName("departure_time")
-    departureTime: SecondsSinceMidnight,
-    @CsvName("stop_id")
-    stopId: String,
-    @CsvName("stop_sequence")
-    stopSequence: Int,
-    @CsvName("stop_headsign")
-    stopHeadsign: Option[String],
-    @CsvName("pickup_type")
-    pickupType: Option[PickupOrDropOffType],
-    @CsvName("drop_off_type")
-    dropOffType: Option[PickupOrDropOffType],
-    @CsvName("shape_dist_traveled")
-    shapeDistTraveled: Option[Double],
+    @CsvName("trip_id")             tripId: String,
+    @CsvName("arrival_time")        arrivalTime: LocalTime,
+    @CsvName("departure_time")      departureTime: LocalTime,
+    @CsvName("stop_id")             stopId: String,
+    @CsvName("stop_sequence")       stopSequence: Int,
+    @CsvName("stop_headsign")       stopHeadsign: Option[String],
+    @CsvName("pickup_type")         pickupType: Option[PickupOrDropOffType],
+    @CsvName("drop_off_type")       dropOffType: Option[PickupOrDropOffType],
+    @CsvName("shape_dist_traveled") shapeDistTraveled: Option[Double],
     timepoint: Option[Timepoint]
 )
 
@@ -46,4 +38,3 @@ object StopTime {
   given CsvRowDecoder[StopTime, String] = deriveCsvRowDecoder[StopTime]
   given CsvRowEncoder[StopTime, String] = deriveCsvRowEncoder[StopTime]
 }
-

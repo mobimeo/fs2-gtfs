@@ -5,38 +5,49 @@ import doobie.implicits.*
 
 object Table:
   object Agency extends Table(
-    sql"""CREATE TABLE agency (
-      id VARCHAR NOT NULL UNIQUE,
-      name VARCHAR NOT NULL,
-      url VARCHAR,
-      timezone VARCHAR NOT NULL,
-      lang VARCHAR NOT NULL,
-      ticketing_deep_link_id VARCHAR
-    )""",
-    "INSERT INTO agency (id, name, url, timezone, lang, ticketing_deep_link_id) values (?, ?, ?, ?, ?, ?)"
+    sql"""
+      CREATE TABLE IF NOT EXISTS agency (
+        id VARCHAR NOT NULL UNIQUE,
+        name VARCHAR NOT NULL,
+        url VARCHAR,
+        timezone VARCHAR NOT NULL,
+        language VARCHAR,
+        fare_url VARCHAR,
+        phone VARCHAR,
+        email VARCHAR,
+        ticketing_deep_link_id VARCHAR
+      )
+    """,
+    sql"DROP table agency",
+    """
+      INSERT INTO agency (id, name, url, timezone, language, phone, fare_url, email, ticketing_deep_link_id)
+      values (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """
   )
 
   object CalendarDate extends Table(
-    sql"""CREATE TABLE calendar_date (
+    sql"""CREATE TABLE IF NOT EXISTS calendar_date (
       service_id VARCHAR NOT NULL,
       date VARCHAR NOT NULL,
       exception_type VARCHAR NOT NULL
     )""",
+    sql"DROP table calendar_date",
     "INSERT INTO calendar_date (service_id, date, exception_type) values (?, ?, ?)"
   )
 
   object FeedInfo extends Table(
-    sql"""CREATE TABLE feed_info (
-      feed_version VARCHAR NOT NULL,
+    sql"""CREATE TABLE IF NOT EXISTS feed_info (
+      feed_version VARCHAR,
       feed_publisher_name VARCHAR NOT NULL,
       feed_publisher_url VARCHAR NOT NULL,
       feed_lang VARCHAR NOT NULL,
-      default_lang VARCHAR NOT NULL,
-      feed_start_date VARCHAR NOT NULL,
-      feed_end_date VARCHAR NOT NULL,
-      feed_contact_email VARCHAR NOT NULL,
-      feed_contact_url VARCHAR NOT NULL
+      default_lang VARCHAR,
+      feed_start_date VARCHAR,
+      feed_end_date VARCHAR,
+      feed_contact_email VARCHAR,
+      feed_contact_url VARCHAR
     )""",
+    sql"DROP table feed_info",
     """INSERT INTO feed_info (
       feed_version,
       feed_publisher_name,
@@ -51,47 +62,63 @@ object Table:
   )
 
   object Route extends Table(
-    sql"""CREATE TABLE route (
+    sql"""CREATE TABLE IF NOT EXISTS route (
       route_id VARCHAR NOT NULL,
-      agency_id VARCHAR NOT NULL,
-      route_short_name VARCHAR NOT NULL,
-      route_long_name VARCHAR NOT NULL,
+      agency_id VARCHAR,
+      route_short_name VARCHAR,
+      route_long_name VARCHAR,
+      route_desc VARCHAR,
       route_type VARCHAR NOT NULL,
-      route_color VARCHAR NOT NULL,
-      route_text_color VARCHAR NOT NULL
+      route_url VARCHAR,
+      route_color VARCHAR,
+      route_text_color VARCHAR,
+      route_sort_order INT
     )""",
+    sql"DROP table route",
     """INSERT INTO route (
       route_id,
       agency_id,
       route_short_name,
       route_long_name,
+      route_desc,
       route_type,
+      route_url,
       route_color,
-      route_text_color
-    ) values (?, ?, ?, ?, ?, ?, ?)"""
+      route_text_color,
+      route_sort_order
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
   )
 
   object StopTime extends Table(
-    sql"""CREATE TABLE stop_time (
+    sql"""CREATE TABLE IF NOT EXISTS stop_time (
       trip_id VARCHAR NOT NULL,
       arrival_time VARCHAR NOT NULL,
       departure_time VARCHAR NOT NULL,
       stop_id VARCHAR NOT NULL,
       stop_sequence VARCHAR NOT NULL,
-      stop_headsign VARCHAR NOT NULL
+      stop_headsign VARCHAR,
+      pickup_type VARCHAR,
+      drop_off_type VARCHAR,
+      shape_dist_traveled VARCHAR,
+      timepoint VARCHAR
     )""",
+    sql"DROP table stop_time",
     """INSERT INTO stop_time (
       trip_id,
       arrival_time,
       departure_time,
       stop_id,
       stop_sequence,
-      stop_headsign
-    ) values (?, ?, ?, ?, ?, ?)"""
+      stop_headsign,
+      pickup_type,
+      drop_off_type,
+      shape_dist_traveled,
+      timepoint
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
   )
 
   object Stop extends Table(
-    sql"""CREATE TABLE stop (
+    sql"""CREATE TABLE IF NOT EXISTS stop (
       stop_id VARCHAR NOT NULL,
       stop_name VARCHAR NOT NULL,
       stop_timezone VARCHAR NOT NULL,
@@ -103,6 +130,7 @@ object Table:
       wheelchair_boarding VARCHAR NOT NULL,
       stop_code VARCHAR NOT NULL
     )""",
+    sql"DROP table stop",
     """INSERT INTO stop (
       stop_id,
       stop_name,
@@ -118,11 +146,12 @@ object Table:
   )
 
   object TicketingIdentifier extends Table(
-    sql"""CREATE TABLE ticketing_identifier (
+    sql"""CREATE TABLE IF NOT EXISTS ticketing_identifier (
       stop_id VARCHAR NOT NULL,
       ticketing_stop_id VARCHAR NOT NULL,
       agency_id VARCHAR NOT NULL
     )""",
+    sql"DROP table ticketing_identifier",
     """INSERT INTO ticketing_identifier (
       stop_id,
       ticketing_stop_id,
@@ -131,12 +160,13 @@ object Table:
   )
 
   object Transfer extends Table(
-    sql"""CREATE TABLE transfer (
+    sql"""CREATE TABLE IF NOT EXISTS transfer (
       from_stop_id VARCHAR NOT NULL,
       to_stop_id VARCHAR NOT NULL,
       transfer_type VARCHAR NOT NULL,
       min_transfer_time VARCHAR NOT NULL
     )""",
+    sql"DROP table transfer",
     """INSERT INTO transfer (
       from_stop_id,
       to_stop_id,
@@ -146,7 +176,7 @@ object Table:
   )
 
   object Trip extends Table(
-    sql"""CREATE TABLE trip (
+    sql"""CREATE TABLE IF NOT EXISTS trip (
       route_id VARCHAR NOT NULL,
       service_id VARCHAR NOT NULL,
       trip_id VARCHAR NOT NULL,
@@ -155,6 +185,7 @@ object Table:
       wheelchair_accessible VARCHAR NOT NULL,
       bikes_allowed VARCHAR NOT NULL
     )""",
+    sql"DROP table trip",
     """INSERT INTO trip (
       route_id,
       service_id,
@@ -167,6 +198,7 @@ object Table:
   )
 
 abstract case class Table(
-  createTable: Fragment,
-  insert: String
+  create: Fragment,
+  drop: Fragment,
+  insertInto: String
 )

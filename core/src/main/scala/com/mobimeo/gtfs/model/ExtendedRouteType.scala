@@ -19,6 +19,17 @@ package com.mobimeo.gtfs.model
 /** Extended route types. See https://developers.google.com/transit/gtfs/reference/extended-route-types
   */
 enum ExtendedRouteType(val value: Int) extends IntEnumEntry {
+  case Tram       extends ExtendedRouteType(0)
+  case Subway     extends ExtendedRouteType(1)
+  case Rail       extends ExtendedRouteType(2)
+  case Bus        extends ExtendedRouteType(3)
+  case Ferry      extends ExtendedRouteType(4)
+  case CableTram  extends ExtendedRouteType(5)
+  case AerialLift extends ExtendedRouteType(6)
+  case Funicular  extends ExtendedRouteType(7)
+  case Trolleybus extends ExtendedRouteType(11)
+  case MonorailSimple   extends ExtendedRouteType(12)
+
   case SomeRailwayService          extends ExtendedRouteType(100)
   case HighSpeedRailService        extends ExtendedRouteType(101)
   case LongDistanceTrains          extends ExtendedRouteType(102)

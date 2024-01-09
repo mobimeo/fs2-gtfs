@@ -27,7 +27,7 @@ case class Agency(
     @CsvName("agency_name")
     name: String,
     @CsvName("agency_url")
-    url: String,
+    url: Option[String],
     @CsvName("agency_timezone")
     timezone: ZoneId,
     @CsvName("agency_lang")
@@ -37,7 +37,9 @@ case class Agency(
     @CsvName("agency_fare_url")
     fareUrl: Option[String],
     @CsvName("agency_email")
-    email: Option[String]
+    email: Option[String],
+    @CsvName("ticketing_deep_link_id")
+    ticketingDeepLinkId: Option[String]
 )
 
 object Agency {

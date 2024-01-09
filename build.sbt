@@ -117,9 +117,10 @@ lazy val commonSettings = Seq(
     )
   ),
   libraryDependencies ++= Dependencies.common,
-  resolvers           ++= Resolver.sonatypeOssRepos("public"),
-  resolvers           ++= Resolver.sonatypeOssRepos("snapshots"),
-  testFrameworks       += new TestFramework("weaver.framework.CatsEffect")
+  resolvers           ++= Resolver.sonatypeOssRepos("public") ++
+                          Resolver.sonatypeOssRepos("snapshots"),
+  testFrameworks       += new TestFramework("weaver.framework.CatsEffect"),
+  Test/fork            := true
 )
 
 lazy val noPublish = List(

@@ -18,8 +18,10 @@ package com.mobimeo.gtfs
 
 import fs2._
 
-/** Represents a GTFS container. Can be used to access the content of the different kind of data in it. This is an
-  * abstract API giving basic access to the data without presuming in what way they are stored.
+/** Represents a GTFS container.
+  *
+  * Can be used to access the content of the different kind of data in it.
+  * This is an abstract API giving basic access to the data without presuming in what way they are stored.
   */
 trait Gtfs[F[_], Decoder[_], Encoder[_]] {
 
@@ -33,11 +35,11 @@ trait Gtfs[F[_], Decoder[_], Encoder[_]] {
     */
   val read: GtfsRead[F, Decoder]
 
-  /** Namespace containing operators and pipes to save the Result of a GTFS stream. This can be used to save the result
-    * of transformations.
+  /** Namespace containing operators and pipes to save the Result of a GTFS stream.
     *
-    * Once saved, the content of the GTFS file is modified, subsequent accesses to the same file in the same GTFS file
-    * will contain modications.
+    * This can be used to save the result of transformations.
+    * Once saved, the content of the GTFS file is modified,
+    * subsequent accesses to the same file in the same GTFS file will contain modications.
     */
   val write: GtfsWrite[F, Encoder]
 

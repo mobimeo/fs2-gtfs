@@ -24,7 +24,6 @@ import fs2._
 import fs2.data.csv._
 import org.typelevel.log4cats.StructuredLogger
 import cats.data.OptionT
-import LogLevel
 
 /** An engine is used to apply set of processing rules to GTFS files. It provides a common environment composed of
   * functions that can be used in the rules.

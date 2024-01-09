@@ -17,7 +17,6 @@
 package com.mobimeo.gtfs
 
 import fs2._
-import StandardName
 
 /** Represents a GTFS container. Can be used to access the content of the different kind of data in it. This is an
   * abstract API giving basic access to the data without presuming in what way they are stored.

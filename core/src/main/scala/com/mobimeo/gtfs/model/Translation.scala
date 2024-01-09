@@ -20,7 +20,6 @@ import fs2.data.csv._
 import fs2.data.csv.generic.CsvName
 import fs2.data.csv.generic.semiauto._
 import java.{util => ju}
-import TableName
 
 case class Translation(
     @CsvName("table_name")

@@ -23,7 +23,6 @@ import fs2.data.csv.{CellDecoder, CellEncoder, DecoderError}
 import java.time.{LocalDate, ZoneId}
 import java.time.format.DateTimeFormatter
 import java.{util => ju}
-import model.SimpleRouteType
 
 package object model {
 

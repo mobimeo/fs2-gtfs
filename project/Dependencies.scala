@@ -18,35 +18,33 @@ object Versions {
 object Dependencies {
 
   val core = List(
-    "co.fs2"    %% "fs2-io"               % Versions.fs2,
-    "org.gnieh" %% "fs2-data-csv"         % Versions.fs2Data,
-    "org.gnieh" %% "fs2-data-csv-generic" % Versions.fs2Data
+    "co.fs2"                 %% "fs2-io"                % Versions.fs2,
+    "org.gnieh"              %% "fs2-data-csv"          % Versions.fs2Data,
+    "org.gnieh"              %% "fs2-data-csv-generic"  % Versions.fs2Data
   )
 
-  val db = List(
+  val db = Seq(
+    "org.tpolecat"           %% "doobie-core"           % Versions.doobie,
+    "org.tpolecat"           %% "doobie-h2"             % Versions.doobie,
+    "com.h2database"          % "h2"                    % Versions.h2,
+    "org.tpolecat"           %% "doobie-hikari"         % Versions.doobie,
+    "org.tpolecat"           %% "doobie-postgres"       % Versions.doobie
   )
 
   val rules = List(
-    "io.circe"      %% "circe-core"    % Versions.circe,
-    "org.typelevel" %% "log4cats-core" % Versions.log4cats
+    "io.circe"               %% "circe-core"            % Versions.circe,
+    "org.typelevel"          %% "log4cats-core"         % Versions.log4cats
   )
 
-  val rulesSyntax =
-    List("org.typelevel" %% "cats-parse" % Versions.catsParse, "org.typelevel" %% "literally" % Versions.literally)
+  val rulesSyntax = List(
+    "org.typelevel"          %% "cats-parse"            % Versions.catsParse,
+    "org.typelevel"          %% "literally"             % Versions.literally)
 
   val site = List(
-    "org.typelevel" %% "log4cats-slf4j" % Versions.log4cats
+    "org.typelevel"          %% "log4cats-slf4j"        % Versions.log4cats
   )
 
-  val common     = List("com.disneystreaming"  %% "weaver-cats" % Versions.weaver % Test)
-
-  val catsEffect = Seq("org.typelevel"         %% "cats-effect"          % Versions.catsEffect)
-
-  val doobie     = Seq("org.tpolecat"          %% "doobie-core"          % Versions.doobie,
-                       "org.tpolecat"          %% "doobie-h2"            % Versions.doobie,
-                       "com.h2database"         % "h2"                   % Versions.h2,
-                       "org.tpolecat"          %% "doobie-hikari"        % Versions.doobie,
-                       "org.tpolecat"          %% "doobie-postgres"      % Versions.doobie)
-
-  val fs2Data    = Seq("org.gnieh"             %% "fs2-data-csv-generic" % Versions.fs2Data)
+  val common     = List("com.disneystreaming"  %% "weaver-cats"           % Versions.weaver     % Test)
+  val catsEffect = Seq("org.typelevel"         %% "cats-effect"           % Versions.catsEffect)
+  val fs2Data    = Seq("org.gnieh"             %% "fs2-data-csv-generic"  % Versions.fs2Data)
 }

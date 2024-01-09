@@ -40,7 +40,33 @@ lazy val root = project
   .settings(noPublish)
   .settings(test     := {},
             testOnly := {})
-  .aggregate(core, rules, rulesSyntax)
+  .aggregate(core, db, rules, rulesSyntax)
+
+lazy val core = project
+  .in(file("core"))
+  .settings(commonSettings)
+  .settings(
+    name                 := "fs2-gtfs-core",
+    libraryDependencies ++= Dependencies.core
+  )
+
+lazy val db = project
+  .in(file("db"))
+  .settings(commonSettings)
+  .settings(name := "fs2-gtfs-db", libraryDependencies ++= Dependencies.db)
+  .dependsOn(core)
+
+lazy val rules = project
+  .in(file("rules"))
+  .settings(commonSettings)
+  .settings(name := "fs2-gtfs-rules", libraryDependencies ++= Dependencies.rules)
+  .dependsOn(core)
+
+lazy val rulesSyntax = project
+  .in(file("rules/syntax"))
+  .settings(commonSettings)
+  .settings(name := "fs2-gtfs-rules-syntax", libraryDependencies ++= Dependencies.rulesSyntax)
+  .dependsOn(rules)
 
 lazy val docsMappingsAPIDir = settingKey[String]("Name of subdirectory in site target directory for api docs")
 
@@ -77,32 +103,6 @@ lazy val site = project
   )
   .dependsOn(core, rules, rulesSyntax)
 
-lazy val core = project
-  .in(file("core"))
-  .settings(commonSettings)
-  .settings(
-    name                 := "fs2-gtfs-core",
-    libraryDependencies ++= Dependencies.core
-  )
-
-lazy val db = project
-  .in(file("db"))
-  .settings(commonSettings)
-  .settings(name := "fs2-gtfs-db", libraryDependencies ++= Dependencies.db)
-  .dependsOn(core)
-
-lazy val rules = project
-  .in(file("rules"))
-  .settings(commonSettings)
-  .settings(name := "fs2-gtfs-rules", libraryDependencies ++= Dependencies.rules)
-  .dependsOn(core)
-
-lazy val rulesSyntax = project
-  .in(file("rules/syntax"))
-  .settings(commonSettings)
-  .settings(name := "fs2-gtfs-rules-syntax", libraryDependencies ++= Dependencies.rulesSyntax)
-  .dependsOn(rules)
-
 lazy val commonSettings = Seq(
   organization                                            := "com.mobimeo",
   headerLicense                                           := Some(HeaderLicense.ALv2("2021", "Mobimeo GmbH")),
@@ -110,16 +110,16 @@ lazy val commonSettings = Seq(
   homepage                                                := Some(url("https://github.com/mobimeo/fs2-gtfs")),
   developers := List(
     Developer(
-      id = "mobimeo",
-      name = "Mobimeo OSS Team",
+      id    = "mobimeo",
+      name  = "Mobimeo OSS Team",
       email = "opensource@mobimeo.com",
-      url = url("https://github.com/mobimeo")
+      url   = url("https://github.com/mobimeo")
     )
   ),
   libraryDependencies ++= Dependencies.common,
-  resolvers ++= Resolver.sonatypeOssRepos("public"),
-  resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
-  testFrameworks += new TestFramework("weaver.framework.CatsEffect")
+  resolvers           ++= Resolver.sonatypeOssRepos("public"),
+  resolvers           ++= Resolver.sonatypeOssRepos("snapshots"),
+  testFrameworks       += new TestFramework("weaver.framework.CatsEffect")
 )
 
 lazy val noPublish = List(

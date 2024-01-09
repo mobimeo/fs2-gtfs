@@ -226,6 +226,10 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
 
 object GtfsFile {
 
+  /** Creates a GTFS object, giving access to all files within the GTFS file. */
+  def apply[F[_]](file: Path, create: Boolean = false)(implicit F: Sync[F], files: Files[F]): Resource[F, GtfsFile[F]] =
+    makeFs(file, create).map(new GtfsFile(file, _))
+
   private[gtfs] def makeFs[F[_]](
       file: Path,
       create: Boolean
@@ -241,9 +245,5 @@ object GtfsFile {
         )
       }
     )(fs => F.blocking(fs.close()))
-
-  /** Creates a GTFS object, giving access to all files within the GTFS file. */
-  def apply[F[_]](file: Path, create: Boolean = false)(implicit F: Sync[F], files: Files[F]): Resource[F, GtfsFile[F]] =
-    makeFs(file, create).map(new GtfsFile(file, _))
 
 }

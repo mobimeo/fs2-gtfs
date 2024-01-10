@@ -22,41 +22,23 @@ import fs2.data.csv.generic.semiauto._
 import java.time._
 
 case class Stop(
-    @CsvName("stop_id")
-    id: String,
-    @CsvName("stop_code")
-    code: Option[String],
-    @CsvName("stop_name")
-    name: Option[String],
-    @CsvName("stop_desc")
-    desc: Option[String],
-    @CsvName("stop_lat")
-    lat: Option[Double],
-    @CsvName("stop_lon")
-    lon: Option[Double],
-    @CsvName("zone_id")
-    zoneId: Option[String],
-    @CsvName("stop_url")
-    url: Option[String],
-    @CsvName("location_type")
-    locationType: Option[LocationType],
-    @CsvName("parent_station")
-    parentStation: Option[String],
-    @CsvName("stop_timezone")
-    timezone: Option[ZoneId],
-    @CsvName("wheelchair_boarding")
-    wheelchairBoarding: Option[Int],
-    @CsvName("level_id")
-    levelId: Option[String],
-    @CsvName("platform_code")
-    platformCode: Option[String]
+    @CsvName("stop_id") id: String,
+    @CsvName("stop_code") code: Option[String],
+    @CsvName("stop_name") name: Option[String],
+    @CsvName("stop_desc") desc: Option[String],
+    @CsvName("stop_lat") lat: Option[Double],
+    @CsvName("stop_lon") lon: Option[Double],
+    @CsvName("zone_id") zoneId: Option[String],
+    @CsvName("stop_url") url: Option[String],
+    @CsvName("location_type") locationType: Option[LocationType],
+    @CsvName("parent_station") parentStation: Option[String],
+    @CsvName("stop_timezone") timezone: Option[ZoneId],
+    @CsvName("wheelchair_boarding") wheelchairBoarding: Option[Int],
+    @CsvName("level_id") levelId: Option[String],
+    @CsvName("platform_code") platformCode: Option[String]
 )
 
 object Stop {
-  implicit val csvRowDecoder: CsvRowDecoder[Stop, String] =
-    deriveCsvRowDecoder[Stop]
-
-  implicit val csvRowEncoder: CsvRowEncoder[Stop, String] =
-    deriveCsvRowEncoder[Stop]
+  given CsvRowDecoder[Stop, String] = deriveCsvRowDecoder[Stop]
+  given CsvRowEncoder[Stop, String] = deriveCsvRowEncoder[Stop]
 }
-

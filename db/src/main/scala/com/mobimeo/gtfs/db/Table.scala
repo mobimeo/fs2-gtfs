@@ -120,29 +120,37 @@ object Table:
   object Stop extends Table(
     sql"""CREATE TABLE IF NOT EXISTS stop (
       stop_id VARCHAR NOT NULL,
-      stop_name VARCHAR NOT NULL,
-      stop_timezone VARCHAR NOT NULL,
-      stop_lat VARCHAR NOT NULL,
-      stop_lon VARCHAR NOT NULL,
-      location_type VARCHAR NOT NULL,
-      parent_station VARCHAR NOT NULL,
-      platform_code VARCHAR NOT NULL,
-      wheelchair_boarding VARCHAR NOT NULL,
-      stop_code VARCHAR NOT NULL
+      stop_code VARCHAR,
+      stop_name VARCHAR,
+      stop_desc VARCHAR,
+      stop_lat VARCHAR,
+      stop_lon VARCHAR,
+      zone_id VARCHAR,
+      stop_url VARCHAR,
+      location_type VARCHAR,
+      parent_station VARCHAR,
+      stop_timezone VARCHAR,
+      wheelchair_boarding VARCHAR,
+      level_id VARCHAR,
+      platform_code VARCHAR
     )""",
     sql"DROP table stop",
     """INSERT INTO stop (
       stop_id,
+      stop_code,
       stop_name,
-      stop_timezone,
+      stop_desc,
       stop_lat,
       stop_lon,
+      zone_id,
+      stop_url,
       location_type,
       parent_station,
-      platform_code,
+      stop_timezone,
       wheelchair_boarding,
-      stop_code
-    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+      level_id,
+      platform_code
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
   )
 
   object TicketingIdentifier extends Table(
@@ -180,21 +188,27 @@ object Table:
       route_id VARCHAR NOT NULL,
       service_id VARCHAR NOT NULL,
       trip_id VARCHAR NOT NULL,
-      trip_short_name VARCHAR NOT NULL,
-      block_id VARCHAR NOT NULL,
-      wheelchair_accessible VARCHAR NOT NULL,
-      bikes_allowed VARCHAR NOT NULL
+      trip_headsign VARCHAR,
+      trip_short_name VARCHAR,
+      direction_id VARCHAR,
+      block_id VARCHAR,
+      shape_id VARCHAR,
+      wheelchair_accessible VARCHAR,
+      bikes_allowed VARCHAR
     )""",
     sql"DROP table trip",
     """INSERT INTO trip (
       route_id,
       service_id,
       trip_id,
+      trip_headsign,
       trip_short_name,
+      direction_id,
       block_id,
+      shape_id,
       wheelchair_accessible,
       bikes_allowed
-    ) values (?, ?, ?, ?, ?, ?, ?)"""
+    ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
   )
 
 abstract case class Table(

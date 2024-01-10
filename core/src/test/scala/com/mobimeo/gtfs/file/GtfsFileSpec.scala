@@ -66,4 +66,54 @@ object GtfsFileSpec extends IOSuite {
       expect(stopTimes(1).stopHeadsign == "Bruxelles-Midi".some),
     ).combineAll
   }
+
+  test("stops can be read") { gtfsFile =>
+    for
+      stops <- gtfsFile.read.stops[Stop].compile.toList
+    yield List(
+      expect(stops.size == 19),
+      expect(stops(0).id == "8002041_4"),
+      expect(stops(0).name == "Frankfurt(Main)Süd - Gleis 4".some),
+      expect(stops(0).timezone == ZoneId.of("Europe/Berlin").some),
+      expect(stops(0).lat == 50.099365.some),
+      expect(stops(0).lon == 8.686457.some),
+      expect(stops(0).locationType == LocationType.fromOrdinal(0).some),
+      expect(stops(0).locationType == LocationType.fromOrdinal(0).some),
+      expect(stops(0).parentStation == "1856_STATION".some),
+      expect(stops(0).platformCode == "4".some),
+      expect(stops(0).platformCode == "4".some),
+      expect(stops(0).wheelchairBoarding == 1.some),
+      expect(stops(0).code == "Frankfurt(Main)Süd - Gleis 4".some),
+    ).combineAll
+  }
+
+  test("transfers can be read") { gtfsFile =>
+    for
+      transfers <- gtfsFile.read.transfers[Transfer].compile.toList
+    yield List(
+      expect(transfers.size == 13),
+      expect(transfers(0).fromStopId == "8000084_1"),
+      expect(transfers(0).toStopId == "8000084_4"),
+      expect(transfers(0).transferType == TransferType.MinimumTimeRequiredTransfer),
+      expect(transfers(0).minTransferTime == 300.some)
+    ).combineAll
+  }
+
+  test("trips can be read") { gtfsFile =>
+    for
+      trips <- gtfsFile.read.trips[Trip].compile.toList
+    yield List(
+      expect(trips.size == 5),
+      expect(trips(0).id == "DE:80:47:22"),
+      expect(trips(0).routeId == "DE:80:EC47"),
+      expect(trips(0).serviceId == "DE:80:47:22"),
+      expect(trips(0).headsign == Option.empty),
+      expect(trips(0).shortName == Option.empty),
+      expect(trips(0).directionId == Option.empty),
+      expect(trips(0).blockId == Option.empty),
+      expect(trips(0).shapeId == Option.empty),
+      expect(trips(0).wheelchairAccessible == 0.some),
+      expect(trips(0).bikesAllowed == 0.some)
+    ).combineAll
+  }
 }

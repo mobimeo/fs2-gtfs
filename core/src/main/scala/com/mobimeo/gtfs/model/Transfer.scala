@@ -21,14 +21,10 @@ import fs2.data.csv.generic.CsvName
 import fs2.data.csv.generic.semiauto._
 
 case class Transfer(
-    @CsvName("from_stop_id")
-    fromStopId: String,
-    @CsvName("to_stop_id")
-    toStopId: String,
-    @CsvName("transfer_type")
-    transferType: TransferType,
-    @CsvName("min_transfer_time")
-    minTransferTime: Option[Int]
+    @CsvName("from_stop_id")      fromStopId: String,
+    @CsvName("to_stop_id")        toStopId: String,
+    @CsvName("transfer_type")     transferType: TransferType,
+    @CsvName("min_transfer_time") minTransferTime: Option[Int]
 )
 
 object Transfer {

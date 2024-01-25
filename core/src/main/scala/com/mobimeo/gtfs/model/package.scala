@@ -16,7 +16,7 @@
 
 package com.mobimeo.gtfs
 
-import cats.syntax.all._
+import cats.syntax.all.*
 import fs2.data.csv.{CellDecoder, CellEncoder, DecoderError}
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -25,18 +25,14 @@ import java.{util => ju}
 package object model {
 
   type ExtendedRoute = Route[ExtendedRouteType]
-
   type SimpleRoute = Route[SimpleRouteType]
-
   type EitherRoute = Route[Either[SimpleRouteType, ExtendedRouteType]]
 
   given CellDecoder[ZoneId] =
     CellDecoder.stringDecoder.emap(s =>
       Either.catchNonFatal(ZoneId.of(s)).leftMap(t => new DecoderError(s"Invalid zone id $s", None, t))
     )
-
-  given CellEncoder[ZoneId] =
-    CellEncoder.stringEncoder.contramap(_.getId())
+  given CellEncoder[ZoneId] = CellEncoder.stringEncoder.contramap(_.getId())
 
   given CellDecoder[LocalDate] =
     CellDecoder.stringDecoder.emap(s =>
@@ -44,15 +40,13 @@ package object model {
         .catchNonFatal(LocalDate.parse(s, DateTimeFormatter.BASIC_ISO_DATE))
         .leftMap(t => new DecoderError(s"Invalid date $s", None, t))
     )
-
-  given CellEncoder[LocalDate] =
-    CellEncoder.stringEncoder.contramap(_.format(DateTimeFormatter.BASIC_ISO_DATE))
+  given CellEncoder[LocalDate] = CellEncoder.stringEncoder.contramap(_.format(DateTimeFormatter.BASIC_ISO_DATE))
 
   given CellDecoder[LocalTime] =
     val TimePattern = raw"(-?\d+):(\d{1,2}):(\d{1,2})".r
     CellDecoder.stringDecoder.emap {
-      case TimePattern(hour, minute, second) => Right(LocalTime.of(hour.toInt, minute.toInt, second.toInt))
-      case s => Left(new DecoderError(s"Unsupported time string '$s'"))
+      case TimePattern(hour, minute, second) => Right(LocalTime.of(hour.toInt % 24, minute.toInt, second.toInt))
+      case s                                 => Left(new DecoderError(s"Unsupported time string '$s'"))
     }
 
   given CellEncoder[LocalTime] =
@@ -75,15 +69,12 @@ package object model {
       case n => Left(new DecoderError(s"Invalid boolean $n"))
     }
 
-  given CellEncoder[Boolean] =
-    CellEncoder.intEncoder.contramap(if (_) 1 else 0)
+  given CellEncoder[Boolean] = CellEncoder.intEncoder.contramap(if (_) 1 else 0)
 
   given CellEncoder[ju.Currency] = CellEncoder.stringEncoder.contramap(_.getCurrencyCode())
 
   given CellDecoder[ju.Locale] = CellDecoder.stringDecoder.map(ju.Locale.forLanguageTag(_))
-
-  given CellEncoder[ju.Locale] =
-    CellEncoder.stringEncoder.contramap(_.getISO3Language())
+  given CellEncoder[ju.Locale] = CellEncoder.stringEncoder.contramap(_.getISO3Language())
 
   given eitherCellDecoder[A, B](using A: CellDecoder[A], B: CellDecoder[B]): CellDecoder[Either[A, B]] = A.either(B)
 

@@ -16,24 +16,20 @@
 
 package com.mobimeo.gtfs.rules
 
-import cats.data.NonEmptyList
+import cats.data.*
 import cats.effect.Sync
-import cats.syntax.all._
+import cats.syntax.all.*
 import com.mobimeo.gtfs.file.GtfsFile
-import fs2._
-import fs2.data.csv._
+import fs2.*
+import fs2.data.csv.*
 import org.typelevel.log4cats.StructuredLogger
-import cats.data.OptionT
 
-/** An engine is used to apply set of processing rules to GTFS files. It provides a common environment composed of
-  * functions that can be used in the rules.
+/** An engine is used to apply set of processing rules to GTFS files.
   *
+  * It provides a common environment composed of functions that can be used in the rules.
   * An engine can be reused for several set of rules and GTFS files using the same set of environment.
   */
-class Engine[F[_]](interpreter: Interpreter[F])(implicit
-    F: Sync[F],
-    logger: StructuredLogger[F]
-) {
+class Engine[F[_]](interpreter: Interpreter[F])(using F: Sync[F], logger: StructuredLogger[F]) {
 
   /** Applies the rule sets to the `from` file, writing results in `to`.
     *

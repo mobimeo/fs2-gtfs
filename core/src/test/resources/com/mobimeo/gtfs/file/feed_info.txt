@@ -1,0 +1,2 @@
+feed_version,feed_publisher_name,feed_publisher_url,feed_lang,default_lang,feed_start_date,feed_end_date,feed_contact_email,feed_contact_url
+2,Deutsche Bahn AG - Reisendeninformation,https://www.bahn.de/,de,,20231019,20231125,RI-Kern.Team-Yoda@deutschebahn.com,

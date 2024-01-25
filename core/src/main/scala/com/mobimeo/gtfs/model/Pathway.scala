@@ -16,9 +16,9 @@
 
 package com.mobimeo.gtfs.model
 
-import fs2.data.csv._
+import fs2.data.csv.*
 import fs2.data.csv.generic.CsvName
-import fs2.data.csv.generic.semiauto._
+import fs2.data.csv.generic.semiauto.*
 
 case class Pathway(
     @CsvName("pathway_id")

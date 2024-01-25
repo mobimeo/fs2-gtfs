@@ -16,11 +16,34 @@
 
 package com.mobimeo.gtfs.model
 
-import fs2.data.csv._
+import fs2.data.csv.*
 import fs2.data.csv.generic.CsvName
-import fs2.data.csv.generic.semiauto._
-import java.time._
+import fs2.data.csv.generic.semiauto.*
+import java.time.*
 
+/**
+  * Service dates specified using a weekly schedule with start and end dates.
+  *
+  * Conditionally Required:
+  * - Required unless all dates of service are defined in calendar_dates.txt.
+  * - Optional otherwise.
+  *
+  * @param serviceId Identifies a set of dates when service is available for one or more routes.
+  * @param monday Indicates whether the service operates on all Mondays in the date range specified by the start_date and end_date fields.
+  *           Note that exceptions for particular dates may be listed in calendar_dates.txt.
+  *
+  *           Valid options are:
+  *           1 - Service is available for all Mondays in the date range.
+  *           0 - Service is not available for Mondays in the date range.
+  * @param tuesday Functions in the same way as monday except applies to Tuesdays.
+  * @param wednesday Functions in the same way as monday except applies to Wednesdays.
+  * @param thursday Functions in the same way as monday except applies to Thursdays.
+  * @param friday Functions in the same way as monday except applies to Fridays.
+  * @param saturday Functions in the same way as monday except applies to Saturdays.
+  * @param sunday Functions in the same way as monday except applies to Sundays.
+  * @param startDate Start service day for the service interval.
+  * @param endDate End service day for the service interval. This service day is included in the interval.
+  */
 case class Calendar(
     @CsvName("service_id")
     serviceId: String,

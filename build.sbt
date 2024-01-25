@@ -53,13 +53,18 @@ lazy val core = project
 lazy val db = project
   .in(file("db"))
   .settings(commonSettings)
-  .settings(name := "fs2-gtfs-db", libraryDependencies ++= Dependencies.db)
+  .settings(
+    name                 := "fs2-gtfs-db",
+    libraryDependencies ++= Dependencies.db         ++
+                            Dependencies.pureconfig)
   .dependsOn(core)
 
 lazy val rules = project
   .in(file("rules"))
   .settings(commonSettings)
-  .settings(name := "fs2-gtfs-rules", libraryDependencies ++= Dependencies.rules)
+  .settings(
+    name                 := "fs2-gtfs-rules",
+    libraryDependencies ++= Dependencies.rules)
   .dependsOn(core)
 
 lazy val rulesSyntax = project

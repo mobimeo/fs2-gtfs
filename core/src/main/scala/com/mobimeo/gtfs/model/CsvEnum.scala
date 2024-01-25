@@ -16,7 +16,7 @@
 
 package com.mobimeo.gtfs.model
 
-import fs2.data.csv.{CellDecoder, CellEncoder, DecoderError}
+import fs2.data.csv.*
 import scala.util.Try
 
 trait EnumEntry {
@@ -24,7 +24,6 @@ trait EnumEntry {
 }
 
 trait CsvEnum[T <: EnumEntry] {
-
   def values: Array[T]
 
   lazy val byEntryName: Map[String, T] = values.toList.groupMapReduce(_.entryName)(identity)((e, _) => e)
@@ -33,7 +32,6 @@ trait CsvEnum[T <: EnumEntry] {
     CellDecoder.stringDecoder.emap(s => byEntryName.get(s).toRight(new DecoderError(s"Unknown enum value $s")))
 
   given CellEncoder[T] = CellEncoder.stringEncoder.contramap(_.entryName)
-
 }
 
 trait IntEnumEntry {
@@ -41,7 +39,6 @@ trait IntEnumEntry {
 }
 
 trait CsvIntEnum[T <: IntEnumEntry] {
-
   def values: Array[T]
 
   // Build an array for quick int->value lookup using the fact GTFS has small known key spaces

@@ -5,49 +5,74 @@ import cats.effect.*
 import cats.implicits.*
 import com.mobimeo.gtfs.file.GtfsFile
 import com.mobimeo.gtfs.model
-import com.mobimeo.gtfs.model.ExceptionType
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javatimedrivernative.*
+import doobie.postgres.pgisgeographyimplicits.*
 import fs2.*
+import java.net.URL
 import java.time.*
+import org.postgis.Point
 
-object Importer {
+class Importer[F[_]: Sync](f: GtfsFile[F]):
+  private val tenant = f.tenant
 
-  def apply[F[_]: Sync](f: GtfsFile[F])(xa: Transactor[F]): F[Unit] =
+  def run(xa: Transactor[F]): F[Unit] =
+    import Table.*
     for
-      _ <- importEntity(f.read.agencies[model.Agency], Table.Agency)(xa)
-      _ <- importEntity(f.read.calendarDates[model.CalendarDate], Table.CalendarDate)(xa)
-      _ <- importEntity(f.read.feedInfo[model.FeedInfo], Table.FeedInfo)(xa)
-      _ <- importEntity(f.read.routes[model.Route[model.ExtendedRouteType]], Table.Route)(xa)
-      _ <- importEntity(f.read.stopTimes[model.StopTime], Table.StopTime)(xa)
-      _ <- importEntity(f.read.stops[model.Stop], Table.Stop)(xa)
-      _ <- importEntity(f.read.transfers[model.Transfer], Table.Transfer)(xa)
-      _ <- importEntity(f.read.trips[model.Trip], Table.Trip)(xa)
+      _  <- sql"insert into tenant (id) values (${f.tenant})".update.run.transact(xa)
+      _  <- importEntity(agency,       f.read.agencies[model.Agency],                       xa)
+      _  <- importEntity(calendarDate, f.read.calendarDates[model.CalendarDate],            xa)
+      _  <- importEntity(feedInfo,     f.read.feedInfo[model.FeedInfo],                     xa)
+      _  <- importEntity(stop,         f.read.stops[model.Stop],                            xa)
+      _  <- importEntity(route,        f.read.routes[model.Route[model.ExtendedRouteType]], xa)
+      _  <- importEntity(stopTime,     f.read.stopTimes[model.StopTime],                    xa)
+      _  <- importEntity(transfer,     f.read.transfers[model.Transfer],                    xa)
+      _  <- importEntity(trip,         f.read.trips[model.Trip],                            xa)
     yield ()
 
-  private def importEntity[F[_]: Sync, T: Write](x: Stream[F, T], table: Table)(xa: Transactor[F]) =
-    x.compile.toList.flatMap { xs => Update[T](table.insertInto).updateMany(xs).transact(xa) }
+  private def importEntity[F[_], E, C](table: Table, entities: Stream[F, E], xa: Transactor[F])(using E => C, Sync[F], Write[ C ]) =
+    entities
+      .chunkN(10000)
+      .map(_.toList)
+      .map(toUpdate(table.insertInto, implicitly))
+      .evalMap(_ transact xa )
+      .debug(count => s"Stored ${count} entries", println)
+      .compile
+      .fold(0)(_ + _)
 
-  given Get[ExceptionType] = Get[String].map(ExceptionType.valueOf)
-  given Put[ExceptionType] = Put[String].contramap(_.toString)
+  private def toUpdate[E, C: Write](sql: Fragment, toColumns: E => C)(l: List[E]) =
+    Update[C](sql.update.sql).updateMany(l.map(toColumns))
 
-  given Get[ZoneId] = Get[String].map(ZoneId.of)
-  given Put[ZoneId] = Put[String].contramap(_.getId)
+  given Function[model.Agency, Table.agency.Columns]                        = entity => tenant *: Tuple.fromProductTyped(entity)
+  given Function[model.CalendarDate, Table.calendarDate.Columns]            = entity => tenant *: Tuple.fromProductTyped(entity)
+  given Function[model.FeedInfo, Table.feedInfo.Columns]                    = entity => tenant *: Tuple.fromProductTyped(entity)
+  given Function[model.Route[model.ExtendedRouteType], Table.route.Columns] = entity => tenant *: Tuple.fromProductTyped(entity)
+  given Function[model.Stop, Table.stop.Columns]                            = entity => tenant *: (
+      entity.id,
+      entity.code,
+      entity.name,
+      entity.desc,
+      entity.lon.flatMap(lon => entity.lat.map(lat => lon -> lat)).map(model.Coordinate.apply.tupled),
+      entity.zoneId,
+      entity.url,
+      entity.locationType,
+      entity.parentStation,
+      entity.timezone,
+      entity.wheelchairBoarding,
+      entity.levelId,
+      entity.platformCode
+    )
+  given Function[model.StopTime, Table.stopTime.Columns]                    = entity => tenant *: Tuple.fromProductTyped(entity)
+  given Function[model.Transfer, Table.transfer.Columns]                    = entity => tenant *: Tuple.fromProductTyped(entity)
+  given Function[model.Trip, Table.trip.Columns]                            = entity => tenant *: Tuple.fromProductTyped(entity)
 
-  given Get[model.ExtendedRouteType] = Get[String].map(model.ExtendedRouteType.valueOf)
-  given Put[model.ExtendedRouteType] = Put[String].contramap(_.toString)
-
-  given Get[model.LocationType] = Get[String].map(model.LocationType.valueOf)
-  given Put[model.LocationType] = Put[String].contramap(_.toString)
-
-  given Get[model.PickupOrDropOffType] = Get[String].map(model.PickupOrDropOffType.valueOf)
-  given Put[model.PickupOrDropOffType] = Put[String].contramap(_.toString)
-
-  given Get[model.Timepoint] = Get[String].map(model.Timepoint.valueOf)
-  given Put[model.Timepoint] = Put[String].contramap(_.toString)
-
-  given Get[model.TransferType] = Get[String].map(model.TransferType.valueOf)
-  given Put[model.TransferType] = Put[String].contramap(_.toString)
-
-}
+  given Meta[URL]                       = Meta[String].imap(new URL(_))(_.toString)
+  given Meta[ZoneId]                    = Meta[String].imap(ZoneId.of)(_.getId)
+  given Meta[model.Coordinate]          = Meta[Point].imap(p => model.Coordinate(lon = p.x, lat = p.y))(c => new Point(c.lon, c.lat))
+  given Meta[model.ExtendedRouteType]   = Meta[String].imap(model.ExtendedRouteType.valueOf)(_.toString)
+  given Meta[model.ExceptionType]       = Meta[String].imap(model.ExceptionType.valueOf)(_.toString)
+  given Meta[model.LocationType]        = Meta[String].imap(model.LocationType.valueOf)(_.toString)
+  given Meta[model.PickupOrDropOffType] = Meta[String].imap(model.PickupOrDropOffType.valueOf)(_.toString)
+  given Meta[model.Timepoint]           = Meta[String].imap(model.Timepoint.valueOf)(_.toString)
+  given Meta[model.TransferType]        = Meta[String].imap(model.TransferType.valueOf)(_.toString)

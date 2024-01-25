@@ -16,7 +16,9 @@
 
 package com.mobimeo.gtfs.model
 
-/** Extended route types. See https://developers.google.com/transit/gtfs/reference/extended-route-types
+/** Extended route types.
+  *
+  * See https://developers.google.com/transit/gtfs/reference/extended-route-types
   */
 enum ExtendedRouteType(val value: Int) extends IntEnumEntry {
   case Tram       extends ExtendedRouteType(0)

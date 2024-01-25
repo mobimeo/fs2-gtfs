@@ -16,7 +16,7 @@
 
 package com.mobimeo.gtfs
 
-import fs2._
+import fs2.*
 
 /** Represents a GTFS container.
   *

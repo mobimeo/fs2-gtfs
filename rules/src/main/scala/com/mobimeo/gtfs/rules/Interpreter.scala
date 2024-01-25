@@ -17,7 +17,7 @@
 package com.mobimeo.gtfs.rules
 
 import cats.MonadError
-import cats.syntax.all._
+import cats.syntax.all.*
 import fs2.data.csv.CsvRow
 import cats.ApplicativeError
 
@@ -27,7 +27,7 @@ import cats.ApplicativeError
   * Expressions are pure, and cannot perform any side effects. Applicable functions transform a string value into
   * another one without access to any context.
   */
-class Interpreter[F[_]](val functions: Map[String, DocumentedFunction[F]])(implicit F: MonadError[F, Throwable]) {
+class Interpreter[F[_]](val functions: Map[String, DocumentedFunction[F]])(using F: MonadError[F, Throwable]) {
 
   /** Evalutes the value within the row context. If it cannot be resolved (e.g. field does not exist or value doesn't
     * exist in context), `None` is returned.
@@ -39,7 +39,6 @@ class Interpreter[F[_]](val functions: Map[String, DocumentedFunction[F]])(impli
         eval(ctx, row, name).flatMap(row(_))
       case Value.Context(keys) =>
         keys.traverse(eval(ctx, row, _)).flatMap(ctx.get(_))
-
     }
 
   def eval(ctx: Ctx, row: CsvRow[String], e: Expr[F]): F[Option[String]] =
@@ -66,7 +65,7 @@ class Interpreter[F[_]](val functions: Map[String, DocumentedFunction[F]])(impli
 
 object Interpreter {
 
-  def defaultFunctions[F[_]](implicit F: ApplicativeError[F, Throwable]): Map[String, DocumentedFunction[F]] =
+  def defaultFunctions[F[_]](using F: ApplicativeError[F, Throwable]): Map[String, DocumentedFunction[F]] =
     Map(
       "lowercase" -> DocumentedFunction.lift1(_.toLowerCase(), Some("Makes the argument lowercase")),
       "uppercase" -> DocumentedFunction.lift1(_.toUpperCase(), Some("Makes the argument uppercase")),
@@ -74,10 +73,9 @@ object Interpreter {
       "concat"    -> DocumentedFunction(_.mkString("").pure[F], Arity.Unbounded, Some("Concatenates all arguments"))
     )
 
-  def apply[F[_]](implicit F: MonadError[F, Throwable]): Interpreter[F] = new Interpreter(defaultFunctions)
+  def apply[F[_]](using F: MonadError[F, Throwable]): Interpreter[F] = new Interpreter(defaultFunctions)
 
-  def apply[F[_]](functions: Map[String, DocumentedFunction[F]])(implicit
-      F: MonadError[F, Throwable]
-  ): Interpreter[F] = new Interpreter(functions)
+  def apply[F[_]](functions: Map[String, DocumentedFunction[F]])(using F: MonadError[F, Throwable]): Interpreter[F] =
+    new Interpreter(functions)
 
 }

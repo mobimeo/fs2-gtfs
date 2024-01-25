@@ -1,0 +1,6 @@
+route_id,service_id,trip_id,trip_short_name,block_id,wheelchair_accessible,bikes_allowed
+DE:80:EC47,DE:80:47:22,DE:80:47:22,,,0,0
+DE:80:ICE645,DE:80:645:9,DE:80:645:9,,,1,1
+DE:80:ICE524,DE:80:524:108,DE:80:524:108,,,0,0
+DE:80:ICE524,DE:80:524:107,DE:80:524:107,,,0,0
+DE:80SEV:BUS10100,DE:80SEV:10100:1,DE:80SEV:10100:1,,,1,0

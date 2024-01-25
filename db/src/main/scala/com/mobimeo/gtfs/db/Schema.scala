@@ -11,27 +11,27 @@ object Schema {
 
   def create[F[_]: Sync](xa: Transactor[F]): F[Int] =
     tables
-      .map(_.create)
+      .map(_._1)
       .map(_.update.run.transact(xa))
       .sequence
       .map(_.sum)
 
   def drop[F[_]: Sync](xa: Transactor[F]): F[Unit] =
     tables
-      .map(_.drop)
+      .map(_._2)
       .map(_.update.run.transact(xa))
       .sequence
       .as(())
 
   private val tables = List(
-    Agency,
-    CalendarDate,
-    FeedInfo,
-    Route,
-    StopTime,
-    Stop,
-    TicketingIdentifier,
-    Transfer,
-    Trip
+    (Tenant.create, Tenant.drop),
+    (agency.create, agency.drop),
+    (calendarDate.create, calendarDate.drop),
+    (feedInfo.create, feedInfo.drop),
+    (route.create, route.drop),
+    (stopTime.create, stopTime.drop),
+    (stop.create, stop.drop),
+    (transfer.create, transfer.drop),
+    (trip.create, trip.drop)
   )
 }

@@ -16,10 +16,18 @@
 
 package com.mobimeo.gtfs.model
 
-import fs2.data.csv._
+import fs2.data.csv.*
 import fs2.data.csv.generic.CsvName
-import fs2.data.csv.generic.semiauto._
+import fs2.data.csv.generic.semiauto.*
 
+/**
+  * Rules for making connections at transfer points between routes.
+  *
+  * @param fromStopId
+  * @param toStopId
+  * @param transferType
+  * @param minTransferTime
+  */
 case class Transfer(
     @CsvName("from_stop_id")      fromStopId: String,
     @CsvName("to_stop_id")        toStopId: String,

@@ -11,7 +11,7 @@ import weaver.*
 object GtfsFileSpec extends IOSuite {
   override type Res = GtfsFile[IO]
   override def sharedResource: Resource[IO, Res] =
-    GtfsFile(Path.fromNioPath(JPath.of(getClass.getResource("simple-gtfs.zip").toURI)))
+    GtfsFile("simple", Path.fromNioPath(JPath.of(getClass.getResource("simple-gtfs.zip").toURI)))
 
   test("agencies can be read") { gtfsFile =>
     for

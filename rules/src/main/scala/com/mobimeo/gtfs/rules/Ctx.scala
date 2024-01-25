@@ -17,10 +17,12 @@
 package com.mobimeo.gtfs.rules
 
 import cats.data.NonEmptyList
-import cats.syntax.all._
+import cats.syntax.all.*
 import io.circe.Decoder
 
-/** A rule context is a trie map of strings. It allows for providing scoped values that can be used in the rules.
+/** A rule context is a trie map of strings.
+  *
+  * It allows for providing scoped values that can be used in the rules.
   */
 sealed trait Ctx {
 
@@ -59,7 +61,7 @@ sealed trait Ctx {
 object Ctx {
 
   object syntax {
-    implicit class Ops(val s: String) extends AnyVal {
+    extension (s: String) {
       def :=(v: String): (String, Ctx) = (s, Ctx.Value(v))
       def :=(c: Ctx): (String, Ctx)    = (s, c)
     }
@@ -70,7 +72,7 @@ object Ctx {
   def apply(bindings: (String, Ctx)*): Ctx =
     Node(bindings.toMap)
 
-  implicit def decoder: Decoder[Ctx] =
+  given decoder: Decoder[Ctx] =
     Decoder.decodeString
       .map[Ctx](Value(_)) or
       (j =>

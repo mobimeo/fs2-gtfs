@@ -17,12 +17,13 @@
 package com.mobimeo.gtfs.rules
 
 import cats.{ApplicativeError, Show}
-import cats.syntax.all._
+import cats.syntax.all.*
 
 case class DocumentedFunction[F[_]](f: List[String] => F[String], arity: Arity, doc: Option[String])
+
 object DocumentedFunction {
 
-  implicit def show[F[_]]: Show[DocumentedFunction[F]] = Show.show {
+  given show[F[_]]: Show[DocumentedFunction[F]] = Show.show {
     case DocumentedFunction(_, arity, None) =>
       show"($arity) -> str"
     case DocumentedFunction(_, arity, Some(doc)) =>
@@ -31,7 +32,7 @@ object DocumentedFunction {
 
   object markdown {
 
-    implicit def show[F[_]]: Show[DocumentedFunction[F]] = Show.show {
+    given show[F[_]]: Show[DocumentedFunction[F]] = Show.show {
       case DocumentedFunction(_, arity, None) =>
         show"`($arity) -> str`"
       case DocumentedFunction(_, arity, Some(doc)) =>
@@ -86,7 +87,7 @@ object DocumentedFunction {
   def liftF2[F[_]](
       f: (String, String) => F[String],
       doc: Option[String] = None
-  )(implicit F: ApplicativeError[F, Throwable]): DocumentedFunction[F] = DocumentedFunction(
+  )(using F: ApplicativeError[F, Throwable]): DocumentedFunction[F] = DocumentedFunction(
     {
       case List(arg1, arg2) => f(arg1, arg2)
       case args =>
@@ -100,8 +101,7 @@ object DocumentedFunction {
 
 sealed trait Arity
 object Arity {
-
-  implicit val show: Show[Arity] = Show.show {
+  given Show[Arity] = Show.show {
     case Unbounded  => "str*"
     case Bounded(n) => List.fill(n)("str").mkString(", ")
   }

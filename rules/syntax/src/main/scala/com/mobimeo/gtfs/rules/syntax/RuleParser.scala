@@ -94,7 +94,7 @@ import com.mobimeo.gtfs.rules.LogLevel
   */
 object RuleParser {
 
-  import Parser._
+  import Parser.*
 
   private val whitespace: Parser[Unit]    = oneOf(List(charIn(" \t\r\n"), string("//") ~ charsWhile(_ != '\n'))).void
   private val whitespaces0: Parser0[Unit] = whitespace.rep0.void

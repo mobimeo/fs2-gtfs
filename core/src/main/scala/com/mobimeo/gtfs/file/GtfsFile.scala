@@ -24,9 +24,8 @@ import fs2.data.csv.*
 import fs2.data.csv.lowlevel.*
 import fs2.io.file.*
 import java.net.*
-import java.nio.file.{FileSystems, Path => JPath}
+import java.nio.file.{FileSystems, FileSystemAlreadyExistsException, Path => JPath}
 import scala.jdk.CollectionConverters.*
-import scala.util.Try
 
 /** Represents a GTFS file to access the content of the different files in it.
   *
@@ -133,11 +132,15 @@ class GtfsFile[F[_]: Sync: Files] private (val tenant: String, val file: Path, g
 object GtfsFile {
   /** Creates a GTFS object, giving access to all files within the GTFS file. */
   def apply[F[_]: Sync: Files](tenant: String, file: Path, create: Boolean = false): Resource[F, GtfsFile[F]] =
+    def getFileSystem(uri: URI, env: Map[String, String]) = Sync[F].blocking {
+      try FileSystems.newFileSystem(uri, env.asJava)
+      catch case _: FileSystemAlreadyExistsException => FileSystems.getFileSystem(uri)
+    }
     for
       exists <- Resource.eval(Files[F].exists(file))
       uri     = URI.create("jar:file:" + file.absolute)
-      env     = Map("create" -> String.valueOf(create && !exists)).asJava
-      acquire = Sync[F].blocking(Try(FileSystems.newFileSystem(uri, env)).get)
+      env     = Map("create" -> String.valueOf(create && !exists))
+      acquire = getFileSystem(uri, env)
       fs     <- Resource.make(acquire) { fs => Sync[F].blocking(fs.close()) }
     yield new GtfsFile(tenant, file, fs.getPath(_))
 

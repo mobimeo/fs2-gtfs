@@ -8,11 +8,9 @@ import com.mobimeo.gtfs.model
 import doobie.*
 import doobie.implicits.*
 import doobie.implicits.javatimedrivernative.*
-import doobie.postgres.pgisgeographyimplicits.*
 import fs2.*
 import java.net.URL
 import java.time.*
-import org.postgis.Point
 
 class Importer[F[_]: Sync](f: GtfsFile[F]):
   private val tenant = f.tenant
@@ -36,7 +34,7 @@ class Importer[F[_]: Sync](f: GtfsFile[F]):
       .chunkN(10000)
       .map(_.toList)
       .map(toUpdate(table.insertInto, implicitly))
-      .evalMap(_ transact xa )
+      .evalMap(_.transact(xa))
       .debug(count => s"Stored ${count} entries", println)
       .compile
       .fold(0)(_ + _)
@@ -66,13 +64,3 @@ class Importer[F[_]: Sync](f: GtfsFile[F]):
   given Function[model.StopTime, Table.stopTime.Columns]                    = entity => tenant *: Tuple.fromProductTyped(entity)
   given Function[model.Transfer, Table.transfer.Columns]                    = entity => tenant *: Tuple.fromProductTyped(entity)
   given Function[model.Trip, Table.trip.Columns]                            = entity => tenant *: Tuple.fromProductTyped(entity)
-
-  given Meta[URL]                       = Meta[String].imap(new URL(_))(_.toString)
-  given Meta[ZoneId]                    = Meta[String].imap(ZoneId.of)(_.getId)
-  given Meta[model.Coordinate]          = Meta[Point].imap(p => model.Coordinate(lon = p.x, lat = p.y))(c => new Point(c.lon, c.lat))
-  given Meta[model.ExtendedRouteType]   = Meta[String].imap(model.ExtendedRouteType.valueOf)(_.toString)
-  given Meta[model.ExceptionType]       = Meta[String].imap(model.ExceptionType.valueOf)(_.toString)
-  given Meta[model.LocationType]        = Meta[String].imap(model.LocationType.valueOf)(_.toString)
-  given Meta[model.PickupOrDropOffType] = Meta[String].imap(model.PickupOrDropOffType.valueOf)(_.toString)
-  given Meta[model.Timepoint]           = Meta[String].imap(model.Timepoint.valueOf)(_.toString)
-  given Meta[model.TransferType]        = Meta[String].imap(model.TransferType.valueOf)(_.toString)

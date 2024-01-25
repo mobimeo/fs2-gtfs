@@ -20,7 +20,7 @@ object Table:
     val insert = "INSERT INTO tenant (id) VALUES (?)"
  }
 
-  val agency = new Table {
+  object agency extends Table {
     type Columns = (
       String,
       String,
@@ -59,7 +59,7 @@ object Table:
     def toColumns(tenant: String)(entity: model.Agency): Columns = tenant *: Tuple.fromProductTyped(entity)
   }
 
-  val calendarDate = new Table {
+  object calendarDate extends Table {
     type Columns = (
       String,
       String,
@@ -71,7 +71,7 @@ object Table:
       CREATE TABLE IF NOT EXISTS calendar_date (
         tenant VARCHAR NOT NULL REFERENCES tenant(id),
         service_id VARCHAR NOT NULL,
-        date VARCHAR NOT NULL,
+        date DATE NOT NULL,
         exception_type VARCHAR NOT NULL
       )"""
     val drop: Fragment = sql"DROP TABLE IF EXISTS calendar_date CASCADE"
@@ -389,7 +389,7 @@ object Table:
       ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
   }
 
-abstract class Table {
+trait Table {
   type Columns
   val create: Fragment
   val drop: Fragment

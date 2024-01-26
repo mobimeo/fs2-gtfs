@@ -9,9 +9,9 @@ import com.mobimeo.gtfs.model.Timepoint
 import com.mobimeo.gtfs.model.TransferType
 import doobie.*
 import doobie.implicits.*
+import doobie.implicits.javatimedrivernative.*
 import java.net.URL
 import java.time.*
-import doobie.util.fragment.Fragment
 
 object Table:
   object Tenant {
@@ -20,7 +20,7 @@ object Table:
     val insert = "INSERT INTO tenant (id) VALUES (?)"
  }
 
-  object agency extends Table {
+  object agency extends Table[model.Agency] {
     type Columns = (
       String,
       String,
@@ -56,10 +56,13 @@ object Table:
       INSERT INTO agency (tenant, id, name, url, timezone, language, phone, fare_url, email, ticketing_deep_link_id)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
+    def selectAll(tenant: String): Query0[Columns] = sql"select * from agency where tenant = $tenant".query[Columns]
+
     def toColumns(tenant: String)(entity: model.Agency): Columns = tenant *: Tuple.fromProductTyped(entity)
+    def toModel(tuple: Columns): model.Agency = model.Agency.apply.tupled(tuple drop 1)
   }
 
-  object calendarDate extends Table {
+  object calendarDate extends Table[model.CalendarDate] {
     type Columns = (
       String,
       String,
@@ -80,10 +83,13 @@ object Table:
       INSERT INTO calendar_date (tenant, service_id, date, exception_type)
       VALUES (?, ?, ?, ?)"""
 
+    def selectAll(tenant: String): Query0[Columns] = sql"select * from calendar_date where tenant = $tenant".query[Columns]
+
     def toColumns(tenant: String)(entity: model.CalendarDate): Columns = tenant *: Tuple.fromProductTyped(entity)
+    def toModel(tuple: Columns): model.CalendarDate = model.CalendarDate.apply.tupled(tuple drop 1)
   }
 
-  val feedInfo = new Table {
+  object feedInfo extends Table[model.FeedInfo] {
     type Columns = (
       String,
       Option[String],
@@ -99,16 +105,16 @@ object Table:
 
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS feed_info (
-        tenant VARCHAR NOT NULL REFERENCES tenant(id),
-        feed_version VARCHAR,
-        feed_publisher_name VARCHAR NOT NULL,
-        feed_publisher_url VARCHAR NOT NULL,
-        feed_lang VARCHAR NOT NULL,
-        default_lang VARCHAR,
-        feed_start_date VARCHAR,
-        feed_end_date VARCHAR,
-        feed_contact_email VARCHAR,
-        feed_contact_url VARCHAR
+        tenant                VARCHAR NOT NULL REFERENCES tenant(id),
+        feed_version          VARCHAR,
+        feed_publisher_name   VARCHAR NOT NULL,
+        feed_publisher_url    VARCHAR NOT NULL,
+        feed_lang             VARCHAR NOT NULL,
+        default_lang          VARCHAR,
+        feed_start_date       DATE,
+        feed_end_date         DATE,
+        feed_contact_email    VARCHAR,
+        feed_contact_url      VARCHAR
       )"""
 
     val drop: Fragment = sql"DROP TABLE IF EXISTS feed_info CASCADE"
@@ -127,10 +133,13 @@ object Table:
         feed_contact_url
       ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
+    def selectAll(tenant: String): Query0[Columns] = sql"select * from feed_info where tenant = $tenant".query[Columns]
+
     def toColumns(tenant: String)(entity: model.FeedInfo): Columns = tenant *: Tuple.fromProductTyped(entity)
+    def toModel(tuple: Columns): model.FeedInfo = model.FeedInfo.apply.tupled(tuple drop 1)
   }
 
-  val route = new Table {
+  object route extends Table[model.Route[ExtendedRouteType]] {
     type Columns = (
       String,
       String,
@@ -180,11 +189,15 @@ object Table:
         route_sort_order
       ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
+    def selectAll(tenant: String): Query0[Columns] = sql"select * from route where tenant = $tenant".query[Columns]
+
     def toColumns(tenant: String)(entity: model.Route[ExtendedRouteType]): Columns =
       tenant *: Tuple.fromProductTyped(entity)
+    def toModel(tuple: Columns): model.Route[ExtendedRouteType] =
+      model.Route[ExtendedRouteType].apply.tupled(tuple drop 1)
   }
 
-  val stopTime = new Table {
+  object stopTime extends Table[model.StopTime] {
     type Columns = (
       String,
       String,
@@ -201,17 +214,17 @@ object Table:
 
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS stop_time (
-        tenant VARCHAR NOT NULL REFERENCES tenant(id),
-        trip_id VARCHAR NOT NULL,
-        arrival_time VARCHAR NOT NULL,
-        departure_time VARCHAR NOT NULL,
-        stop_id VARCHAR NOT NULL,
-        stop_sequence VARCHAR NOT NULL,
-        stop_headsign VARCHAR,
-        pickup_type VARCHAR,
-        drop_off_type VARCHAR,
-        shape_dist_traveled VARCHAR,
-        timepoint VARCHAR
+        tenant                VARCHAR NOT NULL REFERENCES tenant(id),
+        trip_id               VARCHAR NOT NULL,
+        arrival_time          TIME NOT NULL,
+        departure_time        TIME NOT NULL,
+        stop_id               VARCHAR NOT NULL,
+        stop_sequence         VARCHAR NOT NULL,
+        stop_headsign         VARCHAR,
+        pickup_type           VARCHAR,
+        drop_off_type         VARCHAR,
+        shape_dist_traveled   VARCHAR,
+        timepoint             VARCHAR
       )"""
 
     val drop: Fragment = sql"DROP TABLE IF EXISTS stop_time CASCADE"
@@ -231,10 +244,13 @@ object Table:
         timepoint
       ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
+    def selectAll(tenant: String): Query0[Columns] = sql"select * from stop_time where tenant = $tenant".query[Columns]
+
     def toColumns(tenant: String)(entity: model.StopTime): Columns = tenant *: Tuple.fromProductTyped(entity)
+    def toModel(tuple: Columns): model.StopTime = model.StopTime.apply.tupled(tuple drop 1)
   }
 
-  val stop = new Table {
+  object stop extends Table[model.Stop] {
     type Columns = (
       String,
       String,
@@ -292,6 +308,8 @@ object Table:
         platform_code
       ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
 
+    def selectAll(tenant: String): Query0[Columns] = sql"select * from stop where tenant = $tenant".query[Columns]
+
     def toColumns(tenant: String)(entity: model.Stop): Columns = (
       tenant,
       entity.id,
@@ -308,9 +326,25 @@ object Table:
       entity.levelId,
       entity.platformCode
     )
+    def toModel(tuple: Columns): model.Stop = model.Stop(
+      tuple._2,
+      tuple._3,
+      tuple._4,
+      tuple._5,
+      tuple._6.map(_.lat),
+      tuple._6.map(_.lon),
+      tuple._7,
+      tuple._8,
+      tuple._9,
+      tuple._10,
+      tuple._11,
+      tuple._12,
+      tuple._13,
+      tuple._14
+    )
   }
 
-  val transfer = new Table {
+  object transfer extends Table[model.Transfer] {
     type Columns = (String, String, String, TransferType, Option[Int])
 
     // TODO PRIMARY KEY (from_stop_id, to_stop_id, from_trip_id, to_trip_id, from_route_id, to_route_id),
@@ -336,9 +370,12 @@ object Table:
         transfer_type,
         min_transfer_time
       ) values (?, ?, ?, ?, ?)"""
+
+    def selectAll(tenant: String): Query0[Columns] = sql"select * from transfer where tenant = $tenant".query[Columns]
+    def toModel(tuple: Columns): model.Transfer = model.Transfer.apply.tupled(tuple drop 1)
   }
 
-  val trip = new Table {
+  object trip extends Table[model.Trip] {
     type Columns = (
       String,
       String,
@@ -387,11 +424,16 @@ object Table:
         wheelchair_accessible,
         bikes_allowed
       ) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+
+    def selectAll(tenant: String): Query0[Columns] = sql"select * from trip where tenant = $tenant".query[Columns]
+    def toModel(tuple: Columns): model.Trip = model.Trip.apply.tupled(tuple drop 1)
   }
 
-trait Table {
+trait Table[T] {
   type Columns
   val create: Fragment
   val drop: Fragment
   val insertInto: Fragment
+  def selectAll(tenant: String): Query0[Columns]
+  def toModel(tuple: Columns): T
 }

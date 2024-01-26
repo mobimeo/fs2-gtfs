@@ -29,7 +29,7 @@ class Importer[F[_]: Sync](f: GtfsFile[F]):
       _  <- importEntity(trip,         f.read.trips[model.Trip],                            xa)
     yield ()
 
-  private def importEntity[F[_], E, C](table: Table, entities: Stream[F, E], xa: Transactor[F])(using E => C, Sync[F], Write[ C ]) =
+  private def importEntity[F[_], E, C](table: Table[E], entities: Stream[F, E], xa: Transactor[F])(using E => C, Sync[F], Write[C]) =
     entities
       .chunkN(10000)
       .map(_.toList)

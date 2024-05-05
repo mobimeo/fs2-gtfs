@@ -83,12 +83,12 @@ jobs:
           java-version: 8
           cache: sbt
 
-      - name: Download target directories (2.13.11)
+      - name: Download target directories (2.13.14)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-2.13.11-${{ matrix.java }}
+          name: target-${{ matrix.os }}-2.13.14-${{ matrix.java }}
 
-      - name: Inflate target directories (2.13.11)
+      - name: Inflate target directories (2.13.14)
         run: |
           tar xf targets.tar
           rm targets.tar
@@ -121,12 +121,12 @@ jobs:
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Download target directories (2.13.11)
+      - name: Download target directories (2.13.14)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-2.13.11-${{ matrix.java }}
+          name: target-${{ matrix.os }}-2.13.14-${{ matrix.java }}
 
-      - name: Inflate target directories (2.13.11)
+      - name: Inflate target directories (2.13.14)
         run: |
           tar xf targets.tar
           rm targets.tar

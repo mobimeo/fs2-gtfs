@@ -8,7 +8,7 @@ object Versions {
   val circe      = "0.14.5"
   val log4cats   = "2.6.0"
   val catsParse  = "0.3.10"
-  val literally  = "1.1.0"
+  val literally  = "1.2.0"
 }
 
 object Dependencies {

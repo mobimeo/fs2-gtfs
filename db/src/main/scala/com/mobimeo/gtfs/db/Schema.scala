@@ -24,14 +24,15 @@ object Schema {
       .as(())
 
   private val tables = List(
-    (provider.create, provider.drop),
-    (agency.create, agency.drop),
+    (provider.create,     provider.drop),
+    (agency.create,       agency.drop),
+    (calendar.create,     calendar.drop),
     (calendarDate.create, calendarDate.drop),
-    (feedInfo.create, feedInfo.drop),
-    (route.create, route.drop),
-    (stopTime.create, stopTime.drop),
-    (stop.create, stop.drop),
-    (transfer.create, transfer.drop),
-    (trip.create, trip.drop)
+    (feedInfo.create,     feedInfo.drop),
+    (route.create,        route.drop),
+    (stopTime.create,     stopTime.drop),
+    (stop.create,         stop.drop),
+    (transfer.create,     transfer.drop),
+    (trip.create,         trip.drop)
   )
 }

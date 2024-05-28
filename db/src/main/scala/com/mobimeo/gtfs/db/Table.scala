@@ -1,6 +1,7 @@
 package com.mobimeo.gtfs.db
 
 import com.mobimeo.gtfs.model
+import com.mobimeo.gtfs.model.Availability
 import com.mobimeo.gtfs.model.ExceptionType
 import com.mobimeo.gtfs.model.ExtendedRouteType
 import com.mobimeo.gtfs.model.LocationType
@@ -36,7 +37,7 @@ object Table:
 
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS agencies (
-        provider               VARCHAR NOT NULL REFERENCES provider(id),
+        provider               VARCHAR NOT NULL REFERENCES providers(id),
         id                     VARCHAR NOT NULL,
         name                   VARCHAR NOT NULL,
         url                    VARCHAR,
@@ -62,6 +63,49 @@ object Table:
     def toModel(tuple: Columns): model.Agency = model.Agency.apply.tupled(tuple drop 1)
   }
 
+  object calendar extends Table[model.Calendar] {
+    type Columns = (
+      String,
+      String,
+      Availability,
+      Availability,
+      Availability,
+      Availability,
+      Availability,
+      Availability,
+      Availability,
+      LocalDate,
+      LocalDate,
+    )
+
+    val create: Fragment = sql"""
+      CREATE TABLE IF NOT EXISTS calendars (
+        provider VARCHAR NOT NULL REFERENCES providers(id),
+        service_id VARCHAR NOT NULL,
+        monday BOOLEAN NOT NULL,
+        tuesday BOOLEAN NOT NULL,
+        wednesday BOOLEAN NOT NULL,
+        thursday BOOLEAN NOT NULL,
+        friday BOOLEAN NOT NULL,
+        saturday BOOLEAN NOT NULL,
+        sunday BOOLEAN NOT NULL,
+        start_date DATE NOT NULL,
+        end_date DATE NOT NULL,
+
+        PRIMARY KEY (provider, service_id)
+      )"""
+    val drop: Fragment = sql"DROP TABLE IF EXISTS calendars CASCADE"
+
+    val insertInto: Fragment = sql"""
+      INSERT INTO calendars (provider, service_id, monday, tuesday, wednesday, thursday, friday, saturday, sunday, start_date, end_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+
+    def selectAll(provider: String): Query0[Columns] = sql"SELECT * FROM calendars WHERE provider = $provider".query[Columns]
+
+    def toColumns(provider: String)(entity: model.Calendar): Columns = provider *: Tuple.fromProductTyped(entity)
+    def toModel(tuple: Columns): model.Calendar = model.Calendar.apply.tupled(tuple drop 1)
+  }
+
   object calendarDate extends Table[model.CalendarDate] {
     type Columns = (
       String,
@@ -72,7 +116,7 @@ object Table:
 
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS calendar_dates (
-        provider VARCHAR NOT NULL REFERENCES provider(id),
+        provider VARCHAR NOT NULL REFERENCES providers(id),
         service_id VARCHAR NOT NULL,
         date DATE NOT NULL,
         exception_type VARCHAR NOT NULL
@@ -105,7 +149,7 @@ object Table:
 
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS feed_infos (
-        provider              VARCHAR NOT NULL REFERENCES provider(id),
+        provider              VARCHAR NOT NULL REFERENCES providers(id),
         feed_version          VARCHAR,
         feed_publisher_name   VARCHAR NOT NULL,
         feed_publisher_url    VARCHAR NOT NULL,
@@ -156,7 +200,7 @@ object Table:
 
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS routes (
-        provider VARCHAR NOT NULL REFERENCES provider(id),
+        provider VARCHAR NOT NULL REFERENCES providers(id),
         route_id VARCHAR NOT NULL,
         agency_id VARCHAR,
         route_short_name VARCHAR,
@@ -170,7 +214,7 @@ object Table:
 
         PRIMARY KEY (provider, route_id),
         FOREIGN KEY (provider, agency_id)
-          REFERENCES agency (provider, id)
+          REFERENCES agencies (provider, id)
           ON DELETE CASCADE
       )"""
 
@@ -216,7 +260,7 @@ object Table:
 
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS stop_times (
-        provider                VARCHAR NOT NULL REFERENCES provider(id),
+        provider                VARCHAR NOT NULL REFERENCES providers(id),
         trip_id               VARCHAR NOT NULL,
         arrival_time          TIME NOT NULL,
         departure_time        TIME NOT NULL,
@@ -272,7 +316,7 @@ object Table:
 
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS stops (
-        provider VARCHAR NOT NULL REFERENCES provider(id),
+        provider VARCHAR NOT NULL REFERENCES providers(id),
         id VARCHAR NOT NULL,
         code VARCHAR,
         name VARCHAR,
@@ -352,17 +396,17 @@ object Table:
     // TODO PRIMARY KEY (from_stop_id, to_stop_id, from_trip_id, to_trip_id, from_route_id, to_route_id),
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS transfers (
-        provider VARCHAR NOT NULL REFERENCES provider(id),
+        provider VARCHAR NOT NULL REFERENCES providers(id),
         from_stop_id VARCHAR NOT NULL,
         to_stop_id VARCHAR NOT NULL,
         transfer_type VARCHAR NOT NULL,
         min_transfer_time VARCHAR NOT NULL,
 
         FOREIGN KEY (provider, from_stop_id)
-          REFERENCES stop (provider, id)
+          REFERENCES stops (provider, id)
           ON DELETE CASCADE,
         FOREIGN KEY (provider, to_stop_id)
-          REFERENCES stop (provider, id)
+          REFERENCES stops (provider, id)
           ON DELETE CASCADE
       )"""
 
@@ -398,7 +442,7 @@ object Table:
 
     val create: Fragment = sql"""
       CREATE TABLE IF NOT EXISTS trips (
-        provider VARCHAR NOT NULL REFERENCES provider(id),
+        provider VARCHAR NOT NULL REFERENCES providers(id),
         route_id VARCHAR NOT NULL,
         service_id VARCHAR NOT NULL,
         trip_id VARCHAR NOT NULL,
@@ -412,7 +456,7 @@ object Table:
 
         PRIMARY KEY (provider, trip_id),
         FOREIGN KEY (provider, route_id)
-          REFERENCES route (provider, route_id)
+          REFERENCES routes (provider, route_id)
           ON DELETE CASCADE
       )"""
 

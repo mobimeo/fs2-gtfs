@@ -7,6 +7,13 @@ import java.time.*
 import org.postgis.Point
 
 package object db:
+  given Meta[model.Availability]        = Meta[Boolean].imap {
+                                            if (_) model.Availability.Availabile
+                                            else   model.Availability.Unavailable
+                                          } {
+                                            case model.Availability.Availabile   => true
+                                            case model.Availability.Unavailable  => false
+                                          }
   given Meta[URL]                       = Meta[String].imap(new URL(_))(_.toString)
   given Meta[ZoneId]                    = Meta[String].imap(ZoneId.of)(_.getId)
   given Meta[model.Coordinate]          = Meta[Point].imap(p => model.Coordinate(lon = p.x, lat = p.y))(c => new Point(c.lon, c.lat))

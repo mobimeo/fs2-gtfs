@@ -1,7 +1,6 @@
 package com.mobimeo.gtfs
 
 import doobie.*
-import doobie.implicits.*
 import doobie.postgres.pgisgeographyimplicits.*
 import java.net.URL
 import java.time.*

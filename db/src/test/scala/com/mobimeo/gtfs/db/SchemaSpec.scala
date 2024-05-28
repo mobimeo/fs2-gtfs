@@ -9,16 +9,17 @@ object SchemaSpec extends PostgresSuite {
     val sql = sql"SELECT tablename FROM pg_catalog.pg_tables where schemaname = 'public'"
 
     val expected = Set(
-        "agency",
-        "calendar_date",
-        "feed_info",
-        "route",
+        "agencies",
+        "calendars",
+        "calendar_dates",
+        "feed_infos",
+        "routes",
         "spatial_ref_sys",
-        "stop",
-        "stop_time",
-        "tenant",
-        "transfer",
-        "trip"
+        "stops",
+        "stop_times",
+        "providers",
+        "transfers",
+        "trips"
       )
     // val sql = sql"SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'PUBLIC'"
     for

@@ -8,20 +8,22 @@ import weaver.*
 
 object ImporterSpec extends PostgresSuite {
   test("imports from gtfs to db") { xa =>
-    val tenant = "test"
-    GtfsFile.fromClasspath(tenant, getClass.getResource("simple-gtfs.zip")).use { gtfsFile =>
+    val provider = "test"
+    GtfsFile.fromClasspath(provider, getClass.getResource("simple-gtfs.zip")).use { gtfsFile =>
       for
         imported       <- Importer(gtfsFile).run(xa)
-        agencies       <- sql"select count(*) from agency where tenant = $tenant".query[Int].unique.transact(xa)
-        calendarDates  <- sql"select count(*) from calendar_date where tenant = $tenant".query[Int].unique.transact(xa)
-        feedInfo       <- sql"select count(*) from feed_info where tenant = $tenant".query[Int].unique.transact(xa)
-        routes         <- sql"select count(*) from route where tenant = $tenant".query[Int].unique.transact(xa)
-        stopTimes      <- sql"select count(*) from stop_time where tenant = $tenant".query[Int].unique.transact(xa)
-        stops          <- sql"select count(*) from stop where tenant = $tenant".query[Int].unique.transact(xa)
-        transfers      <- sql"select count(*) from transfer where tenant = $tenant".query[Int].unique.transact(xa)
-        trips          <- sql"select count(*) from trip where tenant = $tenant".query[Int].unique.transact(xa)
+        agencies       <- sql"SELECT count(*) FROM agencies WHERE provider = $provider".query[Int].unique.transact(xa)
+        calendars      <- sql"SELECT count(*) FROM calendars WHERE provider = $provider".query[Int].unique.transact(xa)
+        calendarDates  <- sql"SELECT count(*) FROM calendar_dates WHERE provider = $provider".query[Int].unique.transact(xa)
+        feedInfo       <- sql"SELECT count(*) FROM feed_infos WHERE provider = $provider".query[Int].unique.transact(xa)
+        routes         <- sql"SELECT count(*) FROM routes WHERE provider = $provider".query[Int].unique.transact(xa)
+        stopTimes      <- sql"SELECT count(*) FROM stop_times WHERE provider = $provider".query[Int].unique.transact(xa)
+        stops          <- sql"SELECT count(*) FROM stops WHERE provider = $provider".query[Int].unique.transact(xa)
+        transfers      <- sql"SELECT count(*) FROM transfers WHERE provider = $provider".query[Int].unique.transact(xa)
+        trips          <- sql"SELECT count(*) FROM trips WHERE provider = $provider".query[Int].unique.transact(xa)
       yield Seq(
         expect(agencies == 3),
+        expect(calendars == 5),
         expect(calendarDates == 5),
         expect(feedInfo == 1),
         expect(routes == 6),

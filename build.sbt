@@ -56,7 +56,9 @@ lazy val db = project
   .settings(
     name                 := "fs2-gtfs-db",
     libraryDependencies ++= Dependencies.db         ++
-                            Dependencies.pureconfig)
+                            Dependencies.pureconfig,
+    mainClass            := Some("com.mobimeo.gtfs.db.Main")
+  )
   .dependsOn(core)
 
 lazy val rules = project

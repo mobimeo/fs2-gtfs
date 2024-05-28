@@ -10,7 +10,7 @@ import doobie.implicits.*
 import fs2.*
 
 class Exporter[F[_]: Sync](gtfsFile: GtfsFile[F]):
-  private val tenant = gtfsFile.tenant
+  private val provider = gtfsFile.provider
 
   def run(xa: Transactor[F]): F[Unit] =
     val files = List(
@@ -31,7 +31,7 @@ class Exporter[F[_]: Sync](gtfsFile: GtfsFile[F]):
     selectEntity(table, xa).through(writer)
 
   private def selectEntity[F[_], E](table: Table[E], xa: Transactor[F])(using Sync[F]): Stream[F, E] =
-    table.selectAll(tenant)
+    table.selectAll(provider)
       .streamWithChunkSize(1000)
       .transact(xa)
       .map(table.toModel)

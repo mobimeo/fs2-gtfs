@@ -13,12 +13,12 @@ import java.net.URL
 import java.time.*
 
 class Importer[F[_]: Sync](f: GtfsFile[F]):
-  private val tenant = f.tenant
+  private val provider = f.provider
 
   def run(xa: Transactor[F]): F[Unit] =
     import Table.*
     for
-      _  <- sql"insert into tenant (id) values (${f.tenant})".update.run.transact(xa)
+      _  <- sql"insert into provider (id) values (${f.provider})".update.run.transact(xa)
       _  <- importEntity(agency,       f.read.agencies[model.Agency],                       xa)
       _  <- importEntity(calendarDate, f.read.calendarDates[model.CalendarDate],            xa)
       _  <- importEntity(feedInfo,     f.read.feedInfo[model.FeedInfo],                     xa)
@@ -42,11 +42,11 @@ class Importer[F[_]: Sync](f: GtfsFile[F]):
   private def toUpdate[E, C: Write](sql: Fragment, toColumns: E => C)(l: List[E]) =
     Update[C](sql.update.sql).updateMany(l.map(toColumns))
 
-  given Function[model.Agency, Table.agency.Columns]                        = entity => tenant *: Tuple.fromProductTyped(entity)
-  given Function[model.CalendarDate, Table.calendarDate.Columns]            = entity => tenant *: Tuple.fromProductTyped(entity)
-  given Function[model.FeedInfo, Table.feedInfo.Columns]                    = entity => tenant *: Tuple.fromProductTyped(entity)
-  given Function[model.Route[model.ExtendedRouteType], Table.route.Columns] = entity => tenant *: Tuple.fromProductTyped(entity)
-  given Function[model.Stop, Table.stop.Columns]                            = entity => tenant *: (
+  given Function[model.Agency, Table.agency.Columns]                        = entity => provider *: Tuple.fromProductTyped(entity)
+  given Function[model.CalendarDate, Table.calendarDate.Columns]            = entity => provider *: Tuple.fromProductTyped(entity)
+  given Function[model.FeedInfo, Table.feedInfo.Columns]                    = entity => provider *: Tuple.fromProductTyped(entity)
+  given Function[model.Route[model.ExtendedRouteType], Table.route.Columns] = entity => provider *: Tuple.fromProductTyped(entity)
+  given Function[model.Stop, Table.stop.Columns]                            = entity => provider *: (
       entity.id,
       entity.code,
       entity.name,
@@ -61,6 +61,6 @@ class Importer[F[_]: Sync](f: GtfsFile[F]):
       entity.levelId,
       entity.platformCode
     )
-  given Function[model.StopTime, Table.stopTime.Columns]                    = entity => tenant *: Tuple.fromProductTyped(entity)
-  given Function[model.Transfer, Table.transfer.Columns]                    = entity => tenant *: Tuple.fromProductTyped(entity)
-  given Function[model.Trip, Table.trip.Columns]                            = entity => tenant *: Tuple.fromProductTyped(entity)
+  given Function[model.StopTime, Table.stopTime.Columns]                    = entity => provider *: Tuple.fromProductTyped(entity)
+  given Function[model.Transfer, Table.transfer.Columns]                    = entity => provider *: Tuple.fromProductTyped(entity)
+  given Function[model.Trip, Table.trip.Columns]                            = entity => provider *: Tuple.fromProductTyped(entity)

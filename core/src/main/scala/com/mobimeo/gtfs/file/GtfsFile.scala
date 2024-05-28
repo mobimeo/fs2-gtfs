@@ -32,7 +32,7 @@ import scala.jdk.CollectionConverters.*
   * Use the smart constructor in the companion object to acquire a `Resource` over a GTFS file.
   * The file will be closed once the resource is released.
   */
-class GtfsFile[F[_]: Sync: Files] private (val tenant: String, val file: Path, getPath: String => JPath)
+class GtfsFile[F[_]: Sync: Files] private (val provider: String, val file: Path, getPath: String => JPath)
     extends Gtfs[F, CsvRowDecoder[*, String], CsvRowEncoder[*, String]] {
   self =>
   private val files = Files[F]
@@ -126,12 +126,12 @@ class GtfsFile[F[_]: Sync: Files] private (val tenant: String, val file: Path, g
     * This can be used when the result of transforming this GTFS file content is toRowStrings to be saved to a new file.
     */
   def copyTo(file: Path, flags: CopyFlags = CopyFlags.empty): Resource[F, GtfsFile[F]] =
-    Resource.eval(files.copy(self.file, file, flags)) >> GtfsFile(tenant, file)
+    Resource.eval(files.copy(self.file, file, flags)) >> GtfsFile(provider, file)
 }
 
 object GtfsFile {
   /** Creates a GTFS object, giving access to all files within the GTFS file. */
-  def apply[F[_]: Sync: Files](tenant: String, file: Path, create: Boolean = false): Resource[F, GtfsFile[F]] =
+  def apply[F[_]: Sync: Files](provider: String, file: Path, create: Boolean = false): Resource[F, GtfsFile[F]] =
     def getFileSystem(uri: URI, env: Map[String, String]) = Sync[F].blocking {
       try FileSystems.newFileSystem(uri, env.asJava)
       catch case _: FileSystemAlreadyExistsException => FileSystems.getFileSystem(uri)
@@ -142,9 +142,9 @@ object GtfsFile {
       env     = Map("create" -> String.valueOf(create && !exists))
       acquire = getFileSystem(uri, env)
       fs     <- Resource.make(acquire) { fs => Sync[F].blocking(fs.close()) }
-    yield new GtfsFile(tenant, file, fs.getPath(_))
+    yield new GtfsFile(provider, file, fs.getPath(_))
 
   /** Creates a GTFS object, giving access to all files within the GTFS file. */
-  def fromClasspath[F[_]: Sync: Files](tenant: String, resource: URL): Resource[F, GtfsFile[F]] =
-    apply(tenant, Path.fromNioPath(JPath.of(resource.toURI)))
+  def fromClasspath[F[_]: Sync: Files](provider: String, resource: URL): Resource[F, GtfsFile[F]] =
+    apply(provider, Path.fromNioPath(JPath.of(resource.toURI)))
 }

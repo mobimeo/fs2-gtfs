@@ -24,7 +24,7 @@ object Schema {
       .as(())
 
   private val tables = List(
-    (Tenant.create, Tenant.drop),
+    (provider.create, provider.drop),
     (agency.create, agency.drop),
     (calendarDate.create, calendarDate.drop),
     (feedInfo.create, feedInfo.drop),

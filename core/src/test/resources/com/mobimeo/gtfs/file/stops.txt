@@ -1,0 +1,20 @@
+stop_id,stop_name,stop_timezone,stop_lat,stop_lon,location_type,parent_station,platform_code,wheelchair_boarding,stop_code
+8002041_4,Frankfurt(Main)Süd - Gleis 4,Europe/Berlin,50.099365,8.686457,0,1856_STATION,4,1,Frankfurt(Main)Süd - Gleis 4
+8002041_5,Frankfurt(Main)Süd - Gleis 5,Europe/Berlin,50.099365,8.686457,0,1856_STATION,5,0,Frankfurt(Main)Süd - Gleis 5
+8400319_7b,'s-Hertogenbosch - Gleis 7b,Europe/Berlin,51.690542,5.293723,0,,7b,0,'s-Hertogenbosch - Gleis 7b
+8002041_8,Frankfurt(Main)Süd - Gleis 8,Europe/Berlin,50.099365,8.686457,0,1856_STATION,8,0,Frankfurt(Main)Süd - Gleis 8
+8002041_2,Frankfurt(Main)Süd - Gleis 2,Europe/Berlin,50.099365,8.686457,0,1856_STATION,2,1,Frankfurt(Main)Süd - Gleis 2
+8002041_3,Frankfurt(Main)Süd - Gleis 3,Europe/Berlin,50.099365,8.686457,0,1856_STATION,3,1,Frankfurt(Main)Süd - Gleis 3
+8002041_1,Frankfurt(Main)Süd - Gleis 1,Europe/Berlin,50.099365,8.686457,0,1856_STATION,1,1,Frankfurt(Main)Süd - Gleis 1
+8509000_54,Chur - Gleis 54,Europe/Berlin,46.853084,9.528938,0,,54,0,Chur - Gleis 54
+8000263_2_A_C,Münster(Westf)Hbf - Gleis 2 A-C,Europe/Berlin,51.956566,7.635715,0,4280_STATION,2 A-C,0,Münster(Westf)Hbf - Gleis 2 A-C
+8011160_14_D___G,Berlin Hbf - Gleis 14 D - G,Europe/Berlin,52.525592,13.369545,0,1071_STATION,14 D - G,0,Berlin Hbf - Gleis 14 D - G
+8000147_1,Hamburg-Harburg - Gleis 1,Europe/Berlin,53.455908,9.991701,0,2519_STATION,1,1,Hamburg-Harburg - Gleis 1
+8100061_4,Ötztal - Gleis 4,Europe/Berlin,47.238482,10.859114,0,,4,0,Ötztal - Gleis 4
+8100061_3,Ötztal - Gleis 3,Europe/Berlin,47.238482,10.859114,0,,3,0,Ötztal - Gleis 3
+8100008_3,St.Pölten Hbf - Gleis 3,Europe/Berlin,48.208303,15.624672,0,,3,0,St.Pölten Hbf - Gleis 3
+8000112_1_West,Friedrichshafen Stadt - Gleis 1 West,Europe/Berlin,47.653224,9.4739,0,1947_STATION,1 West,0,Friedrichshafen Stadt - Gleis 1 West
+8000147_6,Hamburg-Harburg - Gleis 6,Europe/Berlin,53.455908,9.991701,0,2519_STATION,6,1,Hamburg-Harburg - Gleis 6
+8000013_5_C_E,Augsburg Hbf - Gleis 5 C-E,Europe/Berlin,48.365441,10.88557,0,220_STATION,5 C-E,0,Augsburg Hbf - Gleis 5 C-E
+8506000_4,Winterthur - Gleis 4,Europe/Berlin,47.500334,8.723821,0,,4,0,Winterthur - Gleis 4
+8003368_4,Köln Messe/Deutz - Gleis 4,Europe/Berlin,50.940874,6.975001,0,3329_STATION,4,0,Köln Messe/Deutz - Gleis 4

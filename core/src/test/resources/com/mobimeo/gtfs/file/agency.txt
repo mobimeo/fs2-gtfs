@@ -1,0 +1,4 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,ticketing_deep_link_id
+A,An Agency,,Europe/Berlin,de,
+B,Another One,,Europe/Berlin,de,
+C,And A Third One,,Europe/Berlin,de,

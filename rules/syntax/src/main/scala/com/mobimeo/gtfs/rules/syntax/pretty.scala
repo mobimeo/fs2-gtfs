@@ -21,6 +21,7 @@ import com.mobimeo.gtfs.rules._
 import cats.Show
 import cats.syntax.all._
 import fs2.Pure
+import com.mobimeo.gtfs.rules.LogLevel
 
 /** Pretty prints rules in the concrete syntax. '''Note: ''' anonymous functions cannot be rendered as then include
   * scala code. Instances are printed as concatenation of the arguments.

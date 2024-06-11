@@ -155,7 +155,7 @@ class Dsl[F[_]] {
   def trim(es: Expr[F]*): Expr[F] =
     Expr.NamedFunction("trim", es.toList)
 
-  implicit class Interpolators(val sc: StringContext) {
+  extension (sc: StringContext) {
     def concat(args: Expr[F]*): Expr[F] = {
       @tailrec
       def loop(parts: List[String], args: List[Expr[F]], acc: List[Expr[F]]): List[Expr[F]] = (parts, args) match {

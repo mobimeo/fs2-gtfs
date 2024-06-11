@@ -16,12 +16,12 @@
 
 package com.mobimeo.gtfs.rules
 
-import cats.effect._
+import cats.effect.*
 import fs2.data.csv.CsvRow
-import weaver._
+import weaver.*
 import cats.data.NonEmptyList
-import cats.syntax.all._
-import Ctx.syntax._
+import cats.syntax.all.*
+import Ctx.syntax.*
 
 object InterpreterSuite extends MutableIOSuite {
 

@@ -18,7 +18,7 @@ package com.mobimeo.gtfs.rules
 
 import cats.data.NonEmptyList
 import cats.Show
-import cats.syntax.all._
+import cats.syntax.all.*
 
 case class RuleSet[+F[_]](file: String, rules: List[Rule[F]], additions: List[NonEmptyList[String]])
 
@@ -108,7 +108,7 @@ object Expr {
   case class AnonymousFunction[F[_]](f: List[String] => F[String], args: List[Expr[F]]) extends Expr[F]
   case class Val[F[_]](v: Value)                                                        extends Expr[F]
 
-  implicit def show[F[_]]: Show[Expr[F]] =
+  given show[F[_]]: Show[Expr[F]] =
     new Show[Expr[F]] {
       override def show(t: Expr[F]): String = t match {
         case NamedFunction(name, args)  => show"$name(${args.map(show).mkString(", ")})"

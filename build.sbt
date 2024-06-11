@@ -128,7 +128,7 @@ lazy val site = project
     docsMappingsAPIDir                         := "api",
     addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, docsMappingsAPIDir),
     libraryDependencies ++= Dependencies.site,
-    tpolecatCiModeOptions ~= { opts => opts.filterNot(_ == ScalacOptions.fatalWarnings) },
+    // tpolecatCiModeOptions ~= { opts => opts.filterNot(_ == ScalacOptions.fatalWarnings) },
     mdocExtraArguments           := Seq("--no-link-hygiene"),
     githubWorkflowArtifactUpload := false
   )
@@ -154,6 +154,15 @@ lazy val core = project
       .toList
       .flatten
   )
+
+lazy val rt = project
+  .in(file("rt"))
+  .settings(commonSettings)
+  .settings(
+    name                 := "fs2-gtfs-rt",
+    Compile / PB.targets := Seq(scalapb.gen(grpc = false) -> (Compile / sourceManaged).value)
+  )
+  .dependsOn(core)
 
 lazy val rules = project
   .in(file("rules"))

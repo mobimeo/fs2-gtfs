@@ -17,31 +17,21 @@
 package com.mobimeo.gtfs
 package model
 
-import fs2.data.csv._
+import fs2.data.csv.*
 import fs2.data.csv.generic.CsvName
-import fs2.data.csv.generic.semiauto._
+import fs2.data.csv.generic.semiauto.*
 
 case class Trip(
-    @CsvName("route_id")
-    routeId: String,
-    @CsvName("service_id")
-    serviceId: String,
-    @CsvName("trip_id")
-    id: String,
-    @CsvName("trip_headsign")
-    headsign: Option[String],
-    @CsvName("trip_short_name")
-    shortName: Option[String],
-    @CsvName("direction_id")
-    directionId: Option[Int],
-    @CsvName("block_id")
-    blockId: Option[String],
-    @CsvName("shape_id")
-    shapeId: Option[String],
-    @CsvName("wheelchair_accessible")
-    wheelcharAccessible: Option[Int],
-    @CsvName("bikes_allowed")
-    bikesAllowed: Option[Int]
+  @CsvName("route_id")              routeId: String,
+  @CsvName("service_id")            serviceId: String,
+  @CsvName("trip_id")               id: String,
+  @CsvName("trip_headsign")         headsign: Option[String],
+  @CsvName("trip_short_name")       shortName: Option[String],
+  @CsvName("direction_id")          directionId: Option[Int],
+  @CsvName("block_id")              blockId: Option[String],
+  @CsvName("shape_id")              shapeId: Option[String],
+  @CsvName("wheelchair_accessible") wheelchairAccessible: Option[Int],
+  @CsvName("bikes_allowed")         bikesAllowed: Option[Int]
 )
 
 object Trip {

@@ -11,8 +11,8 @@ import model.*
 object Main extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
     val transformed = for {
-      in   <- GtfsFile[IO]("free", Path(args(0)))
-      out  <- GtfsFile[IO]("free", Path(args(1)), create = true)
+      in   <- GtfsFile[IO](Path(args(0)))
+      out  <- GtfsFile[IO](Path(args(1)), create = true)
     } yield transform(in, out)
     transformed.use(_.as(ExitCode.Success))
   }

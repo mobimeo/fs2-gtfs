@@ -41,14 +41,14 @@ sealed trait Matcher {
   def and(that: Matcher): Matcher = (this, that) match {
     case (Matcher.Any, _)                     => that
     case (_, Matcher.Any)                     => this
-    case (Matcher.Not(in1), Matcher.Not(in2)) => !(in1 or in2)
+    case (Matcher.Not(in1), Matcher.Not(in2)) => !(in1.or(in2))
     case _                                    => Matcher.And(this, that)
   }
 
   def or(that: Matcher): Matcher = (this, that) match {
     case (Matcher.Any, _)                     => Matcher.Any
     case (_, Matcher.Any)                     => Matcher.Any
-    case (Matcher.Not(in1), Matcher.Not(in2)) => !(in1 and in2)
+    case (Matcher.Not(in1), Matcher.Not(in2)) => !(in1.and(in2))
     case _                                    => Matcher.Or(this, that)
   }
 }

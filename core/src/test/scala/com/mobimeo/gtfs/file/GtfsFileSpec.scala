@@ -1,4 +1,5 @@
-package com.mobimeo.gtfs.file
+package com.mobimeo.gtfs
+package file
 
 import cats.effect.*
 import cats.implicits.*
@@ -6,7 +7,8 @@ import fs2.io.file.*
 import java.nio.file.{Path => JPath}
 import weaver.*
 import com.mobimeo.gtfs.model.Agency
-import java.time.ZoneId
+import java.time.*
+import model.*
 
 object GtfsFileSpec extends IOSuite {
   override type Res = GtfsFile[IO]
@@ -15,7 +17,7 @@ object GtfsFileSpec extends IOSuite {
 
   test("agencies can be read") { gtfsFile =>
     for
-      agencies <- gtfsFile.read.agencies[Agency].compile.toList
+      agencies <- gtfsFile.read.agencies.compile.toList
     yield List(
       expect(agencies.size == 3),
       expect(agencies(0).name == "An Agency"),
@@ -26,7 +28,7 @@ object GtfsFileSpec extends IOSuite {
 
   test("calendarDates can be read") { gtfsFile =>
     for
-      calendarDates <- gtfsFile.read.calendarDates[CalendarDate].compile.toList
+      calendarDates <- gtfsFile.read.calendarDates.compile.toList
     yield List(
       expect(calendarDates.size == 5),
       expect(calendarDates(0).serviceId == "DE:10:27:12"),
@@ -37,7 +39,7 @@ object GtfsFileSpec extends IOSuite {
 
   test("feedInfo can be read") { gtfsFile =>
     for
-      feedInfo <- gtfsFile.read.feedInfo[FeedInfo].compile.toList
+      feedInfo <- gtfsFile.read.feedInfo.compile.toList
     yield List(
       expect(feedInfo.size == 1),
       expect(feedInfo(0).version == "2".some)
@@ -46,7 +48,7 @@ object GtfsFileSpec extends IOSuite {
 
   test("routes can be read") { gtfsFile =>
     for
-      routes <- gtfsFile.read.routes[Route[ExtendedRouteType]].compile.toList
+      routes <- gtfsFile.read.routes.compile.toList
     yield List(
       expect(routes.size == 6),
       expect(routes(0).id == "DE:BUS10")
@@ -55,7 +57,7 @@ object GtfsFileSpec extends IOSuite {
 
   test("stopTimes can be read") { gtfsFile =>
     for
-      stopTimes <- gtfsFile.read.stopTimes[StopTime].compile.toList
+      stopTimes <- gtfsFile.read.stopTimes.compile.toList
     yield List(
       expect(stopTimes.size == 12),
       expect(stopTimes(0).tripId == "DE:1"),
@@ -69,7 +71,7 @@ object GtfsFileSpec extends IOSuite {
 
   test("stops can be read") { gtfsFile =>
     for
-      stops <- gtfsFile.read.stops[Stop].compile.toList
+      stops <- gtfsFile.read.stops.compile.toList
     yield List(
       expect(stops.size == 19),
       expect(stops(0).id == "8002041_4"),
@@ -89,7 +91,7 @@ object GtfsFileSpec extends IOSuite {
 
   test("transfers can be read") { gtfsFile =>
     for
-      transfers <- gtfsFile.read.transfers[Transfer].compile.toList
+      transfers <- gtfsFile.read.transfers.compile.toList
     yield List(
       expect(transfers.size == 13),
       expect(transfers(0).fromStopId == "8000084_1"),
@@ -101,7 +103,7 @@ object GtfsFileSpec extends IOSuite {
 
   test("trips can be read") { gtfsFile =>
     for
-      trips <- gtfsFile.read.trips[Trip].compile.toList
+      trips <- gtfsFile.read.trips.compile.toList
     yield List(
       expect(trips.size == 5),
       expect(trips(0).id == "DE:80:47:22"),

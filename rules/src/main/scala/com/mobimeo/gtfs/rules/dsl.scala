@@ -19,7 +19,6 @@ package com.mobimeo.gtfs.rules
 import cats.data.NonEmptyList
 import com.mobimeo.gtfs.StandardName
 import scala.annotation.tailrec
-import scala.reflect.ClassTag
 
 class Dsl[F[_]] {
 
@@ -97,14 +96,8 @@ class Dsl[F[_]] {
     }
   }
 
-  def typedRuleset[T](rules: RulesBuilder)(using c: ClassTag[T]): RuleSet[F] = {
-    c match {
-      case _: model.Route => ruleset("routes")(rules)
-      case other => throw new IllegalArgumentException(s"unsupported class: $other")
-    }
-
-  }
   def ruleset(file: StandardName)(rules: RulesBuilder): RuleSet[F] = ruleset(file.entryName)(rules)
+
   def ruleset(file: String)(rules: RulesBuilder): RuleSet[F] = RuleSet(file, rules.build, Nil)
 
   def rule(name: String): RuleBuilder = new RuleBuilder(name)
@@ -132,9 +125,14 @@ class Dsl[F[_]] {
   implicit def ctxBuilderToExpr(b: CtxBuilder): Expr[F] =
     Expr.Val(Value.Context(b.path.reverse))
 
-  def call(name: String)(args: Expr[F]*): Expr[F] = Expr.NamedFunction(name, args.toList)
-  def call(f: List[String] => F[String])(args: Expr[F]*): Expr[F] = Expr.AnonymousFunction(f, args.toList)
-  def in(name: String): InFieldBuilder = new InFieldBuilder(name)
+  def call(name: String)(args: Expr[F]*): Expr[F] =
+    Expr.NamedFunction(name, args.toList)
+
+  def call(f: List[String] => F[String])(args: Expr[F]*): Expr[F] =
+    Expr.AnonymousFunction(f, args.toList)
+
+  def in(name: String): InFieldBuilder =
+    new InFieldBuilder(name)
 
   class InFieldBuilder(field: String) {
     def search(regex: String): SearchAndReplaceBuilder =
@@ -145,10 +143,17 @@ class Dsl[F[_]] {
     def andReplaceBy(value: String): Transformation[F] = Transformation.SearchAndReplace(field, regex, value)
   }
 
-  def concat(es: Expr[F]*): Expr[F] = Expr.NamedFunction("concat", es.toList)
-  def uppercase(es: Expr[F]*): Expr[F] = Expr.NamedFunction("uppercase", es.toList)
-  def lowercase(es: Expr[F]*): Expr[F] = Expr.NamedFunction("lowercase", es.toList)
-  def trim(es: Expr[F]*): Expr[F] = Expr.NamedFunction("trim", es.toList)
+  def concat(es: Expr[F]*): Expr[F] =
+    Expr.NamedFunction("concat", es.toList)
+
+  def uppercase(es: Expr[F]*): Expr[F] =
+    Expr.NamedFunction("uppercase", es.toList)
+
+  def lowercase(es: Expr[F]*): Expr[F] =
+    Expr.NamedFunction("lowercase", es.toList)
+
+  def trim(es: Expr[F]*): Expr[F] =
+    Expr.NamedFunction("trim", es.toList)
 
   implicit class Interpolators(val sc: StringContext) {
     def concat(args: Expr[F]*): Expr[F] = {

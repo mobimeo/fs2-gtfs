@@ -197,11 +197,10 @@ object RuleParser {
     }
 
     val term = repSep(factor.surroundedBy(whitespaces0), min = 1, sep = string("and")).map { fs =>
-      fs.reduceLeft(_ and _)
+      fs.reduceLeft(_.and(_))
     }
 
-    repSep(term.surroundedBy(whitespaces0), min = 1, sep = string("or")).map(ts => ts.reduceLeft(_ or _))
-
+    repSep(term.surroundedBy(whitespaces0), min = 1, sep = string("or")).map(ts => ts.reduceLeft(_.or(_)))
   }
 
   val expr: Parser[Expr[Pure]] = Parser.recursive[Expr[Pure]] { expr =>

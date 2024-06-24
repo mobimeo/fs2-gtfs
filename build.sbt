@@ -1,5 +1,5 @@
 ThisBuild / scalaVersion                         := Versions.scala3
-ThisBuild / githubWorkflowJavaVersions           += JavaSpec.temurin("21")
+ThisBuild / githubWorkflowJavaVersions           := Seq(JavaSpec.temurin("21"))
 
 ThisBuild / githubWorkflowTargetTags            ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches  += RefPredicate.StartsWith(Ref.Tag("v"))

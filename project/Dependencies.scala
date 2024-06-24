@@ -10,7 +10,7 @@ object Versions {
   val fs2Data    = "1.11.0"
   val h2         = "2.2.224"
   val literally  = "1.2.0"
-  val log4cats   = "2.6.0"
+  val log4cats   = "2.7.0"
   val scala3     = "3.4.2"
   val weaver     = "0.8.4"
 }

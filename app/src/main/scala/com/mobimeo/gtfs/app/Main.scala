@@ -35,9 +35,11 @@ object Main extends IOApp {
     else t
   }
 
+  private object SbahnExtractor {
+    def unapply(shortName: Option[String]): Option[String] = shortName.flatMap("^(S\\d+)$".r.findFirstIn)
+  }
+
   private val transformRoute: PartialFunction[Route, Route] = {
-    case r if (r.shortName.fold(false)(_.startsWith("S"))) && (r.tpe == RouteType.Rail) =>
-      println("found route " + r.id)
-      r.copy(tpe = RouteType.SuburbanRailway)
+    case r @ Route(_, _, SbahnExtractor(_), _, _, RouteType.Rail, _, _, _, _) => r.copy(tpe = RouteType.SuburbanRailway)
   }
 }

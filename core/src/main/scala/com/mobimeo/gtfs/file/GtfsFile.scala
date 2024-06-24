@@ -29,49 +29,71 @@ import java.nio.file.{FileSystems, FileSystemAlreadyExistsException, Path => JPa
 import model.*
 import scala.jdk.CollectionConverters.*
 
-import com.mobimeo.gtfs._
-
-import fs2._
-import fs2.io.file._
-import fs2.data.csv._
-import fs2.data.csv.lowlevel._
-
-import scala.jdk.CollectionConverters._
-
-import java.nio.file.{FileSystem, FileSystems}
-
-import java.net.URI
-import com.mobimeo.gtfs.StandardName
-
-/** Represents a GTFS file. Can be used to access the content of the different files in it.
+/** Represents a GTFS file to access the content of the different files in it.
   *
-  * Use the smart constructor in the companion object to acquire a `Resource` over a GTFS file. The file will be closed
-  * once the resource is released.
+  * Use the smart constructor in the companion object to acquire a `Resource` over a GTFS file.
+  * The file will be closed once the resource is released.
   */
-class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F], files: Files[F])
-    extends Gtfs[F, CsvRowDecoder[*, String], CsvRowEncoder[*, String]] {
+class GtfsFile[F[_]: Sync: Files] private (val provider: String, val file: Path, getPath: String => JPath) {
+  type CsvRowStringDecoder[T] = CsvRowDecoder[T, String]
+  type Transformer[T] = T => T
 
-  object has extends GtfsHas[F] {
-    def file(name: String): F[Boolean] =
-      files.exists(Path.fromNioPath(fs.getPath(s"/$name")))
+  private val files = Files[F]
+
+  object has {
+    def agency: F[Boolean] = exists(StandardName.Agency)
+    def attributions: F[Boolean] = exists(StandardName.Attributions)
+    def calendar: F[Boolean] = exists(StandardName.Calendar)
+    def calendarDates: F[Boolean] = exists(StandardName.CalendarDates)
+    def fareAttributes: F[Boolean] = exists(StandardName.FareAttributes)
+    def fareRules: F[Boolean] = exists(StandardName.FareRules)
+    def feedInfo: F[Boolean] = exists(StandardName.FeedInfo)
+    def frequencies: F[Boolean] = exists(StandardName.Frequencies)
+    def levels: F[Boolean] = exists(StandardName.Levels)
+    def pathways: F[Boolean] = exists(StandardName.Pathways)
+    def routes: F[Boolean] = exists(StandardName.Routes)
+    def shapes: F[Boolean] = exists(StandardName.Shapes)
+    def stopTimes: F[Boolean] = exists(StandardName.StopTimes)
+    def stops: F[Boolean] = exists(StandardName.Stops)
+    def transfers: F[Boolean] = exists(StandardName.Transfers)
+    def translations: F[Boolean] = exists(StandardName.Translations)
+    def trips: F[Boolean] = exists(StandardName.Trips)
+
+    private def exists(name: StandardName): F[Boolean] = files.exists(Path.fromNioPath(getPath(s"/${name.entryName}")))
   }
 
-  object delete extends GtfsDelete[F] {
-    def file(name: String): F[Unit] =
-      files.deleteIfExists(Path.fromNioPath(fs.getPath(s"/$name"))).void
+  object delete {
+    def agency: F[Unit] = file(StandardName.Agency)
+    def stops: F[Unit] = file(StandardName.Stops)
+    def routes: F[Unit] = file(StandardName.Routes)
+    def trips: F[Unit] = file(StandardName.Trips)
+    def stopTimes: F[Unit] = file(StandardName.StopTimes)
+    def calendar: F[Unit] = file(StandardName.Calendar)
+    def calendarDates: F[Unit] = file(StandardName.CalendarDates)
+    def fareAttributes: F[Unit] = file(StandardName.FareAttributes)
+    def fareRules: F[Unit] = file(StandardName.FareRules)
+    def shapes: F[Unit] = file(StandardName.Shapes)
+    def frequencies: F[Unit] = file(StandardName.Frequencies)
+    def transfers: F[Unit] = file(StandardName.Transfers)
+    def pathways: F[Unit] = file(StandardName.Pathways)
+    def levels: F[Unit] = file(StandardName.Levels)
+    def feedInfo: F[Unit] = file(StandardName.FeedInfo)
+    def translations: F[Unit] = file(StandardName.Translations)
+    def attributions: F[Unit] = file(StandardName.Attributions)
+
+    private def file(name: StandardName) = files.deleteIfExists(Path.fromNioPath(getPath(s"/${name.entryName}"))).void
   }
 
-  object read extends GtfsRead[F, CsvRowDecoder[*, String]] {
-
+  object read {
     /** Gives access to the raw content of CSV file `name`.
       *
       * For instance `rawFile("calendar.txt")`.
       */
     def rawFile(name: String): Stream[F, CsvRow[String]] =
-      Stream.force(has.file(name).map { exists =>
+      Stream.force(hasFile(name).map { exists =>
         if (exists)
           files
-            .readAll(Path.fromNioPath(fs.getPath(s"/$name")), 1024, Flags.Read)
+            .readAll(Path.fromNioPath(getPath(s"/$name")), 1024, Flags.Read)
             .through(text.utf8.decode)
             .through(rows())
             .through(headers[F, String])
@@ -116,8 +138,7 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
     private def noAction[T] = identity[T]
   }
 
-  object write extends GtfsWrite[F, CsvRowEncoder[*, String]] {
-
+  object write {
     /** Gives access to the pipe to save in file `name`.
       *
       * For instance `rawFile("agency.txt")`.
@@ -125,9 +146,7 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
     def rawFile(name: String): Pipe[F, CsvRow[String], Nothing] =
       s =>
         Stream
-          .resource(
-            files.tempFile
-          )
+          .resource(files.tempFile)
           .flatMap { tempFile =>
             // save the rows in the temp file first
             s.through(encodeRowWithFirstHeaders)
@@ -136,7 +155,7 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
               .through(files.writeAll(tempFile)) ++
               // once temp file is saved, copy it to the destination file in GTFS
               Stream.exec(
-                files.copy(tempFile, Path.fromNioPath(fs.getPath(s"/$name")), CopyFlags(CopyFlag.ReplaceExisting)).void
+                files.copy(tempFile, Path.fromNioPath(getPath(s"/$name")), CopyFlags(CopyFlag.ReplaceExisting)).void
               )
           }
 
@@ -158,92 +177,51 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
     def translations: Pipe[F, Translation, Nothing]     = file(StandardName.Translations)
     def trips: Pipe[F, Trip, Nothing]                   = file(StandardName.Trips)
 
-    def file[T](name: String)(implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Nothing] =
+    private def file[T](name: StandardName)(using CsvRowEncoder[T, String]): Pipe[F, T, Nothing] =
       _.through(encodeRow).through(rawFile(name))
 
-    def rawStops: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Stops)
-
-    def rawRoutes: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Routes)
-
-    def rawTrips: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Trips)
-
-    def rawStopTimes: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.StopTimes)
-
-    def rawAgencies: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Agency)
-
-    def rawCalendar: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Calendar)
-
-    def rawCalendarDates: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.CalendarDates)
-
-    def rawFareAttributes: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.FareAttributes)
-
-    def rawFareRules: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.FareRules)
-
-    def rawShapes: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Shapes)
-
-    def rawFrequencies: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Frequencies)
-
-    def rawTransfers: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Transfers)
-
-    def rawPathways: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Pathways)
-
-    def rawLevels: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Levels)
-
-    def rawFeedInfo: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.FeedInfo)
-
-    def rawTranslations: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Translations)
-
-    def rawAttributions: Pipe[F, CsvRow[String], Nothing] =
-      rawFile(StandardName.Attributions)
-
+    private def rawFile(name: StandardName): Pipe[F, CsvRow[String], Nothing] =
+      s =>
+        Stream
+          .resource(files.tempFile)
+          .flatMap { tempFile =>
+            // save the rows in the temp file first
+            s.through(encodeRowWithFirstHeaders)
+              .through(toRowStrings())
+              .through(text.utf8.encode)
+              .through(files.writeAll(tempFile)) ++
+              // once temp file is saved, copy it to the destination file in GTFS
+              Stream.exec(
+                files.copy(tempFile, Path.fromNioPath(getPath(s"/${name.entryName}")), CopyFlags(CopyFlag.ReplaceExisting)).void
+              )
+          }
   }
 
-  /** Creates a GTFS target which originally consists of the content of this one. The file is copied when the resource
-    * is acquired.
+  /** Creates a GTFS target which originally consists of the content of this one.
     *
+    * The file is copied when the resource is acquired.
     * This can be used when the result of transforming this GTFS file content is toRowStrings to be saved to a new file.
     */
   def copyTo(file: Path, flags: CopyFlags = CopyFlags.empty): Resource[F, GtfsFile[F]] =
-    Resource.eval(files.copy(self.file, file, flags)) >> GtfsFile(file)
-
+    Resource.eval(files.copy(this.file, file, flags)) >> GtfsFile(provider, file)
 }
 
 object GtfsFile {
-
-  private[gtfs] def makeFs[F[_]](
-      file: Path,
-      create: Boolean
-  )(implicit F: Sync[F], files: Files[F]): Resource[F, FileSystem] =
-    Resource.make(
-      files.exists(file).flatMap { exists =>
-        F.blocking(
-          FileSystems
-            .newFileSystem(
-              URI.create("jar:file:" + file.absolute),
-              Map("create" -> String.valueOf(create && !exists)).asJava
-            )
-        )
-      }
-    )(fs => F.blocking(fs.close()))
+  /** Creates a GTFS object, giving access to all files within the GTFS file. */
+  def apply[F[_]: Sync: Files](provider: String, file: Path, create: Boolean = false): Resource[F, GtfsFile[F]] =
+    def getFileSystem(uri: URI, env: Map[String, String]) = Sync[F].blocking {
+      try FileSystems.newFileSystem(uri, env.asJava)
+      catch case _: FileSystemAlreadyExistsException => FileSystems.getFileSystem(uri)
+    }
+    for
+      exists <- Resource.eval(Files[F].exists(file))
+      uri     = URI.create("jar:file:" + file.absolute)
+      env     = Map("create" -> String.valueOf(create && !exists))
+      acquire = getFileSystem(uri, env)
+      fs     <- Resource.make(acquire) { fs => Sync[F].blocking(fs.close()) }
+    yield new GtfsFile(provider, file, fs.getPath(_))
 
   /** Creates a GTFS object, giving access to all files within the GTFS file. */
-  def apply[F[_]](file: Path, create: Boolean = false)(implicit F: Sync[F], files: Files[F]): Resource[F, GtfsFile[F]] =
-    makeFs(file, create).map(new GtfsFile(file, _))
-
+  def fromClasspath[F[_]: Sync: Files](provider: String, resource: URL): Resource[F, GtfsFile[F]] =
+    apply(provider, Path.fromNioPath(JPath.of(resource.toURI)))
 }

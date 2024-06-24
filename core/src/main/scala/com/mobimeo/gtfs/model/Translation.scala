@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
 import fs2.data.csv._
 import fs2.data.csv.generic.CsvName

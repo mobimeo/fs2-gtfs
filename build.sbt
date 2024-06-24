@@ -40,7 +40,48 @@ lazy val root = project
   .settings(noPublish)
   .settings(test     := {},
             testOnly := {})
-  .aggregate(core, rules, rulesSyntax)
+  .aggregate(core, db, rules, rulesSyntax)
+
+lazy val core = project
+  .in(file("core"))
+  .settings(commonSettings)
+  .settings(
+    name                 := "fs2-gtfs-core",
+    libraryDependencies ++= Dependencies.core
+  )
+
+lazy val app = project
+  .settings(commonSettings)
+  .settings(
+    name                 := "fs2-gtfs-app",
+    libraryDependencies ++= Dependencies.db,
+    mainClass            := Some("com.mobimeo.gtfs.app.Main")
+  )
+  .dependsOn(core)
+
+lazy val db = project
+  .settings(commonSettings)
+  .settings(
+    name                 := "fs2-gtfs-db",
+    libraryDependencies ++= Dependencies.db         ++
+                            Dependencies.pureconfig,
+    mainClass            := Some("com.mobimeo.gtfs.db.Main")
+  )
+  .dependsOn(core)
+
+lazy val rules = project
+  .in(file("rules"))
+  .settings(commonSettings)
+  .settings(
+    name                 := "fs2-gtfs-rules",
+    libraryDependencies ++= Dependencies.rules)
+  .dependsOn(core)
+
+lazy val rulesSyntax = project
+  .in(file("rules/syntax"))
+  .settings(commonSettings)
+  .settings(name := "fs2-gtfs-rules-syntax", libraryDependencies ++= Dependencies.rulesSyntax)
+  .dependsOn(rules)
 
 lazy val docsMappingsAPIDir = settingKey[String]("Name of subdirectory in site target directory for api docs")
 

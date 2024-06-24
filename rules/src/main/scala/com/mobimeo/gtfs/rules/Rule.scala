@@ -20,6 +20,13 @@ import cats.data.NonEmptyList
 import cats.Show
 import cats.syntax.all._
 
+case class TypedRuleSet[T](rules: T => List[TypedRule[T]])
+
+case class TypedRule[T](matcher: TypedMatcher, action: TypedAction[T])
+
+case class TypedMatcher(predicate: Boolean)
+case class TypedAction[T](result: T)
+
 case class RuleSet[+F[_]](file: String, rules: List[Rule[F]], additions: List[NonEmptyList[String]])
 
 case class Rule[+F[_]](name: String, matcher: Matcher, action: Action[F])
@@ -38,16 +45,15 @@ sealed trait Matcher {
     case _                                    => Matcher.And(this, that)
   }
 
-  def or(that: Matcher): Matcher =
-    (this, that) match {
-      case (Matcher.Any, _)                     => Matcher.Any
-      case (_, Matcher.Any)                     => Matcher.Any
-      case (Matcher.Not(in1), Matcher.Not(in2)) => !(in1 and in2)
-      case _                                    => Matcher.Or(this, that)
-    }
+  def or(that: Matcher): Matcher = (this, that) match {
+    case (Matcher.Any, _)                     => Matcher.Any
+    case (_, Matcher.Any)                     => Matcher.Any
+    case (Matcher.Not(in1), Matcher.Not(in2)) => !(in1 and in2)
+    case _                                    => Matcher.Or(this, that)
+  }
 }
-object Matcher {
 
+object Matcher {
   case object Any                                  extends Matcher
   case class Equals(left: Value, right: Value)     extends Matcher
   case class In(value: Value, values: List[Value]) extends Matcher
@@ -57,7 +63,6 @@ object Matcher {
   case class And(left: Matcher, right: Matcher) extends Matcher
   case class Or(left: Matcher, right: Matcher)  extends Matcher
   case class Not(inner: Matcher)                extends Matcher
-
 }
 
 sealed trait Value {

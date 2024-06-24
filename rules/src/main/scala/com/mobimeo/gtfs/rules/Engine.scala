@@ -182,14 +182,10 @@ class Engine[F[_]](interpreter: Interpreter[F])(implicit
 }
 
 object Engine {
-
-  def apply[F[_]: Sync: StructuredLogger]: Engine[F] =
-    new Engine(Interpreter[F])
+  def apply[F[_]: Sync: StructuredLogger]: Engine[F] = new Engine(Interpreter[F])
 
   def apply[F[_]: Sync: StructuredLogger](functions: Map[String, DocumentedFunction[F]]): Engine[F] =
     new Engine(Interpreter(functions))
 
-  def apply[F[_]: Sync: StructuredLogger](interpreter: Interpreter[F]): Engine[F] =
-    new Engine(interpreter)
-
+  def apply[F[_]: Sync: StructuredLogger](interpreter: Interpreter[F]): Engine[F] = new Engine(interpreter)
 }

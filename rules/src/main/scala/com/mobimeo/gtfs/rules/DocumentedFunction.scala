@@ -40,7 +40,7 @@ object DocumentedFunction {
 
   }
 
-  def lift1[F[_]](f: String => String, doc: Option[String] = None)(implicit
+  def lift1[F[_]](f: String => String, doc: Option[String] = None)(using
       F: ApplicativeError[F, Throwable]
   ): DocumentedFunction[F] =
     DocumentedFunction(

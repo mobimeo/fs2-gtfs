@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.file
+package com.mobimeo.gtfs
+package file
 
-import cats.effect._
-import cats.syntax.all._
+import cats.effect.*
+import cats.syntax.all.*
+import com.mobimeo.gtfs.*
+import fs2.*
+import fs2.data.csv.*
+import fs2.data.csv.lowlevel.*
+import fs2.io.file.*
+import java.net.*
+import java.nio.file.{FileSystems, FileSystemAlreadyExistsException, Path => JPath}
+import model.*
+import scala.jdk.CollectionConverters.*
 
 import com.mobimeo.gtfs._
 
@@ -40,7 +50,6 @@ import com.mobimeo.gtfs.StandardName
   */
 class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F], files: Files[F])
     extends Gtfs[F, CsvRowDecoder[*, String], CsvRowEncoder[*, String]] {
-  self =>
 
   object has extends GtfsHas[F] {
     def file(name: String): F[Boolean] =
@@ -70,64 +79,41 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
           Stream.empty
       })
 
-    /** Gives access to the raw content of CSV file `name`. */
-    def rawFile(name: StandardName): Stream[F, CsvRow[String]] =
-      rawFile(name.entryName)
+    def agencies:       Stream[F, Agency]         = readFile(StandardName.Agency, noAction)
+    def attributions:   Stream[F, Attribution]    = readFile(StandardName.Attributions, noAction)
+    def calendar:       Stream[F, Calendar]       = readFile(StandardName.Calendar, noAction)
+    def calendarDates:  Stream[F, CalendarDate]   = readFile(StandardName.CalendarDates, noAction)
+    def fareAttributes: Stream[F, FareAttribute]  = readFile(StandardName.FareAttributes, noAction)
+    def fareRules:      Stream[F, FareRules]      = readFile(StandardName.FareRules, noAction)
+    def feedInfo:       Stream[F, FeedInfo]       = readFile(StandardName.FeedInfo, noAction)
+    def frequencies:    Stream[F, Frequency]      = readFile(StandardName.Frequencies, noAction)
+    def levels:         Stream[F, Level]          = readFile(StandardName.Levels, noAction)
+    def pathways:       Stream[F, Pathway]        = readFile(StandardName.Pathways, noAction)
+    def routes:         Stream[F, Route]          = readFile(StandardName.Routes, noAction)
+    def shapes:         Stream[F, Shape]          = readFile(StandardName.Shapes, noAction)
+    def stopTimes:      Stream[F, StopTime]       = readFile(StandardName.StopTimes, noAction)
+    def stops:          Stream[F, Stop]           = readFile(StandardName.Stops, noAction)
+    def transfers:      Stream[F, Transfer]       = readFile(StandardName.Transfers, noAction)
+    def translations:   Stream[F, Translation]    = readFile(StandardName.Translations, noAction)
+    def trips:          Stream[F, Trip]           = readFile(StandardName.Trips, noAction)
 
-    def file[R](name: String)(implicit decoder: CsvRowDecoder[R, String]): Stream[F, R] =
-      rawFile(name).through(decodeRow)
+    private def readFile[T: CsvRowStringDecoder](name: StandardName, transformer: Transformer[T]) =
+      Stream
+        .force(hasFile(name.entryName).map { exists =>
+                 if (exists)
+                   files
+                     .readAll(Path.fromNioPath(getPath(s"/${name.entryName}")), 1024, Flags.Read)
+                     .through(text.utf8.decode)
+                     .through(rows())
+                     .through(headers[F, String])
+                 else Stream.empty
+               })
+        .through { decodeRow }
+        .through { _.map(transformer) }
 
-    def rawStops: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Stops)
+    private def hasFile(name: String): F[Boolean] = files.exists(Path.fromNioPath(getPath(s"/$name")))
 
-    def rawRoutes: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Routes)
-
-    def rawTrips: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Trips)
-
-    def rawStopTimes: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.StopTimes)
-
-    def rawAgencies: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Agency)
-
-    def rawCalendar: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Calendar)
-
-    def rawCalendarDates: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.CalendarDates)
-
-    def rawFareAttributes: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.FareAttributes)
-
-    def rawFareRules: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.FareRules)
-
-    def rawShapes: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Shapes)
-
-    def rawFrequencies: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Frequencies)
-
-    def rawTransfers: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Transfers)
-
-    def rawPathways: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Pathways)
-
-    def rawLevels: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Levels)
-
-    def rawFeedInfo: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.FeedInfo)
-
-    def rawTranslations: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Translations)
-
-    def rawAttributions: Stream[F, CsvRow[String]] =
-      rawFile(StandardName.Attributions)
-
+    private def noAction[T] = identity[T]
   }
 
   object write extends GtfsWrite[F, CsvRowEncoder[*, String]] {
@@ -154,9 +140,23 @@ class GtfsFile[F[_]] private (val file: Path, fs: FileSystem)(implicit F: Sync[F
               )
           }
 
-    /** Gives access to the pipe to save in file `name`. */
-    def rawFile(name: StandardName): Pipe[F, CsvRow[String], Nothing] =
-      rawFile(name.entryName)
+    def agencies: Pipe[F, Agency, Nothing]              = file(StandardName.Agency)
+    def attributions: Pipe[F, Attribution, Nothing]     = file(StandardName.Attributions)
+    def calendar: Pipe[F, Calendar, Nothing]            = file(StandardName.Calendar)
+    def calendarDates: Pipe[F, CalendarDate, Nothing]   = file(StandardName.CalendarDates)
+    def fareAttributes: Pipe[F, FareAttribute, Nothing] = file(StandardName.FareAttributes)
+    def fareRules: Pipe[F, FareRules, Nothing]          = file(StandardName.FareRules)
+    def feedInfo: Pipe[F, FeedInfo, Nothing]            = file(StandardName.FeedInfo)
+    def frequencies: Pipe[F, Frequency, Nothing]        = file(StandardName.Frequencies)
+    def levels: Pipe[F, Level, Nothing]                 = file(StandardName.Levels)
+    def pathways: Pipe[F, Pathway, Nothing]             = file(StandardName.Pathways)
+    def routes: Pipe[F, Route, Nothing]                 = file(StandardName.Routes)
+    def shapes: Pipe[F, Shape, Nothing]                 = file(StandardName.Shapes)
+    def stopTimes: Pipe[F, StopTime, Nothing]           = file(StandardName.StopTimes)
+    def stops: Pipe[F, Stop, Nothing]                   = file(StandardName.Stops)
+    def transfers: Pipe[F, Transfer, Nothing]           = file(StandardName.Transfers)
+    def translations: Pipe[F, Translation, Nothing]     = file(StandardName.Translations)
+    def trips: Pipe[F, Trip, Nothing]                   = file(StandardName.Trips)
 
     def file[T](name: String)(implicit encoder: CsvRowEncoder[T, String]): Pipe[F, T, Nothing] =
       _.through(encodeRow).through(rawFile(name))

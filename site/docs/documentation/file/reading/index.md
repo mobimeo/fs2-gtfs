@@ -39,32 +39,6 @@ gtfs.use { gtfs =>
 
 The `read` namespace contains shortcuts to read entities from the standard files. You need to provide the type you want to decode the entities to (in this example `ExtendedRoute`, which is the route entity using extended route types). You can provide your own type, provided that you also provide a [`CsvRowDecoder`][csv-row-decoder] for that type.
 
-For instance if you are only interested in extracting route name and identifier, you can define you own data model for these two fields.
-
-```scala mdoc
-import fs2.data.csv.CsvRowDecoder
-import fs2.data.csv.generic.CsvName
-import fs2.data.csv.generic.semiauto._
-
-case class IdNameRoute(
-  @CsvName("route_id") id: String,
-  @CsvName("route_short_name") name: Option[String])
-object IdNameRoute {
-  implicit val decoder: CsvRowDecoder[IdNameRoute, String] = deriveCsvRowDecoder
-}
-
-gtfs.use { gtfs =>
-  gtfs.read
-    .routes[IdNameRoute].collect {
-      case IdNameRoute(id, Some(name)) => s"$name ($id)"
-    }
-    .intersperse("\n")
-    .evalMap(s => IO(print(s)))
-    .compile
-    .drain
-}.unsafeRunSync()
-```
-
 The simplest way to get the proper decoder for your own case classes is to use the [fs2-data `generic` module][fs2-data-generic] as shown in the example above.
 
 ## Non standard files

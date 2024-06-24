@@ -16,9 +16,9 @@
 
 package com.mobimeo.gtfs.model
 
-import fs2.data.csv._
-import fs2.data.csv.generic.semiauto._
-import java.time._
+import fs2.data.csv.*
+import fs2.data.csv.generic.semiauto.*
+import java.time.*
 
 
 class SecondsSinceMidnight(val seconds: Int) extends AnyVal {

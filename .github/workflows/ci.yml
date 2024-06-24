@@ -23,7 +23,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.11, 3.3.0]
+        scala: [3.4.2]
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -41,16 +41,17 @@ jobs:
           cache: sbt
 
       - name: Check that workflows are up to date
-        run: sbt githubWorkflowCheck
+        run: sbt '++ ${{ matrix.scala }}' githubWorkflowCheck
 
       - name: Build project
-        run: sbt test
+        run: sbt '++ ${{ matrix.scala }}' test
 
       - name: Compile Documentation
-        run: sbt site/mdoc
+        if: matrix.scala == '3.4.2'
+        run: sbt '++ ${{ matrix.scala }}' site/mdoc
 
       - name: Compress target directories
-        run: tar cf targets.tar target rules/syntax/target rules/target core/target project/target
+        run: tar cf targets.tar target rules/syntax/target app/target rules/target core/target project/target
 
       - name: Upload target directories
         uses: actions/upload-artifact@v3
@@ -65,7 +66,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.11]
+        scala: [3.4.2]
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -82,22 +83,12 @@ jobs:
           java-version: 8
           cache: sbt
 
-      - name: Download target directories (2.13.11)
+      - name: Download target directories (3.4.2)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-2.13.11-${{ matrix.java }}
+          name: target-${{ matrix.os }}-3.4.2-${{ matrix.java }}
 
-      - name: Inflate target directories (2.13.11)
-        run: |
-          tar xf targets.tar
-          rm targets.tar
-
-      - name: Download target directories (3.3.0)
-        uses: actions/download-artifact@v3
-        with:
-          name: target-${{ matrix.os }}-3.3.0-${{ matrix.java }}
-
-      - name: Inflate target directories (3.3.0)
+      - name: Inflate target directories (3.4.2)
         run: |
           tar xf targets.tar
           rm targets.tar
@@ -116,32 +107,22 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.11]
+        scala: [3.4.2]
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Download target directories (2.13.11)
+      - name: Download target directories (3.4.2)
         uses: actions/download-artifact@v3
         with:
-          name: target-${{ matrix.os }}-2.13.11-${{ matrix.java }}
+          name: target-${{ matrix.os }}-3.4.2-${{ matrix.java }}
 
-      - name: Inflate target directories (2.13.11)
-        run: |
-          tar xf targets.tar
-          rm targets.tar
-
-      - name: Download target directories (3.3.0)
-        uses: actions/download-artifact@v3
-        with:
-          name: target-${{ matrix.os }}-3.3.0-${{ matrix.java }}
-
-      - name: Inflate target directories (3.3.0)
+      - name: Inflate target directories (3.4.2)
         run: |
           tar xf targets.tar
           rm targets.tar
 
       - name: Compile Website
-        if: matrix.scala == '2.13.11'
+        if: matrix.scala == '3.4.2'
         run: sbt site/makeMicrosite
 
       - name: Deploy site

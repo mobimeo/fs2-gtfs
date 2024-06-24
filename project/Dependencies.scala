@@ -3,16 +3,16 @@ import sbt._
 object Versions {
   val catsEffect = "3.5.2"
   val catsParse  = "1.0.0"
-  val circe      = "0.14.6"
+  val circe      = "0.14.8"
   val doobie     = "1.0.0-RC5"
   val enumeratum = "1.7.3"
-  val fs2        = "3.9.3"
-  val fs2Data    = "1.10.0"
+  val fs2        = "3.10.2"
+  val fs2Data    = "1.11.0"
   val h2         = "2.2.224"
-  val literally  = "1.1.0"
+  val literally  = "1.2.0"
   val log4cats   = "2.6.0"
-  val scala3     = "3.3.1"
-  val weaver     = "0.8.3"
+  val scala3     = "3.4.2"
+  val weaver     = "0.8.4"
 }
 
 object Dependencies {

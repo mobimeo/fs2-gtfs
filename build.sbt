@@ -40,7 +40,17 @@ lazy val root = project
   .settings(noPublish)
   .settings(test     := {},
             testOnly := {})
-  .aggregate(core, db, rules, rulesSyntax)
+  .aggregate(core, app, rules, rulesSyntax)
+
+lazy val app = project
+  .settings(commonSettings)
+  .dependsOn(core)
+  .settings(
+    name                 := "fs2-gtfs-app",
+    libraryDependencies ++= Dependencies.db,
+    mainClass            := Some("com.mobimeo.gtfs.app.Main")
+  )
+  .dependsOn(core)
 
 lazy val core = project
   .in(file("core"))
@@ -49,25 +59,6 @@ lazy val core = project
     name                 := "fs2-gtfs-core",
     libraryDependencies ++= Dependencies.core
   )
-
-lazy val app = project
-  .settings(commonSettings)
-  .settings(
-    name                 := "fs2-gtfs-app",
-    libraryDependencies ++= Dependencies.db,
-    mainClass            := Some("com.mobimeo.gtfs.app.Main")
-  )
-  .dependsOn(core)
-
-lazy val db = project
-  .settings(commonSettings)
-  .settings(
-    name                 := "fs2-gtfs-db",
-    libraryDependencies ++= Dependencies.db         ++
-                            Dependencies.pureconfig,
-    mainClass            := Some("com.mobimeo.gtfs.db.Main")
-  )
-  .dependsOn(core)
 
 lazy val rules = project
   .in(file("rules"))
@@ -80,7 +71,9 @@ lazy val rules = project
 lazy val rulesSyntax = project
   .in(file("rules/syntax"))
   .settings(commonSettings)
-  .settings(name := "fs2-gtfs-rules-syntax", libraryDependencies ++= Dependencies.rulesSyntax)
+  .settings(
+    name                 := "fs2-gtfs-rules-syntax",
+    libraryDependencies ++= Dependencies.rulesSyntax)
   .dependsOn(rules)
 
 lazy val docsMappingsAPIDir = settingKey[String]("Name of subdirectory in site target directory for api docs")
@@ -117,32 +110,6 @@ lazy val site = project
     githubWorkflowArtifactUpload               := false
   )
   .dependsOn(core, rules, rulesSyntax)
-
-lazy val core = project
-  .in(file("core"))
-  .settings(commonSettings)
-  .settings(
-    name                 := "fs2-gtfs-core",
-    libraryDependencies ++= Dependencies.core
-  )
-
-lazy val db = project
-  .in(file("db"))
-  .settings(commonSettings)
-  .settings(name := "fs2-gtfs-db", libraryDependencies ++= Dependencies.db)
-  .dependsOn(core)
-
-lazy val rules = project
-  .in(file("rules"))
-  .settings(commonSettings)
-  .settings(name := "fs2-gtfs-rules", libraryDependencies ++= Dependencies.rules)
-  .dependsOn(core)
-
-lazy val rulesSyntax = project
-  .in(file("rules/syntax"))
-  .settings(commonSettings)
-  .settings(name := "fs2-gtfs-rules-syntax", libraryDependencies ++= Dependencies.rulesSyntax)
-  .dependsOn(rules)
 
 lazy val commonSettings = Seq(
   organization                                            := "com.mobimeo",

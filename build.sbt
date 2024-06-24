@@ -1,4 +1,5 @@
 ThisBuild / scalaVersion                         := Versions.scala3
+ThisBuild / githubWorkflowJavaVersions           += JavaSpec.temurin("21")
 
 ThisBuild / githubWorkflowTargetTags            ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches  += RefPredicate.StartsWith(Ref.Tag("v"))
@@ -9,7 +10,6 @@ ThisBuild / githubWorkflowPublish := Seq(
               "PGP_SECRET"        -> "${{ secrets.PGP_SECRET }}",
               "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
               "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}")))
-
 ThisBuild / githubWorkflowUseSbtThinClient := false
 ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
   id      = "site",

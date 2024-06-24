@@ -49,10 +49,6 @@ jobs:
       - name: Build project
         run: sbt '++ ${{ matrix.scala }}' test
 
-      - name: Compile Documentation
-        if: matrix.scala == '3.4.2'
-        run: sbt '++ ${{ matrix.scala }}' site/mdoc
-
       - name: Compress target directories
         run: tar cf targets.tar target rules/syntax/target app/target rules/target core/target project/target
 

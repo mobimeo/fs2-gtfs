@@ -28,11 +28,11 @@ ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
                                           "github_token" -> "${{ secrets.GITHUB_TOKEN }}"))
 )
 
-ThisBuild / githubWorkflowBuildPostamble  ++= List(
-                                                WorkflowStep.Sbt(
-                                                  List("site/mdoc"),
-                                                  name = Some("Compile Documentation"),
-                                                  cond = Some(s"matrix.scala == '${Versions.scala3}'")))
+// ThisBuild / githubWorkflowBuildPostamble  ++= List(
+//                                                 WorkflowStep.Sbt(
+//                                                   List("site/mdoc"),
+//                                                   name = Some("Compile Documentation"),
+//                                                   cond = Some(s"matrix.scala == '${Versions.scala3}'")))
 
 lazy val root = project
   .in(file("."))

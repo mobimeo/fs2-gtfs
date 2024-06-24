@@ -61,8 +61,8 @@ object GtfsFileSpec extends IOSuite {
     yield List(
       expect(stopTimes.size == 12),
       expect(stopTimes(0).tripId == "DE:1"),
-      expect(stopTimes(1).arrivalTime == LocalTime.of(18, 39, 0)),
-      expect(stopTimes(1).departureTime == LocalTime.of(18, 42, 0)),
+      expect(stopTimes(1).arrivalTime.toLocalTime == LocalTime.of(18, 39, 0)),
+      expect(stopTimes(1).departureTime.toLocalTime == LocalTime.of(18, 42, 0)),
       expect(stopTimes(1).stopSequence == 2),
       expect(stopTimes(1).stopId == "8070003"),
       expect(stopTimes(1).stopHeadsign == "Bruxelles-Midi".some),

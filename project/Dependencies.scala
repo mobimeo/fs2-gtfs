@@ -1,14 +1,14 @@
 import sbt._
 
 object Versions {
-  val fs2        = "3.7.0"
-  val fs2Data    = "1.8.0"
+  val fs2        = "3.10.2"
+  val fs2Data    = "1.11.0"
   val enumeratum = "1.7.3"
-  val weaver     = "0.8.3"
-  val circe      = "0.14.5"
-  val log4cats   = "2.6.0"
-  val catsParse  = "0.3.10"
-  val literally  = "1.1.0"
+  val weaver     = "0.8.4"
+  val circe      = "0.14.8"
+  val log4cats   = "2.7.0"
+  val catsParse  = "1.0.0"
+  val literally  = "1.2.0"
 }
 
 object Dependencies {
@@ -17,10 +17,6 @@ object Dependencies {
     "co.fs2"    %% "fs2-io"               % Versions.fs2,
     "org.gnieh" %% "fs2-data-csv"         % Versions.fs2Data,
     "org.gnieh" %% "fs2-data-csv-generic" % Versions.fs2Data
-  )
-
-  val coreScala2 = List(
-    "com.beachape" %% "enumeratum" % Versions.enumeratum
   )
 
   val rules = List(

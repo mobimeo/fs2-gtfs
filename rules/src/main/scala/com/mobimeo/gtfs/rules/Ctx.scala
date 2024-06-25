@@ -79,7 +79,7 @@ object Ctx {
             .traverse { case (k, v) =>
               v.as[Ctx](decoder).tupleLeft(k)
             }
-            .map(l => apply(l: _*))
+            .map(l => apply(l*))
         }
       )
 

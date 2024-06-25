@@ -34,11 +34,9 @@ val noPublish = List(
 )
 
 // === CI/CD settings ===
-val scala213 = "2.13.11"
-val scala3   = "3.3.0"
+val scala3   = "3.4.2"
 
-ThisBuild / scalaVersion       := scala213
-ThisBuild / crossScalaVersions := List(scala213, scala3)
+ThisBuild / scalaVersion       := scala3
 
 // publishing
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
@@ -73,7 +71,7 @@ ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
     WorkflowStep.Sbt(
       List("site/makeMicrosite"),
       name = Some("Compile Website"),
-      cond = Some(s"matrix.scala == '$scala213'")
+      cond = Some(s"matrix.scala == '$scala3'")
     ) :+
     WorkflowStep.Use(
       UseRef.Public("peaceiris", "actions-gh-pages", "v3"),
@@ -138,7 +136,7 @@ ThisBuild / githubWorkflowBuildPostamble ++= List(
   WorkflowStep.Sbt(
     List("site/mdoc"),
     name = Some("Compile Documentation"),
-    cond = Some(s"matrix.scala == '$scala213'")
+    cond = Some(s"matrix.scala == '$scala3'")
   )
 )
 
@@ -147,12 +145,7 @@ lazy val core = project
   .settings(commonSettings)
   .settings(
     name := "fs2-gtfs-core",
-    libraryDependencies ++= Dependencies.core ++ PartialFunction
-      .condOpt(CrossVersion.partialVersion(scalaVersion.value)) { case Some((2, _)) =>
-        Dependencies.coreScala2
-      }
-      .toList
-      .flatten
+    libraryDependencies ++= Dependencies.core
   )
 
 lazy val rules = project

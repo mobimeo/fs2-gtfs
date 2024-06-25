@@ -1,4 +1,4 @@
-ThisBuild / scalaVersion               := "3.4.2"
+ThisBuild / scalaVersion               := "3.3.3"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17"))
 
 // === Common settings used by all modules ===

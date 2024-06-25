@@ -140,8 +140,8 @@ RuleParser.rule.parseAll(input).leftMap(error => new Prettyprint(input).prettypr
 When the rules you want to parse are known at compile time and you would like to be notified of syntax errors at compile time, you can use the provided interpolators from package `com.mobimeo.gtfs.rules.syntax.literals`.
 The rules defined with these literals are parsed and checked at compile time, and they return the rules themselves, no wrapped in any `Either`.
 
-```scala mdoc
-import com.mobimeo.gtfs.rules.syntax.literals._
+```scala
+import com.mobimeo.gtfs.rules.syntax.literals.*
 
 val rules =
   ruleset"""ruleset for stops {
@@ -172,7 +172,7 @@ If you have set of rules that you'd like to serialize to the concrete syntax, yo
 ```scala mdoc
 import com.mobimeo.gtfs.rules.syntax.pretty._
 
-rules.show
+rule.show
 ```
 
 **Note:** the concrete syntax does not allow for expressing anonymous functions. If you try to serialize rules containing calls to anonymous functions, it will be rendered as concatenation of the arguments.

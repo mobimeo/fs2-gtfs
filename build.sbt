@@ -1,3 +1,6 @@
+ThisBuild / scalaVersion               := "3.4.2"
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17"))
+
 // === Common settings used by all modules ===
 val commonSettings = Seq(
   organization                                            := "com.mobimeo",
@@ -13,15 +16,7 @@ val commonSettings = Seq(
       url = url("https://github.com/mobimeo")
     )
   ),
-  libraryDependencies ++= Dependencies.common ++ PartialFunction
-    .condOpt(CrossVersion.partialVersion(scalaVersion.value)) { case Some((2, _)) =>
-      List(
-        compilerPlugin("org.typelevel" % "kind-projector"     % "0.13.2" cross CrossVersion.full),
-        compilerPlugin("com.olegpy"    % "better-monadic-for" % "0.3.1" cross CrossVersion.binary)
-      )
-    }
-    .toList
-    .flatten,
+  libraryDependencies ++= Dependencies.common,
   resolvers ++= Resolver.sonatypeOssRepos("public"),
   resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
   testFrameworks += new TestFramework("weaver.framework.CatsEffect")
@@ -32,11 +27,6 @@ val noPublish = List(
   publishLocal    := {},
   publishArtifact := false
 )
-
-// === CI/CD settings ===
-val scala3   = "3.4.2"
-
-ThisBuild / scalaVersion       := scala3
 
 // publishing
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
@@ -70,8 +60,7 @@ ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
   steps = githubWorkflowGeneratedDownloadSteps.value.toList :+
     WorkflowStep.Sbt(
       List("site/makeMicrosite"),
-      name = Some("Compile Website"),
-      cond = Some(s"matrix.scala == '$scala3'")
+      name = Some("Compile Website")
     ) :+
     WorkflowStep.Use(
       UseRef.Public("peaceiris", "actions-gh-pages", "v3"),
@@ -135,8 +124,7 @@ lazy val site = project
 ThisBuild / githubWorkflowBuildPostamble ++= List(
   WorkflowStep.Sbt(
     List("site/mdoc"),
-    name = Some("Compile Documentation"),
-    cond = Some(s"matrix.scala == '$scala3'")
+    name = Some("Compile Documentation")
   )
 )
 

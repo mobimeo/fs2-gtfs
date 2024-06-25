@@ -122,13 +122,3 @@ jobs:
         run: |
           tar xf targets.tar
           rm targets.tar
-
-      - name: Compile Website
-        if: matrix.scala == '3.4.2'
-        run: sbt site/makeMicrosite
-
-      - name: Deploy site
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          publish_dir: ./site/target/site
-          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -18,14 +18,14 @@ ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
   javas   = (ThisBuild / githubWorkflowJavaVersions).value.toList,
   scalas  = (ThisBuild / scalaVersion).value :: Nil,
   cond    = "startsWith(github.ref, 'refs/tags/v')".some,
-  steps   = githubWorkflowGeneratedDownloadSteps.value.toList                       :+
-            WorkflowStep.Sbt(List("site/makeMicrosite"),
-                             name = Some("Compile Website"),
-                             cond = Some(s"matrix.scala == '${Versions.scala3}'"))  :+
-            WorkflowStep.Use(UseRef.Public("peaceiris", "actions-gh-pages", "v3"),
-                             name = Some(s"Deploy site"),
-                             params = Map("publish_dir"  -> "./site/target/site",
-                                          "github_token" -> "${{ secrets.GITHUB_TOKEN }}"))
+  steps   = githubWorkflowGeneratedDownloadSteps.value.toList   //                    :+
+            // WorkflowStep.Sbt(List("site/makeMicrosite"),
+            //                  name = Some("Compile Website"),
+            //                  cond = Some(s"matrix.scala == '${Versions.scala3}'"))  :+
+            // WorkflowStep.Use(UseRef.Public("peaceiris", "actions-gh-pages", "v3"),
+            //                  name = Some(s"Deploy site"),
+            //                  params = Map("publish_dir"  -> "./site/target/site",
+            //                               "github_token" -> "${{ secrets.GITHUB_TOKEN }}"))
 )
 
 // ThisBuild / githubWorkflowBuildPostamble  ++= List(

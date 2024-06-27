@@ -171,5 +171,5 @@ In addition to calling functions by name, you can use the DSL to call standard s
 ```scala mdoc
 def makeKebab(args: List[String]) = IO.pure(args.mkString("-"))
 
-call(makeKebab _)("a", "b", "c")
+call(makeKebab)("a", "b", "c")
 ```

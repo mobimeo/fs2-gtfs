@@ -50,7 +50,7 @@ class Dsl[F[_]] {
 
   class TransformationBuilder(name: String, matcher: Matcher) {
     def perform(t: Transformation[F], ts: Transformation[F]*): RulesBuilder =
-      RulesBuilder.Apply(name, matcher, NonEmptyList.of(t, ts: _*))
+      RulesBuilder.Apply(name, matcher, NonEmptyList.of(t, ts*))
     def delete: RulesBuilder = RulesBuilder.Delete(name, matcher)
     def log(msg: Expr[F], at: LogLevel = LogLevel.Info): RulesBuilder =
       RulesBuilder.Log(name, matcher, msg, at)

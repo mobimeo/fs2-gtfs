@@ -1,3 +1,6 @@
+ThisBuild / scalaVersion               := "3.3.3"
+ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17"))
+
 // === Common settings used by all modules ===
 val commonSettings = Seq(
   organization                                            := "com.mobimeo",
@@ -13,15 +16,7 @@ val commonSettings = Seq(
       url = url("https://github.com/mobimeo")
     )
   ),
-  libraryDependencies ++= Dependencies.common ++ PartialFunction
-    .condOpt(CrossVersion.partialVersion(scalaVersion.value)) { case Some((2, _)) =>
-      List(
-        compilerPlugin("org.typelevel" % "kind-projector"     % "0.13.2" cross CrossVersion.full),
-        compilerPlugin("com.olegpy"    % "better-monadic-for" % "0.3.1" cross CrossVersion.binary)
-      )
-    }
-    .toList
-    .flatten,
+  libraryDependencies ++= Dependencies.common,
   resolvers ++= Resolver.sonatypeOssRepos("public"),
   resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
   testFrameworks += new TestFramework("weaver.framework.CatsEffect")
@@ -32,13 +27,6 @@ val noPublish = List(
   publishLocal    := {},
   publishArtifact := false
 )
-
-// === CI/CD settings ===
-val scala213 = "2.13.11"
-val scala3   = "3.3.0"
-
-ThisBuild / scalaVersion       := scala213
-ThisBuild / crossScalaVersions := List(scala213, scala3)
 
 // publishing
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
@@ -72,8 +60,7 @@ ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
   steps = githubWorkflowGeneratedDownloadSteps.value.toList :+
     WorkflowStep.Sbt(
       List("site/makeMicrosite"),
-      name = Some("Compile Website"),
-      cond = Some(s"matrix.scala == '$scala213'")
+      name = Some("Compile Website")
     ) :+
     WorkflowStep.Use(
       UseRef.Public("peaceiris", "actions-gh-pages", "v3"),
@@ -137,8 +124,7 @@ lazy val site = project
 ThisBuild / githubWorkflowBuildPostamble ++= List(
   WorkflowStep.Sbt(
     List("site/mdoc"),
-    name = Some("Compile Documentation"),
-    cond = Some(s"matrix.scala == '$scala213'")
+    name = Some("Compile Documentation")
   )
 )
 
@@ -147,12 +133,7 @@ lazy val core = project
   .settings(commonSettings)
   .settings(
     name := "fs2-gtfs-core",
-    libraryDependencies ++= Dependencies.core ++ PartialFunction
-      .condOpt(CrossVersion.partialVersion(scalaVersion.value)) { case Some((2, _)) =>
-        Dependencies.coreScala2
-      }
-      .toList
-      .flatten
+    libraryDependencies ++= Dependencies.core
   )
 
 lazy val rules = project

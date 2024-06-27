@@ -70,9 +70,10 @@ The base class to know to run rules on your data is the `Engine` that lives in t
 
 ```scala mdoc
 import org.typelevel.log4cats.slf4j.Slf4jLogger
+import org.typelevel.log4cats.StructuredLogger
 
 // this is unsafe in production code, please refer to the log4cats documentation
-implicit val unsafeLogger = Slf4jLogger.getLogger[IO]
+given StructuredLogger[IO] = Slf4jLogger.getLogger[IO]
 
 val engine = Engine[IO]
 ```

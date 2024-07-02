@@ -27,7 +27,7 @@ The acquired GTFS resource gives access to the content under the `read` namespac
 ```scala mdoc
 gtfs.use { gtfs =>
   gtfs.read
-    .routes.collect {
+    .routes[Route].collect {
       case Route(id, _, Some(name), _, _, _, _, _, _, _) => s"$name ($id)"
     }
     .intersperse("\n")

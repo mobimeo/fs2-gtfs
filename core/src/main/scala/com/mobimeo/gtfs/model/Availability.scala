@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
 enum Availability(val value: Int) extends IntEnumEntry {
   case Unavailable extends Availability(0)

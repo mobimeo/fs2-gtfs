@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
 enum ExceptionType(val value: Int) extends IntEnumEntry {
   case Added   extends ExceptionType(1)

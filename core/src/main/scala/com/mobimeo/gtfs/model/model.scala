@@ -90,7 +90,7 @@ object Stop {
     deriveCsvRowEncoder[Stop]
 }
 
-case class Route[RouteType](
+case class Route(
     @CsvName("route_id")
     id: String,
     @CsvName("agency_id")
@@ -116,13 +116,13 @@ case class Route[RouteType](
 object Route {
   implicit def csvRowDecoder[RouteType](implicit
       @unused decoder: CellDecoder[RouteType]
-  ): CsvRowDecoder[Route[RouteType], String] =
-    deriveCsvRowDecoder[Route[RouteType]]
+  ): CsvRowDecoder[Route, String] =
+    deriveCsvRowDecoder[Route]
 
   implicit def csvRowEncoder[RouteType](implicit
       @unused decoder: CellEncoder[RouteType]
-  ): CsvRowEncoder[Route[RouteType], String] =
-    deriveCsvRowEncoder[Route[RouteType]]
+  ): CsvRowEncoder[Route, String] =
+    deriveCsvRowEncoder[Route]
 }
 
 case class Trip(

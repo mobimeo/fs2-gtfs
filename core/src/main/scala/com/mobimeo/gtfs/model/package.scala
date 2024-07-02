@@ -26,12 +26,6 @@ import java.{util => ju}
 
 package object model {
 
-  type ExtendedRoute = Route[ExtendedRouteType]
-
-  type SimpleRoute = Route[SimpleRouteType]
-
-  type EitherRoute = Route[Either[SimpleRouteType, ExtendedRouteType]]
-
   implicit val zoneIdCellDecoder: CellDecoder[ZoneId] =
     CellDecoder.stringDecoder.emap(s =>
       Either.catchNonFatal(ZoneId.of(s)).leftMap(t => new DecoderError(s"Invalid zone id $s", None, t))

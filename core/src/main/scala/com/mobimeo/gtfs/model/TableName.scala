@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
 enum TableName(val entryName: String) extends EnumEntry {
   case Agency       extends TableName("agency")

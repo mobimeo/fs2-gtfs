@@ -22,7 +22,6 @@ import fs2.data.csv.generic.semiauto._
 
 import java.time._
 import java.{util => ju}
-import scala.annotation.unused
 
 case class Agency(
     @CsvName("agency_id")
@@ -114,15 +113,8 @@ case class Route(
 )
 
 object Route {
-  implicit def csvRowDecoder[RouteType](implicit
-      @unused decoder: CellDecoder[RouteType]
-  ): CsvRowDecoder[Route, String] =
-    deriveCsvRowDecoder[Route]
-
-  implicit def csvRowEncoder[RouteType](implicit
-      @unused decoder: CellEncoder[RouteType]
-  ): CsvRowEncoder[Route, String] =
-    deriveCsvRowEncoder[Route]
+  given CsvRowDecoder[Route, String] = deriveCsvRowDecoder[Route]
+  given CsvRowEncoder[Route, String] = deriveCsvRowEncoder[Route]
 }
 
 case class Trip(

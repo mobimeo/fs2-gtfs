@@ -27,7 +27,7 @@ The acquired GTFS resource gives access to the content under the `read` namespac
 ```scala mdoc
 gtfs.use { gtfs =>
   gtfs.read
-    .routes[ExtendedRoute].collect {
+    .routes[Route].collect {
       case Route(id, _, Some(name), _, _, _, _, _, _, _) => s"$name ($id)"
     }
     .intersperse("\n")
@@ -37,7 +37,8 @@ gtfs.use { gtfs =>
 }.unsafeRunSync()
 ```
 
-The `read` namespace contains shortcuts to read entities from the standard files. You need to provide the type you want to decode the entities to (in this example `ExtendedRoute`, which is the route entity using extended route types). You can provide your own type, provided that you also provide a [`CsvRowDecoder`][csv-row-decoder] for that type.
+The `read` namespace contains shortcuts to read entities from the standard files. You need to provide the type you want to decode the entities to Route.
+You can provide your own type, provided that you also provide a [`CsvRowDecoder`][csv-row-decoder] for that type.
 
 For instance if you are only interested in extracting route name and identifier, you can define you own data model for these two fields.
 

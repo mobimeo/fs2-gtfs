@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
 enum PickupOrDropOffType(val value: Int) extends IntEnumEntry {
   case RegularlyScheduled       extends PickupOrDropOffType(0)

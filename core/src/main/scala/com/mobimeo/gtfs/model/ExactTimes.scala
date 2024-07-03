@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
 enum ExactTimes(val value: Int) extends IntEnumEntry {
   case FrequencyBased extends ExactTimes(0)

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
 enum TransferType(val value: Int) extends IntEnumEntry {
   case RecommendedTransfer         extends TransferType(0)

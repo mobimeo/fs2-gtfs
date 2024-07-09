@@ -56,7 +56,7 @@ ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
   needs = List("publish"),
   javas = (ThisBuild / githubWorkflowJavaVersions).value.toList,
   scalas = (ThisBuild / scalaVersion).value :: Nil,
-  // cond = "startsWith(github.ref, 'refs/tags/v')".some,
+  cond = "startsWith(github.ref, 'refs/tags/v')".some,
   steps =
     (WorkflowStep.Checkout :: githubWorkflowGeneratedDownloadSteps.value.toList) :+
     WorkflowStep.Sbt(List("site/makeMicrosite"), name = Some("Compile Website")) :+

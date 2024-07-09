@@ -57,11 +57,9 @@ ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
   javas = (ThisBuild / githubWorkflowJavaVersions).value.toList,
   scalas = (ThisBuild / scalaVersion).value :: Nil,
   cond = "startsWith(github.ref, 'refs/tags/v')".some,
-  steps = githubWorkflowGeneratedDownloadSteps.value.toList :+
-    WorkflowStep.Sbt(
-      List("site/makeMicrosite"),
-      name = Some("Compile Website")
-    ) :+
+  steps =
+    (WorkflowStep.Checkout :: githubWorkflowGeneratedDownloadSteps.value.toList) :+
+    WorkflowStep.Sbt(List("site/makeMicrosite"), name = Some("Compile Website")) :+
     WorkflowStep.Use(
       UseRef.Public("peaceiris", "actions-gh-pages", "v3"),
       name = Some(s"Deploy site"),
@@ -71,6 +69,7 @@ ThisBuild / githubWorkflowAddedJobs += WorkflowJob(
       )
     )
 )
+
 
 // === aggregating root project ===
 lazy val root = project

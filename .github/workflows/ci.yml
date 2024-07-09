@@ -116,6 +116,9 @@ jobs:
         java: [temurin@17]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Checkout current branch (fast)
+        uses: actions/checkout@v4
+
       - name: Download target directories (3.3.3)
         uses: actions/download-artifact@v4
         with:

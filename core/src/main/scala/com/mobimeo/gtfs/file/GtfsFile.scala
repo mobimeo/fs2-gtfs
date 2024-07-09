@@ -229,6 +229,9 @@ object GtfsFile {
       file: Path,
       create: Boolean
   )(implicit F: Sync[F], files: Files[F]): Resource[F, FileSystem] =
+    println("===")
+    println(file.toString)
+    println("===")
     Resource.make(
       files.exists(file).flatMap { exists =>
         F.blocking(

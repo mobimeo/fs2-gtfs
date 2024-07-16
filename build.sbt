@@ -1,3 +1,5 @@
+import org.typelevel.scalacoptions.ScalacOptions
+
 ThisBuild / scalaVersion               := "3.3.3"
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17"))
 
@@ -81,7 +83,7 @@ lazy val root = project
     test     := {},
     testOnly := {}
   )
-  .aggregate(core, rules, rulesSyntax)
+  .aggregate(core, rt, rules, rulesSyntax)
 
 // === The modules ===
 
@@ -115,7 +117,6 @@ lazy val site = project
     docsMappingsAPIDir                         := "api",
     addMappingsToSiteDir(ScalaUnidoc / packageDoc / mappings, docsMappingsAPIDir),
     libraryDependencies ++= Dependencies.site,
-    tpolecatCiModeOptions ~= { opts => opts.filterNot(_ == ScalacOptions.fatalWarnings) },
     mdocExtraArguments           := Seq("--no-link-hygiene"),
     githubWorkflowArtifactUpload := false
   )
@@ -134,6 +135,16 @@ lazy val core = project
   .settings(
     name := "fs2-gtfs-core",
     libraryDependencies ++= Dependencies.core
+  )
+
+lazy val rt = project
+  .in(file("rt"))
+  .enablePlugins(Fs2Grpc)
+  .settings(commonSettings)
+  .settings(
+    name                         := "fs2-gtfs-rt",
+    libraryDependencies         ++= Dependencies.rt,
+    tpolecatExcludeOptions       += ScalacOptions.warnValueDiscard
   )
 
 lazy val rules = project

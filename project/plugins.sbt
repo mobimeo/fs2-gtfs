@@ -4,7 +4,7 @@ ThisBuild / libraryDependencySchemes ++= Seq(
 )
 
 // strict compiler flags
-addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.4.4")
+addSbtPlugin("org.typelevel" % "sbt-tpolecat" % "0.5.2")
 // source code formatting
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
 // coverage

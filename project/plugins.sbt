@@ -20,4 +20,4 @@ addSbtPlugin("com.47deg" % "sbt-microsites" % "1.4.3")
 // generate unified documentation
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
 // release automatically
-addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.12")
+addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.8.0")

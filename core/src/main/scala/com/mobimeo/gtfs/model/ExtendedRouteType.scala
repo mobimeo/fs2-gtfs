@@ -60,6 +60,8 @@ enum RouteType(val value: Int) extends IntEnumEntry {
   case CommuterCoachService      extends RouteType(208)
   case AllCoachServices          extends RouteType(209)
 
+  case AlfBusService extends RouteType(300)  // 300 special DemandAndResponse case for NRW ÖPNV
+
   case SomeUrbanRailwayService extends RouteType(400)
   case MetroService            extends RouteType(401)
   case UndergroundService      extends RouteType(402)

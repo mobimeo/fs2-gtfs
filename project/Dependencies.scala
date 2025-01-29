@@ -1,13 +1,13 @@
 import sbt._
 
 object Versions {
-  val fs2        = "3.10.2"
-  val fs2Data    = "1.11.1"
+  val fs2        = "3.11.0"
+  val fs2Data    = "1.11.2"
   val enumeratum = "1.7.3"
   val weaver     = "0.8.4"
-  val circe      = "0.14.8"
+  val circe      = "0.14.10"
   val log4cats   = "2.7.0"
-  val catsParse  = "1.0.0"
+  val catsParse  = "1.1.0"
   val literally  = "1.2.0"
 }
 

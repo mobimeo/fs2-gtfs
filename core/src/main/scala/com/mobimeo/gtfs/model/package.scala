@@ -26,53 +26,37 @@ import java.{util => ju}
 
 package object model {
 
-  type ExtendedRoute = Route[ExtendedRouteType]
-
-  type SimpleRoute = Route[SimpleRouteType]
-
-  type EitherRoute = Route[Either[SimpleRouteType, ExtendedRouteType]]
-
-  implicit val zoneIdCellDecoder: CellDecoder[ZoneId] =
+  given CellDecoder[ZoneId] =
     CellDecoder.stringDecoder.emap(s =>
       Either.catchNonFatal(ZoneId.of(s)).leftMap(t => new DecoderError(s"Invalid zone id $s", None, t))
     )
+  given CellEncoder[ZoneId] = CellEncoder.stringEncoder.contramap(_.getId())
 
-  implicit val zoneIdCellEncoder: CellEncoder[ZoneId] =
-    CellEncoder.stringEncoder.contramap(_.getId())
-
-  implicit val localDateDecoder: CellDecoder[LocalDate] =
+  given CellDecoder[LocalDate] =
     CellDecoder.stringDecoder.emap(s =>
       Either
         .catchNonFatal(LocalDate.parse(s, DateTimeFormatter.BASIC_ISO_DATE))
         .leftMap(t => new DecoderError(s"Invalid date $s", None, t))
     )
+  given CellEncoder[LocalDate] = CellEncoder.stringEncoder.contramap(_.format(DateTimeFormatter.BASIC_ISO_DATE))
 
-  implicit val localDateEncoder: CellEncoder[LocalDate] =
-    CellEncoder.stringEncoder.contramap(_.format(DateTimeFormatter.BASIC_ISO_DATE))
-
-  implicit val currencyDecoder: CellDecoder[ju.Currency] =
+  given CellDecoder[ju.Currency] =
     CellDecoder.stringDecoder.emap(s =>
       Either.catchNonFatal(ju.Currency.getInstance(s)).leftMap(t => new DecoderError(s"Invalid currency: $s", None, t))
     )
 
-  implicit val boolDecoder: CellDecoder[Boolean] =
+  given CellDecoder[Boolean] =
     CellDecoder.intDecoder.emap {
       case 0 => Right(false)
       case 1 => Right(true)
       case n => Left(new DecoderError(s"Invalid boolean $n"))
     }
 
-  implicit val boolEncoder: CellEncoder[Boolean] =
-    CellEncoder.intEncoder.contramap(if (_) 1 else 0)
+  given boolEncoder: CellEncoder[Boolean] = CellEncoder.intEncoder.contramap(if (_) 1 else 0)
+  given currencyEncoder: CellEncoder[ju.Currency] = CellEncoder.stringEncoder.contramap(_.getCurrencyCode())
 
-  implicit val currencyEncoder: CellEncoder[ju.Currency] =
-    CellEncoder.stringEncoder.contramap(_.getCurrencyCode())
-
-  implicit val localeDecoder: CellDecoder[ju.Locale] =
-    CellDecoder.stringDecoder.map(new ju.Locale(_))
-
-  implicit val localeEncoder: CellEncoder[ju.Locale] =
-    CellEncoder.stringEncoder.contramap(_.getISO3Language())
+  given CellDecoder[ju.Locale] = CellDecoder.stringDecoder.map(new ju.Locale(_))
+  given CellEncoder[ju.Locale] = CellEncoder.stringEncoder.contramap(_.getISO3Language())
 
   implicit def eitherCellDecoder[A, B](implicit A: CellDecoder[A], B: CellDecoder[B]): CellDecoder[Either[A, B]] =
     A.either(B)

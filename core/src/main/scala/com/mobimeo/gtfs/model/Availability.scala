@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
-enum PickupOrDropOffType(val value: Int) extends IntEnumEntry {
-  case RegularlyScheduled       extends PickupOrDropOffType(0)
-  case None                     extends PickupOrDropOffType(1)
-  case MustPhoneAgency          extends PickupOrDropOffType(2)
-  case MustCoordinateWithDriver extends PickupOrDropOffType(3)
+enum Availability(val value: Int) extends IntEnumEntry {
+  case Unavailable extends Availability(0)
+  case Availabile  extends Availability(1)
 }
 
-object PickupOrDropOffType extends OrdinalBasedCsvIntEnum[PickupOrDropOffType]
+object Availability extends OrdinalBasedCsvIntEnum[Availability]

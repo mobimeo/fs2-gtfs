@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
-enum TransferType(val value: Int) extends IntEnumEntry {
-  case RecommendedTransfer         extends TransferType(0)
-  case TimedTransfer               extends TransferType(1)
-  case MinimumTimeRequiredTransfer extends TransferType(2)
-  case ImpossibleTransfer          extends TransferType(3)
+enum PaymentMethod(val value: Int) extends IntEnumEntry {
+  case OnBoard        extends PaymentMethod(0)
+  case BeforeBoarding extends PaymentMethod(1)
 }
 
-object TransferType extends OrdinalBasedCsvIntEnum[TransferType]
+object PaymentMethod extends OrdinalBasedCsvIntEnum[PaymentMethod]

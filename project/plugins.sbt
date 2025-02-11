@@ -6,7 +6,7 @@ ThisBuild / libraryDependencySchemes ++= Seq(
 // strict compiler flags
 addSbtPlugin("io.github.davidgregory084" % "sbt-tpolecat" % "0.4.4")
 // source code formatting
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.0")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.4")
 // coverage
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "2.0.8")
 // check dependencies against OWASP vulnerabilities
@@ -20,4 +20,4 @@ addSbtPlugin("com.47deg" % "sbt-microsites" % "1.4.3")
 // generate unified documentation
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
 // release automatically
-addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.12")
+addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.9.2")

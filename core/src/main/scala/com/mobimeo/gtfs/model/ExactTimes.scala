@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
-enum PaymentMethod(val value: Int) extends IntEnumEntry {
-  case OnBoard        extends PaymentMethod(0)
-  case BeforeBoarding extends PaymentMethod(1)
+enum ExactTimes(val value: Int) extends IntEnumEntry {
+  case FrequencyBased extends ExactTimes(0)
+  case ScheduleBased  extends ExactTimes(1)
 }
 
-object PaymentMethod extends OrdinalBasedCsvIntEnum[PaymentMethod]
+object ExactTimes extends OrdinalBasedCsvIntEnum[ExactTimes]

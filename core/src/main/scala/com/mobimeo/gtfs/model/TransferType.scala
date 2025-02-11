@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package com.mobimeo.gtfs.model
+package com.mobimeo.gtfs
+package model
 
-import enumeratum.values.{IntEnum, IntEnumEntry}
-
-sealed abstract class LocationType(val value: Int) extends IntEnumEntry
-object LocationType extends IntEnum[LocationType] with CsvIntEnum[LocationType] {
-  case object Stop         extends LocationType(0)
-  case object Station      extends LocationType(1)
-  case object Entrance     extends LocationType(2)
-  case object GenericNode  extends LocationType(3)
-  case object BoardingArea extends LocationType(4)
-
-  val values = findValues
+enum TransferType(val value: Int) extends IntEnumEntry {
+  case RecommendedTransfer         extends TransferType(0)
+  case TimedTransfer               extends TransferType(1)
+  case MinimumTimeRequiredTransfer extends TransferType(2)
+  case ImpossibleTransfer          extends TransferType(3)
 }
+
+object TransferType extends OrdinalBasedCsvIntEnum[TransferType]

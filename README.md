@@ -1,5 +1,10 @@
 # `fs2-gtfs`
 
+## Note
+This project is no longer actively maintained since March 2025. It's still well usable though for probably several years,
+feel invited to fork it if you want to continue development.
+
+## Description
 This project is a [GTFS][gtfs] processing library based on [fs2][fs2].
 It consists of several API levels, and can be used to perform several kind of tasks on GTFS data.
 
